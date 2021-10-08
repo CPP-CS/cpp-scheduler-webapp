@@ -1,27 +1,40 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <div id="container">
+    <h1 id="title">CPP Scheduler</h1>
+    <Courses @find-schedules="findSchedules" />
+    <Schedule />
+  </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-import HelloWorld from './components/HelloWorld.vue';
+import { defineComponent } from "vue";
+import { SectionsData } from "./Classes";
+import Courses from "./components/Courses.vue";
+import Schedule from "./components/Schedule.vue";
 
-@Options({
+export default defineComponent({
+  name: "App",
   components: {
-    HelloWorld,
+    Courses,
+    Schedule,
   },
-})
-export default class App extends Vue {}
+  data() {
+    return {
+      schedules: Schedule[]
+    }
+  },
+  methods: {
+    findSchedules(sectionsData: SectionsData[]):void {
+
+    },
+    getHours(str: string): number {
+      return parseInt(str.substring(0, 2));
+    },
+    getMinutes(str: string): number {
+      return parseInt(str.substring(3, 5));
+    },
+  },
+});
 </script>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style></style>
