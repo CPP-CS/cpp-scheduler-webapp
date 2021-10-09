@@ -372,7 +372,7 @@ export default defineComponent({
     async findSections(subject: string, number: string) {
       subject = subject.toUpperCase();
       number = number.toUpperCase();
-      let query = `http://127.0.0.1:5000/api/courses/Sp22/?Subject=${subject}&CourseNumber=${number}`.replace(" ", "+");
+      let query = `http://127.0.0.1:8000/api/courses/Sp22/?Subject=${subject}&CourseNumber=${number}`.replace(" ", "+");
       let response = await fetch(query);
       let sections: Array<Section> = await response.json();
       console.log(this.courses);
