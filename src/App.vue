@@ -1,16 +1,16 @@
 <template>
   <div id="container">
-    <h1 id="title">CPP Scheduler</h1>
-    <Courses @find-schedules="findSchedules" />
-    <Schedules :schedules="schedules" />
+    <Courses @find-schedules="findSchedules" @error="error" />
+    <Schedules :schedules="schedules" :key="id" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { SectionsData, Schedule } from "./Classes";
+import { SectionsData, Schedule, WeekDays, Section } from "./Classes";
 import Courses from "./components/Courses.vue";
 import Schedules from "./components/Schedules.vue";
+import { nanoid } from "nanoid";
 
 export default defineComponent({
   name: "App",
@@ -21,11 +21,13 @@ export default defineComponent({
   data() {
     return {
       schedules: [] as Schedule[],
+      errorMessage: "error" as String,
+      hidden: false,
+      id: 1,
     };
   },
   methods: {
     findSchedules(courses: SectionsData[]): void {
-      console.log(courses);
       let result: Schedule[] = [];
       for (let section of courses[0].sections) {
         result.push([section]);
@@ -41,18 +43,31 @@ export default defineComponent({
         }
         result = tempSchedules;
       }
-      console.log(result);
-      this.schedules = result;
+      if (result.length > 500) {
+        this.error("There are too many schedules to render. Please deselect some sections.");
+      } else {
+        this.schedules = result;
+        this.id = parseInt(nanoid(20));
+      }
     },
     isValidSchedule(schedule: Schedule) {
-      for (let i = 0; i < schedule.length - 1; i++) {
-        let first = schedule[i].EndTime;
-        let second = schedule[i + 1].StartTime;
-        if (first == "TBA" || second == "TBA") continue;
-        if (this.getHours(first) == this.getHours(second)) {
-          if (this.getMinutes(first) > this.getMinutes(second)) return false;
+      for (let day of Object.keys(WeekDays)) {
+        let first: Section;
+        let second: Section;
+        for (let section of schedule) {
+          if ((section as any)[day] == "True") {
+            if (first! === undefined) {
+              first = section;
+            } else {
+              second = section;
+              if (this.getHours(first.EndTime) == this.getHours(second.StartTime)) {
+                if (this.getMinutes(first.EndTime) > this.getMinutes(second.StartTime)) return false;
+              }
+              if (this.getHours(first.EndTime) > this.getHours(second.StartTime)) return false;
+              first = second;
+            }
+          }
         }
-        if (this.getHours(first) > this.getHours(second)) return false;
       }
       return true;
     },
@@ -72,16 +87,39 @@ export default defineComponent({
     getMinutes(str: string): number {
       return parseInt(str.substring(3, 5));
     },
+    error(str: string) {
+      alert("Error: " + str);
+    },
   },
 });
 </script>
 
-<style scoped>
-#title {
-  font-size: 5em;
-  text-align: center;
+<style>
+#container {
+  display: flex;
+  flex-direction: column;
 }
+
+@media (min-width: 641px) {
+  #container {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
 * {
   font-family: "Noto Sans Display", sans;
+}
+::-webkit-scrollbar {
+  width: 20px;
+}
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
 }
 </style>

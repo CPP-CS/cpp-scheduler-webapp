@@ -1,38 +1,67 @@
 <template>
   <div id="schedulesContainer">
-    <h3 v-for="index in schedules.length" :key="index">
-      <span v-for="section in schedules[index]" :key="section.CourseNumber">
-        {{ section.Subject }}{{ section.CourseNumber }}: {{ section.Instructor }} ;
-        {{ convertTime(section.StartTime) }} - {{ convertTime(section.EndTime) }} ||
-      </span>
-    </h3>
+    <div id="schedules">
+      <ScheduleView
+        :schedule="schedules[index - 1]"
+        v-for="index in schedules.length"
+        :key="index"
+        @select-section="selectSection"
+      />
+    </div>
+    <SectionData :selectedSection="selectedSection" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { Schedule } from "@/Classes";
+import ScheduleView from "./ScheduleView.vue";
+import SectionData from "./SectionData.vue";
+import { Schedule, Section } from "@/Classes";
 
 export default defineComponent({
   name: "Schedules",
   props: {
     schedules: Array as PropType<Array<Schedule>>,
   },
+  data() {
+    return {
+      selectedSection: {} as Section,
+    };
+  },
+  components: {
+    ScheduleView,
+    SectionData,
+  },
   methods: {
-    convertTime(str: String): String {
-      if (str == "TBA") return "TBA";
-      if (str.length != 8) return "ERROR";
-      let hours: number = parseInt(str.substring(0, 2));
-      let minutes: string = str.substring(3, 5);
-      let end: string;
-      if (hours > 12) {
-        hours -= 12;
-        end = "PM";
-      } else {
-        end = "AM";
-      }
-      return `${hours}:${minutes} ${end}`;
+    selectSection(section: Section) {
+      this.selectedSection = section;
     },
   },
 });
 </script>
+
+<style>
+#schedulesContainer {
+  display: flex;
+  flex-direction: column;
+}
+#schedules {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 0;
+  max-height: 50vh;
+  overflow-y: scroll;
+}
+@media (min-width: 641px) {
+  #schedulesContainer {
+    width: 75%;
+    flex-direction: row;
+  }
+  #schedules {
+    width: 80%;
+    height: 100%;
+    max-height: 100vh;
+  }
+}
+</style>

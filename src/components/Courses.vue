@@ -1,8 +1,18 @@
 <template>
   <div id="coursesContainer">
-    <CourseQuery @find-sections="findSections" />
-    <CourseSelect :courses="courses" @switch-selected="switchSelected" />
-    <input type="button" value="Find Schedules" @click="findSchedules" />
+    <h1 id="pageTitle">CPP Scheduler</h1>
+    <div id="coursesSearchContainer">
+      <h2 id="name">Add Courses</h2>
+      <CourseQuery @find-sections="findSections" />
+      <input type="button" value="Clear Courses" @click="clearCourses" class="button" />
+    </div>
+    <CourseSelect
+      v-if="notEmpty"
+      :courses="courses"
+      @find-schedules="findSchedules"
+      @switch-selected="switchSelected"
+      @delete-course="deleteCourse"
+    />
   </div>
 </template>
 
@@ -16,353 +26,13 @@ export default defineComponent({
   name: "Courses",
   data() {
     return {
-      courses: [
-        {
-          name: "CS 2400",
-          sections: [
-            {
-              AcademicSession: "Regular Academic Session",
-              Building: 8,
-              ClassCapacity: 35,
-              ClassNumber: 33058,
-              ClassTitle: "Data Structures and Advanced Programming",
-              Component: "Lecture",
-              CourseNumber: 2400,
-              EndDate: "2022-05-13",
-              EndTime: "11:50:00",
-              Friday: "True",
-              InstructionMode: "Face-to-Face",
-              Instructor: "Ji, Hao",
-              Monday: "True",
-              Room: 52,
-              Saturday: "False",
-              Section: 1,
-              StartDate: "2022-01-22",
-              StartTime: "10:45:00",
-              Subject: "CS",
-              Sunday: "False",
-              Thursday: "False",
-              Tuesday: "False",
-              Units: 4,
-              Wednesday: "True",
-              Selected: true,
-            },
-            {
-              AcademicSession: "Regular Academic Session",
-              Building: 8,
-              ClassCapacity: 53,
-              ClassNumber: 33060,
-              ClassTitle: "Data Structures and Advanced Programming",
-              Component: "Lecture",
-              CourseNumber: 2400,
-              EndDate: "2022-05-13",
-              EndTime: "11:50:00",
-              Friday: "False",
-              InstructionMode: "Face-to-Face",
-              Instructor: "Dong, Qichao",
-              Monday: "False",
-              Room: 4,
-              Saturday: "False",
-              Section: 3,
-              StartDate: "2022-01-22",
-              StartTime: "10:00:00",
-              Subject: "CS",
-              Sunday: "False",
-              Thursday: "True",
-              Tuesday: "True",
-              Units: 4,
-              Wednesday: "False",
-              Selected: true,
-            },
-            {
-              AcademicSession: "Regular Academic Session",
-              Building: 8,
-              ClassCapacity: 53,
-              ClassNumber: 33061,
-              ClassTitle: "Data Structures and Advanced Programming",
-              Component: "Lecture",
-              CourseNumber: 2400,
-              EndDate: "2022-05-13",
-              EndTime: "16:50:00",
-              Friday: "False",
-              InstructionMode: "Face-to-Face",
-              Instructor: "Dong, Qichao",
-              Monday: "False",
-              Room: 4,
-              Saturday: "False",
-              Section: 4,
-              StartDate: "2022-01-22",
-              StartTime: "15:00:00",
-              Subject: "CS",
-              Sunday: "False",
-              Thursday: "True",
-              Tuesday: "True",
-              Units: 4,
-              Wednesday: "False",
-              Selected: true,
-            },
-          ],
-        },
-        {
-          name: "CS 2450",
-          sections: [
-            {
-              AcademicSession: "Regular Academic Session",
-              Building: 8,
-              ClassCapacity: 35,
-              ClassNumber: 33066,
-              ClassTitle: "User Interface Design and Programming",
-              Component: "Lecture",
-              CourseNumber: 2450,
-              EndDate: "2022-05-13",
-              EndTime: "15:45:00",
-              Friday: "False",
-              InstructionMode: "Face-to-Face",
-              Instructor: "Steichen, Ben",
-              Monday: "True",
-              Room: 348,
-              Saturday: "False",
-              Section: 1,
-              StartDate: "2022-01-22",
-              StartTime: "14:30:00",
-              Subject: "CS",
-              Sunday: "False",
-              Thursday: "False",
-              Tuesday: "False",
-              Units: 3,
-              Wednesday: "True",
-              Selected: true,
-            },
-          ],
-        },
-        {
-          name: "CS 2600",
-          sections: [
-            {
-              AcademicSession: "Regular Academic Session",
-              Building: null,
-              ClassCapacity: 35,
-              ClassNumber: 33069,
-              ClassTitle: "Systems Programming",
-              Component: "Lecture",
-              CourseNumber: 2600,
-              EndDate: "2022-05-13",
-              EndTime: "18:45:00",
-              Friday: "False",
-              InstructionMode: "Fully Synchronous",
-              Instructor: "Davarpanah, Nima",
-              Monday: "True",
-              Room: null,
-              Saturday: "False",
-              Section: 1,
-              StartDate: "2022-01-22",
-              StartTime: "17:30:00",
-              Subject: "CS",
-              Sunday: "False",
-              Thursday: "False",
-              Tuesday: "False",
-              Units: 3,
-              Wednesday: "True",
-              Selected: true,
-            },
-            {
-              AcademicSession: "Regular Academic Session",
-              Building: 3,
-              ClassCapacity: 35,
-              ClassNumber: 33070,
-              ClassTitle: "Systems Programming",
-              Component: "Lecture",
-              CourseNumber: 2600,
-              EndDate: "2022-05-13",
-              EndTime: "20:15:00",
-              Friday: "False",
-              InstructionMode: "Face-to-Face",
-              Instructor: "Atanasio, Dominick",
-              Monday: "True",
-              Room: 2636,
-              Saturday: "False",
-              Section: 2,
-              StartDate: "2022-01-22",
-              StartTime: "19:00:00",
-              Subject: "CS",
-              Sunday: "False",
-              Thursday: "False",
-              Tuesday: "False",
-              Units: 3,
-              Wednesday: "True",
-              Selected: true,
-            },
-            {
-              AcademicSession: "Regular Academic Session",
-              Building: 8,
-              ClassCapacity: 35,
-              ClassNumber: 33071,
-              ClassTitle: "Systems Programming",
-              Component: "Lecture",
-              CourseNumber: 2600,
-              EndDate: "2022-05-13",
-              EndTime: "20:15:00",
-              Friday: "False",
-              InstructionMode: "Face-to-Face",
-              Instructor: "Atanasio, Dominick",
-              Monday: "False",
-              Room: 345,
-              Saturday: "False",
-              Section: 3,
-              StartDate: "2022-01-22",
-              StartTime: "19:00:00",
-              Subject: "CS",
-              Sunday: "False",
-              Thursday: "True",
-              Tuesday: "True",
-              Units: 3,
-              Wednesday: "False",
-              Selected: true,
-            },
-            {
-              AcademicSession: "Regular Academic Session",
-              Building: null,
-              ClassCapacity: 35,
-              ClassNumber: 33072,
-              ClassTitle: "Systems Programming",
-              Component: "Lecture",
-              CourseNumber: 2600,
-              EndDate: "2022-05-13",
-              EndTime: "18:45:00",
-              Friday: "False",
-              InstructionMode: "Fully Synchronous",
-              Instructor: "Gershman, David",
-              Monday: "False",
-              Room: null,
-              Saturday: "False",
-              Section: 4,
-              StartDate: "2022-01-22",
-              StartTime: "17:30:00",
-              Subject: "CS",
-              Sunday: "False",
-              Thursday: "True",
-              Tuesday: "True",
-              Units: 3,
-              Wednesday: "False",
-              Selected: true,
-            },
-          ],
-        },
-        {
-          name: "CS 2640",
-          sections: [
-            {
-              AcademicSession: "Regular Academic Session",
-              Building: 8,
-              ClassCapacity: 34,
-              ClassNumber: 33074,
-              ClassTitle: "Computer Organization and Assembly Programming",
-              Component: "Lecture",
-              CourseNumber: 2640,
-              EndDate: "2022-05-13",
-              EndTime: "09:50:00",
-              Friday: "True",
-              InstructionMode: "Face-to-Face",
-              Instructor: "Nguyen, Thanh",
-              Monday: "True",
-              Room: 348,
-              Saturday: "False",
-              Section: 1,
-              StartDate: "2022-01-22",
-              StartTime: "09:00:00",
-              Subject: "CS",
-              Sunday: "False",
-              Thursday: "False",
-              Tuesday: "False",
-              Units: 3,
-              Wednesday: "True",
-              Selected: true,
-            },
-            {
-              AcademicSession: "Regular Academic Session",
-              Building: 8,
-              ClassCapacity: 34,
-              ClassNumber: 33075,
-              ClassTitle: "Computer Organization and Assembly Programming",
-              Component: "Lecture",
-              CourseNumber: 2640,
-              EndDate: "2022-05-13",
-              EndTime: "10:50:00",
-              Friday: "True",
-              InstructionMode: "Face-to-Face",
-              Instructor: "Amamra, Abdelfattah",
-              Monday: "True",
-              Room: 348,
-              Saturday: "False",
-              Section: 2,
-              StartDate: "2022-01-22",
-              StartTime: "10:00:00",
-              Subject: "CS",
-              Sunday: "False",
-              Thursday: "False",
-              Tuesday: "False",
-              Units: 3,
-              Wednesday: "True",
-              Selected: true,
-            },
-            {
-              AcademicSession: "Regular Academic Session",
-              Building: 3,
-              ClassCapacity: 35,
-              ClassNumber: 33076,
-              ClassTitle: "Computer Organization and Assembly Programming",
-              Component: "Lecture",
-              CourseNumber: 2640,
-              EndDate: "2022-05-13",
-              EndTime: "14:15:00",
-              Friday: "False",
-              InstructionMode: "Face-to-Face",
-              Instructor: "Nguyen, Thanh",
-              Monday: "False",
-              Room: 2636,
-              Saturday: "False",
-              Section: 3,
-              StartDate: "2022-01-22",
-              StartTime: "13:00:00",
-              Subject: "CS",
-              Sunday: "False",
-              Thursday: "True",
-              Tuesday: "True",
-              Units: 3,
-              Wednesday: "False",
-              Selected: true,
-            },
-            {
-              AcademicSession: "Regular Academic Session",
-              Building: 8,
-              ClassCapacity: 35,
-              ClassNumber: 33077,
-              ClassTitle: "Computer Organization and Assembly Programming",
-              Component: "Lecture",
-              CourseNumber: 2640,
-              EndDate: "2022-05-13",
-              EndTime: "15:45:00",
-              Friday: "False",
-              InstructionMode: "Face-to-Face",
-              Instructor: "Johannsen, David",
-              Monday: "False",
-              Room: 345,
-              Saturday: "False",
-              Section: 4,
-              StartDate: "2022-01-22",
-              StartTime: "14:30:00",
-              Subject: "CS",
-              Sunday: "False",
-              Thursday: "True",
-              Tuesday: "True",
-              Units: 3,
-              Wednesday: "False",
-              Selected: true,
-            },
-          ],
-        },
-      ] as SectionsData[],
+      courses: [] as SectionsData[],
     };
+  },
+  computed: {
+    notEmpty() {
+      return this.courses.length != 0;
+    },
   },
   components: {
     CourseQuery,
@@ -372,16 +42,18 @@ export default defineComponent({
     async findSections(subject: string, number: string) {
       subject = subject.toUpperCase();
       number = number.toUpperCase();
-      let query = `http://127.0.0.1:8000/api/courses/Sp22/?Subject=${subject}&CourseNumber=${number}`.replace(" ", "+");
+      let query = `https://cpp-scheduler.herokuapp.com/api/courses/Sp22/?Subject=${subject}&CourseNumber=${number}`.replace(
+        " ",
+        "+"
+      );
       let response = await fetch(query);
       let sections: Array<Section> = await response.json();
-      console.log(this.courses);
       if (sections.length == 0) {
-        // Add "No sections found error here"
+        this.error(`No sections found under: ${subject}${number}`);
       } else if (this.courses.find((sectionsData) => sectionsData.name == `${subject} ${number}`)) {
-        // Add "Course already added error"
-      } else if (this.courses.length >= 8) {
-        // Add "Too many courses already added error"
+        this.error(`Course already added: ${subject}${number}`);
+      } else if (this.courses.length >= 12) {
+        this.error(`Cannot add course. Maximum reached`);
       } else {
         sections.forEach((section) => (section.Selected = true));
         let sectionsData: SectionsData = {
@@ -389,7 +61,6 @@ export default defineComponent({
           sections: sections,
         };
         this.courses.push(sectionsData);
-        console.log("Changed courses");
       }
     },
     switchSelected(sectionNumber: number, className: string) {
@@ -424,14 +95,54 @@ export default defineComponent({
       });
       this.$emit("find-schedules", filteredCourses);
     },
+    error(str: string) {
+      this.$emit("error", str);
+    },
+    clearCourses() {
+      this.courses = [];
+    },
+    deleteCourse(sectionName: string) {
+      this.courses = this.courses.filter((course) => {
+        return course.name != sectionName;
+      });
+    },
   },
-  emits: ["find-schedules"],
+  emits: ["find-schedules", "error"],
 });
 </script>
 
 <style scoped>
+#name {
+  font-size: 2em;
+  margin-bottom: 1em;
+}
 #coursesContainer {
-  flex-grow: 1;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 1em;
+  border: solid black 1px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+@media (min-width: 641px) {
+  #coursesContainer {
+    width: 25%;
+    height: 100vh;
+    overflow-y: scroll;
+  }
+}
+#coursesSearchContainer {
+  display: flex;
+  flex-direction: column;
+}
+#pageTitle {
+  font-size: 4em;
+  text-align: center;
+  border-bottom: 1px solid black;
+}
+.button {
+  align-self: center;
+  margin-top: 10px;
 }
 </style>

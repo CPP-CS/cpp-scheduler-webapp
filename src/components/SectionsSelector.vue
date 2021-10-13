@@ -1,7 +1,14 @@
 <template>
   <div id="sectionsSelectorContainer">
-    <div id="title">{{ sectionsData.name }}: {{ sectionsData.sections[0].ClassTitle }}</div>
-    <div id="sections">
+    <div id="selectorHeader">
+      <div id="title">
+        <h3>{{ sectionsData.name }}: {{ sectionsData.sections[0].ClassTitle }}</h3>
+        <fa id="arrow" :icon="getIcon" @click="iconClicked" />
+      </div>
+      <fa icon="trash" @click="deleteCourse" id="delete" />
+    </div>
+
+    <div id="sections" v-if="!hidden">
       <SectionSelect
         v-for="section in sectionsData.sections"
         :key="section"
@@ -14,6 +21,7 @@
 
 <script lang="ts">
 import { SectionsData } from "@/Classes";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { defineComponent } from "vue";
 import SectionSelect from "./SectionSelect.vue";
 
@@ -25,10 +33,26 @@ export default defineComponent({
   components: {
     SectionSelect,
   },
-  emits: ["switch-selected"],
+  emits: ["switch-selected", "delete-course"],
   methods: {
     switchSelected(sectionNumber: number) {
       this.$emit("switch-selected", sectionNumber, this.sectionsData?.name);
+    },
+    iconClicked() {
+      this.hidden = !this.hidden;
+    },
+    deleteCourse() {
+      this.$emit("delete-course", this.sectionsData?.name);
+    },
+  },
+  data() {
+    return {
+      hidden: false,
+    };
+  },
+  computed: {
+    getIcon() {
+      return this.hidden ? faChevronUp : faChevronDown;
     },
   },
 });
@@ -36,44 +60,49 @@ export default defineComponent({
 
 <style scoped lang="scss">
 #sectionsSelectorContainer {
-  margin: 2px;
   box-sizing: border-box;
   border: black solid 1px;
-  width: calc(25% - 4px);
   display: flex;
   flex-direction: column;
-  background-color: lightgrey;
+  background-color: white;
   border-radius: 10px;
+
+  max-height: 40vh;
+  width: 100%;
+  min-width: 300px;
+}
+#selectorHeader {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-content: space-between;
+  padding: 5px;
+  border-bottom: black solid 1px;
+}
+#delete {
+  align-self: center;
+  width: 20%;
+  height: 20px;
 }
 #title {
-  padding: 5px;
   font-size: 1.2em;
-  border-bottom: black solid 1px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   font-weight: 600;
+  align-self: left;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
 }
+
+#arrow {
+  height: 20px;
+  width: 20px;
+  align-self: flex-start;
+}
+
 #sections {
   height: 100%;
-  max-height: 20vh;
+
   overflow-y: scroll;
   min-height: auto;
-}
-::-webkit-scrollbar {
-  width: 20px;
-}
-::-webkit-scrollbar-track {
-  background-color: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background-color: #d6dee1;
-  border-radius: 20px;
-  border: 6px solid transparent;
-  background-clip: content-box;
-}
-::-webkit-scrollbar-thumb:hover {
-  background-color: white;
-  // background-color: #a8bbbf;
 }
 </style>

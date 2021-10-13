@@ -1,20 +1,22 @@
 <template>
-  <div id="sectionSelectContainer">
+  <div id="sectionSelectContainer" :class="{ selected: section.Selected }">
     <input type="checkbox" :checked="section.Selected" name="selected" id="checkbox" @click="switchSelected" />
     <div id="sectionContainer">
       <h3>Section: {{ section.Section }}</h3>
       <h3>Instructor: {{ section.Instructor }}</h3>
       <h3>Building: {{ section.Building }} Room: {{ section.Room }}</h3>
+      <h3>Days: {{ getDays() }}</h3>
       <h3>
         Time: {{ convertTime(section.StartTime) }} -
         {{ convertTime(section.EndTime) }}
       </h3>
+      <h3>Class #: {{ section.ClassNumber }}</h3>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Section } from "@/Classes";
+import { Section, WeekDays } from "@/Classes";
 import { defineComponent } from "@vue/runtime-core";
 export default defineComponent({
   name: "SectionSelect",
@@ -39,6 +41,13 @@ export default defineComponent({
     switchSelected() {
       this.$emit("switch-selected", this.section?.Section);
     },
+    getDays(): String {
+      let res = "";
+      for (let day of Object.keys(WeekDays)) {
+        res += (this.section as any)[day] == "True" ? day.substring(0, 3) + " " : "";
+      }
+      return res;
+    },
   },
 });
 </script>
@@ -51,6 +60,7 @@ export default defineComponent({
   box-sizing: border-box;
   border: 1px solid black;
   margin: 2px;
+  padding: 5px 5%;
   border-radius: 5px;
   display: flex;
   flex-direction: row;
@@ -58,5 +68,8 @@ export default defineComponent({
 }
 #sectionContainer {
   line-height: 1.3em;
+}
+.selected {
+  background-color: white;
 }
 </style>

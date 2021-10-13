@@ -44,3 +44,13 @@ export interface SectionsData {
 }
 
 export interface Schedule extends Array<Section> {}
+
+export enum WeekDays {
+  "Sunday" = "02",
+  "Monday" = "03",
+  "Tuesday" = "04",
+  "Wednesday" = "05",
+  "Thursday" = "06",
+  "Friday" = "07",
+  "Saturday" = "08",
+}
