@@ -1,6 +1,11 @@
 // options: subject, course number, mode
 <template>
   <form id="courseQueryContainer">
+    <label for="term">Select a term:</label>
+    <select name="term" id="term">
+      <option v-for="term in terms" :key="term" value="term.query">{{ term.name }}</option>
+    </select>
+
     <input v-model="subject" type="text" placeholder="Course Subject (ex. CS)" id="subject" />
 
     <input v-model="courseNumber" type="text" placeholder="Course Number (ex. 1400)" id="courseNumber" />
@@ -17,6 +22,12 @@ export default {
       subject: "",
       courseNumber: "",
       mode: "Any Mode",
+      terms: [
+        {
+          query: "Sp22",
+          name: "Spring 2022",
+        },
+      ],
     };
   },
   created() {
@@ -42,7 +53,11 @@ export default {
   display: flex;
   flex-direction: column;
 }
+label {
+  margin: 0 10px;
+}
+select,
 input {
-  margin: 10px;
+  margin: 10px 10px 10px 10px;
 }
 </style>

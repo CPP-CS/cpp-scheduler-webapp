@@ -1,11 +1,12 @@
 <template>
   <div id="coursesContainer">
     <h1 id="pageTitle">CPP Scheduler</h1>
-    <div id="coursesSearchContainer">
-      <h2 id="name">Add Courses</h2>
-      <CourseQuery @find-sections="findSections" />
-      <input type="button" value="Clear Courses" @click="clearCourses" class="button" />
-    </div>
+
+    <h2 id="name">Add Courses</h2>
+    <CourseQuery @find-sections="findSections" />
+    <input type="button" value="Clear Courses" @click="clearCourses" class="button" />
+
+    <h3 id="name" v-if="notEmpty">Select Sections</h3>
     <CourseSelect
       v-if="notEmpty"
       :courses="courses"
@@ -113,8 +114,11 @@ export default defineComponent({
 
 <style scoped>
 #name {
+  border-top: 1px black solid;
+  text-align: center;
   font-size: 2em;
-  margin-bottom: 1em;
+  margin-top: 0.3em;
+  padding-top: 0.7em;
 }
 #coursesContainer {
   box-sizing: border-box;
@@ -127,19 +131,16 @@ export default defineComponent({
 }
 @media (min-width: 641px) {
   #coursesContainer {
+    border: 0;
+    border-right: solid black 1px;
     width: 25%;
     height: 100vh;
     overflow-y: scroll;
   }
 }
-#coursesSearchContainer {
-  display: flex;
-  flex-direction: column;
-}
 #pageTitle {
   font-size: 4em;
   text-align: center;
-  border-bottom: 1px solid black;
 }
 .button {
   align-self: center;

@@ -1,5 +1,5 @@
 <template>
-  <div id="sectionSelectContainer" :class="{ selected: section.Selected }">
+  <div id="sectionSelectContainer" :class="{ deselected: !section.Selected }">
     <input type="checkbox" :checked="section.Selected" name="selected" id="checkbox" @click="switchSelected" />
     <div id="sectionContainer">
       <h3>Section: {{ section.Section }}</h3>
@@ -69,7 +69,7 @@ export default defineComponent({
 #sectionContainer {
   line-height: 1.3em;
 }
-.selected {
-  background-color: white;
+.deselected {
+  background-color: lightgray;
 }
 </style>

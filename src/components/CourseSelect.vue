@@ -1,6 +1,5 @@
 <template>
   <div id="courseSelectContainer">
-    <h3 id="title">Select Sections</h3>
     <SectionsSelector
       :key="sectionsData"
       v-for="sectionsData in courses"
@@ -41,13 +40,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-#title {
-  align-self: start;
-  font-size: 2em;
-  padding-bottom: 10px;
-}
 #courseSelectContainer {
-  padding: 20px 0;
+  padding: 20px 3px;
   display: flex;
   flex-direction: column;
   width: 100%;

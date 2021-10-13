@@ -66,7 +66,7 @@ export default defineComponent({
   flex-direction: column;
   background-color: white;
   border-radius: 10px;
-
+  margin: 5px 0;
   max-height: 40vh;
   width: 100%;
   min-width: 300px;
@@ -80,6 +80,9 @@ export default defineComponent({
   border-bottom: black solid 1px;
 }
 #delete {
+  :hover {
+    filter: invert(76%) sepia(0%) saturate(3820%) hue-rotate(15deg) brightness(91%) contrast(86%);
+  }
   align-self: center;
   width: 20%;
   height: 20px;
