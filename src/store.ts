@@ -92,7 +92,6 @@ const store = createStore({
         if (sectionsData.name == payload.className) {
           sectionsData.sections = sectionsData.sections.map((section: Section) => {
             if (section.Section == payload.sectionNumber) {
-              section.AcademicSession = "changed";
               section.Selected = !section.Selected;
             }
             return section;
