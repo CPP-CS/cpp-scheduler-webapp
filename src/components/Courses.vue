@@ -79,22 +79,7 @@ export default defineComponent({
       }) as SectionsData[];
     },
     findSchedules() {
-      let courses = this.courses.slice();
-      let filteredCourses: SectionsData[] = courses.map((sectionsData) => {
-        return {
-          name: sectionsData.name as String,
-          sections: sectionsData.sections.filter((section: Section) => {
-            return section.Selected == true;
-          }),
-        };
-      });
-      filteredCourses.forEach((sectionsData) => {
-        if (sectionsData.sections.length == 0) {
-          // No sections selected for sectionsData.name error
-          return;
-        }
-      });
-      this.$emit("find-schedules", filteredCourses);
+      this.$emit("find-schedules", this.courses);
     },
     error(str: string) {
       this.$emit("error", str);

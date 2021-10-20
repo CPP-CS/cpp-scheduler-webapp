@@ -28,6 +28,7 @@ export default defineComponent({
   },
   methods: {
     findSchedules(courses: SectionsData[]): void {
+      courses = this.filterCourses(courses);
       let result: Schedule[] = [];
       for (let section of courses[0].sections) {
         result.push([section]);
@@ -49,6 +50,23 @@ export default defineComponent({
         this.schedules = result;
         this.id = parseInt(nanoid(20));
       }
+    },
+    filterCourses(courses: SectionsData[]) {
+      let filteredCourses: SectionsData[] = courses.map((sectionsData) => {
+        return {
+          name: sectionsData.name as String,
+          sections: sectionsData.sections.filter((section: Section) => {
+            return section.Selected == true;
+          }),
+        };
+      });
+      filteredCourses.forEach((sectionsData) => {
+        if (sectionsData.sections.length == 0) {
+          // No sections selected for sectionsData.name error
+          return;
+        }
+      });
+      return filteredCourses;
     },
     isValidSchedule(schedule: Schedule) {
       for (let day of Object.keys(WeekDays)) {
