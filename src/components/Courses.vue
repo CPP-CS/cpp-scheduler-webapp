@@ -129,7 +129,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
 }
-@media (min-width: 641px) {
+@media (min-width: 961px) {
   #coursesContainer {
     border: 0;
     border-right: solid black 1px;

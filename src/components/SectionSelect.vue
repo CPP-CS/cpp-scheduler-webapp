@@ -54,7 +54,7 @@ export default defineComponent({
 
 <style scoped>
 #checkbox {
-  margin: 10px;
+  margin-right: 0.75em;
 }
 #sectionSelectContainer {
   box-sizing: border-box;

@@ -53,7 +53,7 @@ export default defineComponent({
   max-height: 50vh;
   overflow-y: scroll;
 }
-@media (min-width: 641px) {
+@media (min-width: 961px) {
   #schedulesContainer {
     width: 75%;
     flex-direction: row;

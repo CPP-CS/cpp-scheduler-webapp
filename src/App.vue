@@ -100,7 +100,7 @@ export default defineComponent({
   flex-direction: column;
 }
 
-@media (min-width: 641px) {
+@media (min-width: 961px) {
   #container {
     display: flex;
     flex-direction: row;

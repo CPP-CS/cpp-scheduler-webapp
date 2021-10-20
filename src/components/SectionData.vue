@@ -65,7 +65,7 @@ export default defineComponent({
   margin: 1%;
   height: 50vh;
 }
-@media (min-width: 641px) {
+@media (min-width: 961px) {
   #sectionViewContainer {
     margin: 0;
     padding: 1%;

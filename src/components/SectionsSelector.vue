@@ -69,7 +69,6 @@ export default defineComponent({
   margin: 5px 0;
   max-height: 40vh;
   width: 100%;
-  min-width: 300px;
 }
 #selectorHeader {
   width: 100%;
