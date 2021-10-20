@@ -39,7 +39,7 @@ export interface Section extends Block {
 }
 
 export interface SectionsData {
-  name: String;
+  name: string;
   sections: Array<Section>;
 }
 

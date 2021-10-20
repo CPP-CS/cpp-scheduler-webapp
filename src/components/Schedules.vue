@@ -13,15 +13,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent } from "vue";
 import ScheduleView from "./ScheduleView.vue";
 import SectionData from "./SectionData.vue";
-import { Schedule, Section } from "@/Classes";
+import { Schedule, Section, SectionsData, WeekDays } from "@/Classes";
 
 export default defineComponent({
   name: "Schedules",
-  props: {
-    schedules: Array as PropType<Array<Schedule>>,
+  computed: {
+    schedules(): Schedule[] {
+      return this.$store.getters.getSchedules;
+    },
   },
   data() {
     return {
@@ -35,6 +37,10 @@ export default defineComponent({
   methods: {
     selectSection(section: Section) {
       this.selectedSection = section;
+    },
+
+    error(str: string) {
+      alert("Error: " + str);
     },
   },
 });

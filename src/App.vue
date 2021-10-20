@@ -1,16 +1,14 @@
 <template>
   <div id="container">
-    <Courses @find-schedules="findSchedules" @error="error" />
-    <Schedules :schedules="schedules" :key="id" />
+    <Courses />
+    <Schedules />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { SectionsData, Schedule, WeekDays, Section } from "./Classes";
 import Courses from "./components/Courses.vue";
 import Schedules from "./components/Schedules.vue";
-import { nanoid } from "nanoid";
 
 export default defineComponent({
   name: "App",
@@ -20,95 +18,12 @@ export default defineComponent({
   },
   data() {
     return {
-      schedules: [] as Schedule[],
       errorMessage: "error" as String,
       hidden: false,
       id: 1,
     };
   },
-  methods: {
-    findSchedules(courses: SectionsData[]): void {
-      courses = this.filterCourses(courses);
-      let result: Schedule[] = [];
-      for (let section of courses[0].sections) {
-        result.push([section]);
-      }
-      for (let i = 1; i < courses.length; i++) {
-        let tempSchedules: Schedule[] = [];
-        for (let section of courses[i].sections) {
-          for (let schedule of result) {
-            let newSchedule: Schedule = [...schedule, section];
-            this.sortSchedule(newSchedule);
-            if (this.isValidSchedule(newSchedule)) tempSchedules.push(newSchedule);
-          }
-        }
-        result = tempSchedules;
-      }
-      if (result.length > 500) {
-        this.error("There are too many schedules to render. Please deselect some sections.");
-      } else {
-        this.schedules = result;
-        this.id = parseInt(nanoid(20));
-      }
-    },
-    filterCourses(courses: SectionsData[]) {
-      let filteredCourses: SectionsData[] = courses.map((sectionsData) => {
-        return {
-          name: sectionsData.name as String,
-          sections: sectionsData.sections.filter((section: Section) => {
-            return section.Selected == true;
-          }),
-        };
-      });
-      filteredCourses.forEach((sectionsData) => {
-        if (sectionsData.sections.length == 0) {
-          // No sections selected for sectionsData.name error
-          return;
-        }
-      });
-      return filteredCourses;
-    },
-    isValidSchedule(schedule: Schedule) {
-      for (let day of Object.keys(WeekDays)) {
-        let first: Section;
-        let second: Section;
-        for (let section of schedule) {
-          if ((section as any)[day] == "True") {
-            if (first! === undefined) {
-              first = section;
-            } else {
-              second = section;
-              if (this.getHours(first.EndTime) == this.getHours(second.StartTime)) {
-                if (this.getMinutes(first.EndTime) > this.getMinutes(second.StartTime)) return false;
-              }
-              if (this.getHours(first.EndTime) > this.getHours(second.StartTime)) return false;
-              first = second;
-            }
-          }
-        }
-      }
-      return true;
-    },
-    sortSchedule(schedule: Schedule) {
-      schedule.sort((first, second) => {
-        let one = first.StartTime;
-        let two = second.StartTime;
-        if (one == "TBA") return 1;
-        if (two == "TBA") return -1;
-        if (this.getHours(one) == this.getHours(two)) return this.getMinutes(one) - this.getMinutes(two);
-        return this.getHours(one) - this.getHours(two);
-      });
-    },
-    getHours(str: string): number {
-      return parseInt(str.substring(0, 2));
-    },
-    getMinutes(str: string): number {
-      return parseInt(str.substring(3, 5));
-    },
-    error(str: string) {
-      alert("Error: " + str);
-    },
-  },
+  methods: {},
 });
 </script>
 

@@ -7,13 +7,7 @@
     <input type="button" value="Clear Courses" @click="clearCourses" class="button" />
 
     <h3 id="name" v-if="notEmpty">Select Sections</h3>
-    <CourseSelect
-      v-if="notEmpty"
-      :courses="courses"
-      @find-schedules="findSchedules"
-      @switch-selected="switchSelected"
-      @delete-course="deleteCourse"
-    />
+    <CourseSelect v-if="notEmpty" />
   </div>
 </template>
 
@@ -25,19 +19,14 @@ import CourseSelect from "./CourseSelect.vue";
 
 export default defineComponent({
   name: "Courses",
-  data() {
-    return {
-      courses: [] as SectionsData[],
-    };
-  },
-  computed: {
-    notEmpty() {
-      return this.courses.length != 0;
-    },
-  },
   components: {
     CourseQuery,
     CourseSelect,
+  },
+  computed: {
+    notEmpty() {
+      return this.$store.state.courses.length > 0;
+    },
   },
   methods: {
     async findSections(subject: string, number: string) {
@@ -51,9 +40,9 @@ export default defineComponent({
       let sections: Array<Section> = await response.json();
       if (sections.length == 0) {
         this.error(`No sections found under: ${subject}${number}`);
-      } else if (this.courses.find((sectionsData) => sectionsData.name == `${subject} ${number}`)) {
+      } else if (this.$store.state.courses.find((sectionsData) => sectionsData.name == `${subject} ${number}`)) {
         this.error(`Course already added: ${subject}${number}`);
-      } else if (this.courses.length >= 12) {
+      } else if (this.$store.state.courses.length >= 12) {
         this.error(`Cannot add course. Maximum reached`);
       } else {
         sections.forEach((section) => (section.Selected = true));
@@ -61,39 +50,17 @@ export default defineComponent({
           name: `${subject} ${number}`,
           sections: sections,
         };
-        this.courses.push(sectionsData);
+        this.$store.dispatch("addCourse", sectionsData);
       }
     },
-    switchSelected(sectionNumber: number, className: string) {
-      this.courses = this.courses.map((sectionsData) => {
-        if (sectionsData.name == className) {
-          sectionsData.sections = sectionsData.sections.map((section: Section) => {
-            if (section.Section == sectionNumber) {
-              section.AcademicSession = "changed";
-              section.Selected = !section.Selected;
-            }
-            return section;
-          });
-        }
-        return sectionsData;
-      }) as SectionsData[];
-    },
-    findSchedules() {
-      this.$emit("find-schedules", this.courses);
-    },
-    error(str: string) {
-      this.$emit("error", str);
+    error(error: String) {
+      alert(error);
     },
     clearCourses() {
-      this.courses = [];
-    },
-    deleteCourse(sectionName: string) {
-      this.courses = this.courses.filter((course) => {
-        return course.name != sectionName;
-      });
+      this.$store.commit("clearCourses");
     },
   },
-  emits: ["find-schedules", "error"],
+  emits: ["find-schedules"],
 });
 </script>
 

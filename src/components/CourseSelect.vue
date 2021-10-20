@@ -7,7 +7,7 @@
       @switch-selected="switchSelected"
       @delete-course="deleteCourse"
     />
-    <input type="button" value="Find Schedules" @click="findSchedules" class="button" />
+    <!-- <input type="button" value="Find Schedules" @click="findSchedules" class="button" /> -->
   </div>
 </template>
 
@@ -18,22 +18,23 @@ import SectionsSelector from "./SectionsSelector.vue";
 
 export default defineComponent({
   name: "CourseSelect",
-  props: {
-    courses: Array as PropType<Array<SectionsData>>,
+  computed: {
+    courses() {
+      return this.$store.state.courses;
+    },
   },
   components: {
     SectionsSelector,
   },
-  emits: ["switch-selected", "find-schedules", "delete-course"],
   methods: {
     switchSelected(sectionNumber: number, className: string) {
-      this.$emit("switch-selected", sectionNumber, className);
+      this.$store.commit("switchSelected", {
+        className: className,
+        sectionNumber: sectionNumber,
+      });
     },
-    findSchedules() {
-      this.$emit("find-schedules");
-    },
-    deleteCourse(sectionName: string) {
-      this.$emit("delete-course", sectionName);
+    deleteCourse(courseName: string) {
+      this.$store.dispatch("deleteCourse", courseName);
     },
   },
 });
