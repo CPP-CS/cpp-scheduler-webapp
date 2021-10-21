@@ -15,7 +15,7 @@ interface Event {
   title: String;
   start: String;
   end: String;
-  section: Section;
+  courseIndex: Number;
 }
 
 export default defineComponent({
@@ -38,34 +38,38 @@ export default defineComponent({
         initialDate: "2011-10-02",
         slotMinTime: "06:00:00",
         events: this.events,
-        slotDuration: "1:00:00",
-        height: "479px",
-        eventClick: (eventClickInfo: { event: { extendedProps: { section: any } } }) => {
-          this.selectSection(eventClickInfo.event.extendedProps.section);
+        slotDuration: "00:30:00",
+        expandRows: true,
+        height: "100vh",
+        eventClick: (eventClickInfo: { event: { extendedProps: { courseIndex: Number } } }) => {
+          this.selectSection(eventClickInfo.event.extendedProps.courseIndex);
         },
       };
     },
+
+    schedule(): Schedule {
+      if (this.selectedSchedule == undefined || this.$store.state.schedules.length == 0) return [];
+      return this.$store.state.schedules[this.selectedSchedule];
+    },
     events() {
       let res: Array<Event> = [];
-
-      for (let section of this.schedule!) {
+      for (let [index, section] of this.schedule.entries()) {
         for (let [day, num] of Object.entries(WeekDays)) {
           if ((section as any)[day] == "True") {
             res.push({
               title: `${section.Subject}${section.CourseNumber} ${section.Instructor}`,
               start: `2011-10-${num}T${section.StartTime}`,
               end: `2011-10-${num}T${section.EndTime}`,
-              section: section,
+              courseIndex: index,
             });
           }
         }
       }
-      console.log("calculated results", res);
       return res;
     },
   },
   props: {
-    schedule: Array as PropType<Schedule>,
+    selectedSchedule: Number,
   },
   methods: {
     convertTime(str: String): String {
@@ -82,8 +86,8 @@ export default defineComponent({
       }
       return `${hours}:${minutes} ${end}`;
     },
-    selectSection(section: Section) {
-      this.$emit("select-section", section);
+    selectSection(courseIndex: Number) {
+      this.$emit("select-section", courseIndex);
     },
   },
   emits: ["select-section"],
@@ -92,9 +96,9 @@ export default defineComponent({
 
 <style scoped>
 #scheduleContainer {
-  width: 50%;
+  width: 100%;
   flex-grow: 1;
   min-width: 400px;
-  /* padding: 0 5px; */
+  overflow-y: overlay;
 }
 </style>

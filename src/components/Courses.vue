@@ -2,12 +2,14 @@
   <div id="coursesContainer">
     <h1 id="pageTitle">CPP Scheduler</h1>
 
-    <h2 id="name">Add Courses</h2>
-    <CourseQuery @find-sections="findSections" />
+    <h3 class="name">Add Courses</h3>
+    <CourseQuery @find-course="findCourse" />
     <input type="button" value="Clear Courses" @click="clearCourses" class="button" />
 
-    <h3 id="name" v-if="notEmpty">Select Sections</h3>
+    <h3 class="name" v-if="notEmpty">Select Sections</h3>
     <CourseSelect v-if="notEmpty" />
+
+    <!-- <h3 class="name">Add Breaks</h3> -->
   </div>
 </template>
 
@@ -29,7 +31,7 @@ export default defineComponent({
     },
   },
   methods: {
-    async findSections(subject: string, number: string) {
+    async findCourse(subject: string, number: string) {
       subject = subject.toUpperCase();
       number = number.toUpperCase();
       let query = `https://cpp-scheduler.herokuapp.com/api/courses/Sp22/?Subject=${subject}&CourseNumber=${number}`.replace(
@@ -65,7 +67,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-#name {
+.name {
   border-top: 1px black solid;
   text-align: center;
   font-size: 2em;

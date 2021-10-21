@@ -1,12 +1,13 @@
 <template>
   <div id="schedulesContainer">
     <div id="schedules">
-      <ScheduleView
-        :schedule="schedules[index - 1]"
-        v-for="index in schedules.length"
-        :key="index"
-        @select-section="selectSection"
-      />
+      <div id="arrows">
+        <fa icon="caret-square-left" @click="decrementSelectedSchedule" />
+        <h3>{{ scheduleCount == 0 ? 0 : selectedSchedule + 1 }} / {{ scheduleCount }}</h3>
+        <fa icon="caret-square-right" @click="incrementSelectedSchedule" />
+      </div>
+
+      <ScheduleView :selectedSchedule="selectedSchedule" @select-section="selectSection" />
     </div>
     <SectionData :selectedSection="selectedSection" />
   </div>
@@ -16,48 +17,73 @@
 import { defineComponent } from "vue";
 import ScheduleView from "./ScheduleView.vue";
 import SectionData from "./SectionData.vue";
-import { Schedule, Section, SectionsData, WeekDays } from "@/Classes";
+import { Schedule } from "@/Classes";
 
 export default defineComponent({
   name: "Schedules",
+  data() {
+    return {
+      selectedSection: {},
+      selectedSchedule: 0,
+    };
+  },
   computed: {
     schedules(): Schedule[] {
       return this.$store.getters.getSchedules;
     },
+    scheduleCount() {
+      return this.$store.getters.getSchedules.length;
+    },
   },
-  data() {
-    return {
-      selectedSection: {} as Section,
-    };
-  },
-  components: {
-    ScheduleView,
-    SectionData,
+  watch: {
+    scheduleCount() {
+      this.selectedSchedule = 0;
+    },
   },
   methods: {
-    selectSection(section: Section) {
-      this.selectedSection = section;
+    selectSection(courseIndex: Number) {
+      this.selectedSection = this.$store.state.schedules[this.selectedSchedule][courseIndex.valueOf()];
     },
 
     error(str: string) {
       alert("Error: " + str);
     },
+    decrementSelectedSchedule() {
+      if (this.selectedSchedule < 1) return;
+      this.selectedSchedule--;
+    },
+    incrementSelectedSchedule() {
+      if (this.selectedSchedule >= this.$store.state.schedules.length - 1) return;
+      this.selectedSchedule++;
+    },
+  },
+  components: {
+    ScheduleView,
+    SectionData,
   },
 });
 </script>
 
 <style>
+#arrows {
+  width: 80%;
+  justify-content: space-around;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 #schedulesContainer {
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
 #schedules {
+  width: 100%;
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
   padding: 0;
   max-height: 50vh;
-  overflow-y: scroll;
 }
 @media (min-width: 961px) {
   #schedulesContainer {
@@ -69,5 +95,8 @@ export default defineComponent({
     height: 100%;
     max-height: 100vh;
   }
+}
+svg {
+  font-size: 2em;
 }
 </style>

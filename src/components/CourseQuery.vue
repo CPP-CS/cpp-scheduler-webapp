@@ -10,7 +10,7 @@
 
     <input v-model="courseNumber" type="text" placeholder="Course Number (ex. 1400)" id="courseNumber" />
 
-    <input @click="findSections" type="button" value="Find Course" />
+    <input @click="findCourse" type="button" value="Find Course" />
   </form>
 </template>
 
@@ -33,15 +33,16 @@ export default {
   created() {
     window.addEventListener("keyup", (event) => {
       if (event.code == "Enter") {
-        this.findSections();
+        this.findCourse();
       }
     });
   },
   methods: {
-    findSections() {
-      this.$emit("find-sections", this.subject, this.courseNumber);
+    findCourse() {
+      this.$emit("find-course", this.subject, this.courseNumber);
     },
   },
+  emits: ["find-course"],
 };
 </script>
 

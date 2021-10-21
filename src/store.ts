@@ -1,7 +1,7 @@
 import { State } from '@vue/runtime-core';
 import { createStore } from 'vuex';
 
-import { Schedule, Section, SectionsData, WeekDays } from './Classes';
+import { Block, Schedule, Section, SectionsData, WeekDays } from './Classes';
 
 function filterCourses(courses: SectionsData[]) {
   let filteredCourses: SectionsData[] = courses.map((sectionsData) => {
@@ -63,6 +63,7 @@ const store = createStore({
     return {
       courses: [] as SectionsData[],
       schedules: [] as Schedule[],
+      breaks: [] as Block[],
     };
   },
   getters: {
@@ -141,4 +142,5 @@ const store = createStore({
     },
   },
 });
+
 export default store;
