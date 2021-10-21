@@ -83,7 +83,7 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   padding: 0;
-  height: 50vh;
+  height: 80vh;
 }
 @media (min-width: 961px) {
   #schedulesContainer {
