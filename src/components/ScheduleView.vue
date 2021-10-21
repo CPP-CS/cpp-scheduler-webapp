@@ -40,7 +40,7 @@ export default defineComponent({
         events: this.events,
         slotDuration: "00:30:00",
         expandRows: true,
-        height: "100vh",
+        height: "100%",
         eventClick: (eventClickInfo: { event: { extendedProps: { courseIndex: Number } } }) => {
           this.selectSection(eventClickInfo.event.extendedProps.courseIndex);
         },
@@ -99,6 +99,6 @@ export default defineComponent({
   width: 100%;
   flex-grow: 1;
   min-width: 400px;
-  overflow-y: overlay;
+  overflow-y: visible;
 }
 </style>
