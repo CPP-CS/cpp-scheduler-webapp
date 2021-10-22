@@ -53,6 +53,7 @@ export default defineComponent({
         plugins: [timeGridPlugin],
         initialView: "timeGridWeek",
         allDaySlot: true,
+        allDayContent: "Async",
         dayHeaderFormat: { weekday: "short" },
         headerToolbar: {
           start: "",
