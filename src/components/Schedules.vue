@@ -91,7 +91,7 @@ export default defineComponent({
     flex-direction: row;
   }
   #schedules {
-    width: 80%;
+    width: 75%;
     height: 100%;
     max-height: 100vh;
   }

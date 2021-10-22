@@ -65,6 +65,10 @@ export default defineComponent({
   margin: 1%;
   height: 50vh;
 }
+h3 {
+  width: 100%;
+  word-wrap: normal;
+}
 @media (min-width: 961px) {
   #sectionViewContainer {
     margin: 0;
@@ -73,6 +77,7 @@ export default defineComponent({
     height: 100vh;
     border-top: 0;
     border-left: 1px solid black;
+    width: 25%;
   }
 }
 </style>
