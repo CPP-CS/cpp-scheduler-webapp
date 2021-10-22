@@ -11,6 +11,7 @@
         {{ convertTime(section.EndTime) }}
       </h3>
       <h3>Class #: {{ section.ClassNumber }}</h3>
+      <h3>Instruction Mode: {{ section.InstructionMode }}</h3>
     </div>
   </div>
 </template>
