@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import "@fullcalendar/core/vdom";
-import FullCalendar from "@fullcalendar/vue3";
+import FullCalendar, { EventApi } from "@fullcalendar/vue3";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { PropType, defineComponent } from "vue";
 import { Schedule, Section, WeekDays } from "@/Classes";
@@ -16,6 +16,30 @@ interface Event {
   start: String;
   end: String;
   courseIndex: Number;
+  textColor: String;
+  backgroundColor: String;
+}
+
+function getColor(section: Section) {
+  let mode = section.InstructionMode;
+  switch (mode.toLowerCase()) {
+    case "bisynchronous":
+      return "#fca9b0";
+    case "face-to-face":
+      return "#cfecff";
+    case "fully synchronous":
+      return "#fff5cc";
+    case "fully asynchronous":
+      return "#7fd463";
+    case "hyflex":
+      return "#faefbe";
+    case "hybrid asynchronous component":
+      return "#ace0fc";
+    case "hybrid synchronous component":
+      return "#beb8ff";
+    default:
+      return "white";
+  }
 }
 
 export default defineComponent({
@@ -41,6 +65,7 @@ export default defineComponent({
         slotDuration: "00:30:00",
         expandRows: true,
         height: "100%",
+
         eventClick: (eventClickInfo: { event: { extendedProps: { courseIndex: Number } } }) => {
           this.selectSection(eventClickInfo.event.extendedProps.courseIndex);
         },
@@ -61,6 +86,8 @@ export default defineComponent({
               start: `2011-10-${num}T${section.StartTime}`,
               end: `2011-10-${num}T${section.EndTime}`,
               courseIndex: index,
+              textColor: "black",
+              backgroundColor: getColor(section),
             });
           }
         }
