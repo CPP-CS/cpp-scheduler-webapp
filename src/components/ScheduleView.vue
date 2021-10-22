@@ -52,7 +52,7 @@ export default defineComponent({
       return {
         plugins: [timeGridPlugin],
         initialView: "timeGridWeek",
-        allDaySlot: false,
+        allDaySlot: true,
         dayHeaderFormat: { weekday: "short" },
         headerToolbar: {
           start: "",
@@ -85,6 +85,16 @@ export default defineComponent({
               title: `${section.Subject}${section.CourseNumber} ${section.Instructor}`,
               start: `2011-10-${num}T${section.StartTime}`,
               end: `2011-10-${num}T${section.EndTime}`,
+              courseIndex: index,
+              textColor: "black",
+              backgroundColor: getColor(section),
+            });
+          }
+          if (section.StartTime == "TBA" && section.EndTime == "TBA") {
+            res.push({
+              title: `${section.Subject}${section.CourseNumber} ${section.Instructor}`,
+              start: `2011-10-${num}`,
+              end: `2011-10-${num}`,
               courseIndex: index,
               textColor: "black",
               backgroundColor: getColor(section),
