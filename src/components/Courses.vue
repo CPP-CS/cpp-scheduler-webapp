@@ -48,6 +48,9 @@ export default defineComponent({
         this.error(`Cannot add course. Maximum reached`);
       } else {
         sections.forEach((section) => (section.Selected = true));
+        sections.sort((a, b) => {
+          return a.Section - b.Section;
+        });
         let course: Course = {
           name: `${subject} ${number}`,
           sections: sections,
