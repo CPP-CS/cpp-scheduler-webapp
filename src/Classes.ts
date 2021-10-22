@@ -38,7 +38,7 @@ export interface Section extends Block {
   Wednesday: string;
 }
 
-export interface SectionsData {
+export interface Course {
   name: string;
   sections: Array<Section>;
 }

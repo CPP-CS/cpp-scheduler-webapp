@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { Section, SectionsData } from "@/Classes";
+import { Section, Course } from "@/Classes";
 import { defineComponent } from "vue";
 import CourseQuery from "./CourseQuery.vue";
 import CourseSelect from "./CourseSelect.vue";
@@ -48,11 +48,11 @@ export default defineComponent({
         this.error(`Cannot add course. Maximum reached`);
       } else {
         sections.forEach((section) => (section.Selected = true));
-        let sectionsData: SectionsData = {
+        let course: Course = {
           name: `${subject} ${number}`,
           sections: sections,
         };
-        this.$store.dispatch("addCourse", sectionsData);
+        this.$store.dispatch("addCourse", course);
       }
     },
     error(error: String) {

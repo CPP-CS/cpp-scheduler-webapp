@@ -1,10 +1,10 @@
 import { State } from '@vue/runtime-core';
 import { createStore } from 'vuex';
 
-import { Block, Schedule, Section, SectionsData, WeekDays } from './Classes';
+import { Block, Course, Schedule, Section, WeekDays } from './Classes';
 
-function filterCourses(courses: SectionsData[]) {
-  let filteredCourses: SectionsData[] = courses.map((sectionsData) => {
+function filterCourses(courses: Course[]) {
+  let filteredCourses: Course[] = courses.map((sectionsData) => {
     return {
       name: sectionsData.name as string,
       sections: sectionsData.sections.filter((section: Section) => {
@@ -61,7 +61,7 @@ function getMinutes(str: string): number {
 const store = createStore({
   state() {
     return {
-      courses: [] as SectionsData[],
+      courses: [] as Course[],
       schedules: [] as Schedule[],
       breaks: [] as Block[],
     };
@@ -75,7 +75,7 @@ const store = createStore({
   },
   mutations: {
     sortCourses(state: State) {
-      state.courses.sort((a: SectionsData, b: SectionsData) => {
+      state.courses.sort((a: Course, b: Course) => {
         if (a.name < b.name) {
           return -1;
         } else if (a.name > b.name) {
@@ -85,8 +85,8 @@ const store = createStore({
         }
       });
     },
-    addCourse(state: State, sectionsData: SectionsData) {
-      state.courses.push(sectionsData);
+    addCourse(state: State, course: Course) {
+      state.courses.push(course);
     },
     switchSelected(state: State, payload: { className: string; sectionNumber: number }) {
       state.courses = state.courses.map((sectionsData) => {
@@ -99,7 +99,7 @@ const store = createStore({
           });
         }
         return sectionsData;
-      }) as SectionsData[];
+      }) as Course[];
     },
     clearCourses(state: State) {
       state.courses = [];
@@ -132,12 +132,12 @@ const store = createStore({
     },
   },
   actions: {
-    addCourse(context, sectionsData: SectionsData) {
-      context.commit("addCourse", sectionsData);
+    addCourse(context, course: Course) {
+      context.commit("addCourse", course);
       context.commit("sortCourses");
     },
-    deleteCourse(context, sectionsData: SectionsData) {
-      context.commit("deleteCourse", sectionsData);
+    deleteCourse(context, course: Course) {
+      context.commit("deleteCourse", course);
       context.commit("sortCourses");
     },
   },

@@ -2,7 +2,7 @@
   <div id="sectionsSelectorContainer">
     <div id="selectorHeader">
       <div id="title">
-        <h3>{{ sectionsData.name }}: {{ sectionsData.sections[0].ClassTitle }}</h3>
+        <h3>{{ course.name }}: {{ course.sections[0].ClassTitle }}</h3>
         <fa id="arrow" :icon="getIcon" @click="iconClicked" />
       </div>
       <fa icon="trash" @click="deleteCourse" id="delete" />
@@ -10,7 +10,7 @@
 
     <div id="sections" v-if="!hidden">
       <SectionSelect
-        v-for="section in sectionsData.sections"
+        v-for="section in course.sections"
         :key="section"
         :section="section"
         @switch-selected="switchSelected"
@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { SectionsData } from "@/Classes";
+import { Course } from "@/Classes";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { defineComponent } from "vue";
 import SectionSelect from "./SectionSelect.vue";
@@ -28,7 +28,7 @@ import SectionSelect from "./SectionSelect.vue";
 export default defineComponent({
   name: "SectionsSelector",
   props: {
-    sectionsData: Object as () => SectionsData,
+    course: Object as () => Course,
   },
   components: {
     SectionSelect,
@@ -36,13 +36,13 @@ export default defineComponent({
   emits: ["switch-selected", "delete-course"],
   methods: {
     switchSelected(sectionNumber: number) {
-      this.$emit("switch-selected", sectionNumber, this.sectionsData?.name);
+      this.$emit("switch-selected", sectionNumber, this.course?.name);
     },
     iconClicked() {
       this.hidden = !this.hidden;
     },
     deleteCourse() {
-      this.$emit("delete-course", this.sectionsData?.name);
+      this.$emit("delete-course", this.course?.name);
     },
   },
   data() {

@@ -1,9 +1,9 @@
 <template>
   <div id="courseSelectContainer">
     <SectionsSelector
-      :key="sectionsData"
-      v-for="sectionsData in courses"
-      :sectionsData="sectionsData"
+      :key="course"
+      v-for="course in courses"
+      :course="course"
       @switch-selected="switchSelected"
       @delete-course="deleteCourse"
     />
@@ -12,7 +12,6 @@
 </template>
 
 <script lang="ts">
-import { SectionsData } from "@/Classes";
 import { defineComponent, PropType } from "vue";
 import SectionsSelector from "./SectionsSelector.vue";
 
