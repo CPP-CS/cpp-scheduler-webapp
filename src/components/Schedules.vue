@@ -2,9 +2,10 @@
   <div id="schedulesContainer">
     <div id="schedules">
       <div id="arrows">
-        <fa icon="caret-square-left" @click="decrementSelectedSchedule" />
+        <button @click="decrementSelectedSchedule"><fa icon="caret-square-left" /></button>
+
         <h3>{{ scheduleCount == 0 ? 0 : selectedSchedule + 1 }} / {{ scheduleCount }}</h3>
-        <fa icon="caret-square-right" @click="incrementSelectedSchedule" />
+        <button @click="incrementSelectedSchedule"><fa icon="caret-square-right" /></button>
       </div>
 
       <ScheduleView :selectedSchedule="selectedSchedule" @select-section="selectSection" />
@@ -95,6 +96,13 @@ export default defineComponent({
     height: 100%;
     max-height: 100vh;
   }
+}
+button {
+  height: 2em;
+  width: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 svg {
   font-size: 2em;
