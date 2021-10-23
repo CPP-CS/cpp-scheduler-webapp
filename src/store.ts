@@ -1,5 +1,6 @@
 import { State } from '@vue/runtime-core';
 import { createStore } from 'vuex';
+import VuexPersistence from 'vuex-persist';
 
 import { Block, Course, Schedule, Section, WeekDays } from './Classes';
 
@@ -58,7 +59,12 @@ function getMinutes(str: string): number {
   return parseInt(str.substring(3, 5));
 }
 
+const vuexLocal = new VuexPersistence({
+  storage: window.localStorage,
+});
+
 const store = createStore({
+  plugins: [vuexLocal.plugin],
   state() {
     return {
       courses: [] as Course[],
