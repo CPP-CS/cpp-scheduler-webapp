@@ -83,7 +83,6 @@ const store = createStore({
   getters: {
     getSchedules: (state: State) => {
       store.commit("findSchedules");
-      console.log(state.schedules);
       return state.schedules;
     },
   },
@@ -125,7 +124,10 @@ const store = createStore({
     },
     findSchedules(state) {
       let courses = filterCourses(state.courses);
-      if (courses.length == 0) return [];
+      if (courses.length == 0) {
+        state.schedules = [];
+        return;
+      }
 
       let result: Schedule[] = [];
       for (let section of courses[0].sections) {
@@ -160,5 +162,4 @@ const store = createStore({
   },
 });
 
-console.log(JSON.stringify(store));
 export default store;
