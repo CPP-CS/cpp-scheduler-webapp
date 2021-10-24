@@ -1,4 +1,3 @@
-import { State } from '@vue/runtime-core';
 import { createStore } from 'vuex';
 import VuexPersistence from 'vuex-persist';
 
@@ -61,7 +60,16 @@ function getMinutes(str: string): number {
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
+  reducer: (state: State) => {
+    return { courses: state.courses };
+  },
 });
+
+interface State {
+  courses: Course[];
+  schedules: Schedule[];
+  breaks: Block[];
+}
 
 const store = createStore({
   plugins: [vuexLocal.plugin],
@@ -130,7 +138,10 @@ const store = createStore({
             let newSchedule: Schedule = [...schedule, section];
             sortSchedule(newSchedule);
             if (isValidSchedule(newSchedule)) tempSchedules.push(newSchedule);
+            //cap schedules
+            if (tempSchedules.length > 999) break;
           }
+          if (tempSchedules.length > 999) break;
         }
         result = tempSchedules;
       }
@@ -149,4 +160,5 @@ const store = createStore({
   },
 });
 
+console.log(JSON.stringify(store));
 export default store;
