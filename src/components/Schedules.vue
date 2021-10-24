@@ -2,10 +2,14 @@
   <div id="schedulesContainer">
     <div id="schedules">
       <div id="arrows">
-        <button @click="decrementSelectedSchedule"><fa icon="caret-square-left" /></button>
+        <button @mousedown="repeat(decrementSelectedSchedule, 1000)" @mouseup="stopRepeat">
+          <fa icon="caret-square-left" />
+        </button>
 
         <h3>{{ scheduleCount == 0 ? 0 : selectedSchedule + 1 }} / {{ scheduleCount }}</h3>
-        <button @click="incrementSelectedSchedule"><fa icon="caret-square-right" /></button>
+        <button @mousedown="repeat(incrementSelectedSchedule, 1000)" @mouseup="stopRepeat">
+          <fa icon="caret-square-right" />
+        </button>
       </div>
 
       <ScheduleView :selectedSchedule="selectedSchedule" @select-section="selectSection" />
@@ -26,6 +30,7 @@ export default defineComponent({
     return {
       selectedSection: {},
       selectedSchedule: 0,
+      timeout: 0,
     };
   },
   computed: {
@@ -56,6 +61,14 @@ export default defineComponent({
     incrementSelectedSchedule() {
       if (this.selectedSchedule >= this.$store.state.schedules.length - 1) return;
       this.selectedSchedule++;
+    },
+    repeat(change: Function, initialTime: number) {
+      change();
+      this.timeout = setTimeout(() => this.repeat(change, initialTime), initialTime);
+      initialTime /= 2;
+    },
+    stopRepeat() {
+      clearTimeout(this.timeout);
     },
   },
   components: {
