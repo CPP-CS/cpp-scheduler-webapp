@@ -133,15 +133,15 @@ const store = createStore({
       }
       for (let i = 1; i < courses.length; i++) {
         let tempSchedules: Schedule[] = [];
-        for (let section of courses[i].sections) {
+        overflow: for (let section of courses[i].sections) {
           for (let schedule of result) {
             let newSchedule: Schedule = [...schedule, section];
             sortSchedule(newSchedule);
             if (isValidSchedule(newSchedule)) tempSchedules.push(newSchedule);
+
             //cap schedules
-            if (tempSchedules.length > 999) break;
+            if (tempSchedules.length > 999) break overflow;
           }
-          if (tempSchedules.length > 999) break;
         }
         result = tempSchedules;
       }
