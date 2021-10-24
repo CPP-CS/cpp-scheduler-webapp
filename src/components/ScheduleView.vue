@@ -18,6 +18,7 @@ interface Event {
   courseIndex: Number;
   textColor: String;
   backgroundColor: String;
+  borderColor: String;
 }
 
 function getColor(section: Section) {
@@ -83,22 +84,24 @@ export default defineComponent({
         for (let [day, num] of Object.entries(WeekDays)) {
           if ((section as any)[day] == "True") {
             res.push({
-              title: `${section.Subject}${section.CourseNumber} ${section.Instructor}`,
+              title: `${section.Subject}${section.CourseNumber}[${section.Section}] ${section.Instructor}`,
               start: `2011-10-${num}T${section.StartTime}`,
               end: `2011-10-${num}T${section.EndTime}`,
               courseIndex: index,
               textColor: "black",
               backgroundColor: getColor(section),
+              borderColor: "black",
             });
           }
           if (section.StartTime == "TBA" && section.EndTime == "TBA") {
             res.push({
-              title: `${section.Subject}${section.CourseNumber} ${section.Instructor}`,
+              title: `${section.Subject}${section.CourseNumber}[${section.Section}] ${section.Instructor}`,
               start: `2011-10-${num}`,
               end: `2011-10-${num}`,
               courseIndex: index,
               textColor: "black",
               backgroundColor: getColor(section),
+              borderColor: "black",
             });
           }
         }
