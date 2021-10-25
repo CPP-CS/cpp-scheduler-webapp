@@ -1,7 +1,8 @@
-import { createStore } from 'vuex';
+import LZUTF8 from 'lzutf8';
+import { ActionContext, createStore } from 'vuex';
 import VuexPersistence from 'vuex-persist';
 
-import { Block, Course, Schedule, Section, WeekDays } from './Classes';
+import { Block, Course, SaveData, Schedule, Section, WeekDays } from './Classes';
 
 function filterCourses(courses: Course[]) {
   let filteredCourses: Course[] = courses.map((sectionsData) => {
@@ -57,6 +58,9 @@ function getHours(str: string): number {
 function getMinutes(str: string): number {
   return parseInt(str.substring(3, 5));
 }
+function error(error: String) {
+  alert(error);
+}
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -81,9 +85,31 @@ const store = createStore({
     };
   },
   getters: {
-    getSchedules: (state: State) => {
+    getSchedules(state: State) {
       store.commit("findSchedules");
       return state.schedules;
+    },
+    getSaveData(state: State) {
+      let saveData: SaveData = {
+        breaks: state.breaks,
+        courses: [],
+        activeSections: [],
+      };
+      for (let course of state.courses) {
+        saveData.courses.push({
+          subject: course.sections[0].Subject,
+          courseNumber: course.sections[0].CourseNumber.toString(),
+        });
+        for (let section of course.sections) {
+          if (section.Selected) {
+            saveData.activeSections.push(section.ClassNumber);
+          }
+        }
+      }
+      console.log("saved data", saveData);
+      return LZUTF8.compress(JSON.stringify(saveData), {
+        outputEncoding: "StorageBinaryString",
+      });
     },
   },
   mutations: {
@@ -122,6 +148,9 @@ const store = createStore({
         return course.name != courseName;
       });
     },
+    setCourses(state: State, courses: Course[]) {
+      state.courses = courses;
+    },
     findSchedules(state) {
       let courses = filterCourses(state.courses);
       if (courses.length == 0) {
@@ -151,6 +180,78 @@ const store = createStore({
     },
   },
   actions: {
+    async findCourse(context, parameters: { subject: string; courseNumber: string }) {
+      parameters.subject = parameters.subject.toUpperCase();
+      if (typeof parameters.courseNumber == "string") {
+        parameters.courseNumber.toUpperCase();
+      }
+      let query = `https://cpp-scheduler.herokuapp.com/api/courses/Sp22/?Subject=${parameters.subject}&CourseNumber=${parameters.courseNumber}`.replace(
+        " ",
+        "+"
+      );
+      let response = await fetch(query);
+      let sections: Array<Section> = await response.json();
+      if (sections.length == 0) {
+        error(`No sections found under: ${parameters.subject}${parameters.courseNumber}`);
+      } else if (
+        context.state.courses.find(
+          (sectionsData) => sectionsData.name == `${parameters.subject} ${parameters.courseNumber}`
+        )
+      ) {
+        error(`Course already added: ${parameters.subject}${parameters.courseNumber}`);
+      } else if (context.state.courses.length >= 12) {
+        error(`Cannot add course. Maximum reached`);
+      } else {
+        sections.forEach((section) => (section.Selected = true));
+        sections.sort((a, b) => {
+          return a.Section - b.Section;
+        });
+        let course: Course = {
+          name: `${parameters.subject} ${parameters.courseNumber}`,
+          sections: sections,
+        };
+        context.dispatch("addCourse", course);
+      }
+    },
+    loadSaveData(context: ActionContext<State, State>, input: string) {
+      let saveData: SaveData;
+      try {
+        saveData = JSON.parse(
+          LZUTF8.decompress(input, {
+            inputEncoding: "StorageBinaryString",
+          })
+        );
+        console.log("Loaded Save Data", saveData);
+
+        if ("breaks" in saveData) {
+          context.state.breaks = saveData.breaks;
+        }
+
+        if ("courses" in saveData) {
+          context.state.courses = [];
+          context.dispatch("findCourses", saveData).then(() => {
+            console.log("fixing sections");
+
+            console.log(saveData.activeSections);
+            context.state.courses.forEach((course) => {
+              course.sections.forEach((section) => {
+                // console.log(section.ClassNumber);
+                section.Selected = saveData.activeSections.includes(section.ClassNumber);
+                // console.log(saveData.activeSections.includes(section.CourseNumber), section.Selected);
+              });
+            });
+          });
+        }
+      } catch (err) {
+        error("Failed to load save data: " + err);
+      }
+    },
+    async findCourses(context, saveData: SaveData) {
+      for (let course of saveData.courses) {
+        await context.dispatch("findCourse", course);
+        console.log("finding courses");
+      }
+    },
     addCourse(context, course: Course) {
       context.commit("addCourse", course);
       context.commit("sortCourses");

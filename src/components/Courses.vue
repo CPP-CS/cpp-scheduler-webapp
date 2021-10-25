@@ -10,6 +10,9 @@
     <CourseSelect v-if="notEmpty" />
 
     <!-- <h3 class="name">Add Breaks</h3> -->
+
+    <h3 class="name">Save Progress</h3>
+    <SaveProgress />
   </div>
 </template>
 
@@ -18,12 +21,14 @@ import { Section, Course } from "@/Classes";
 import { defineComponent } from "vue";
 import CourseQuery from "./CourseQuery.vue";
 import CourseSelect from "./CourseSelect.vue";
+import SaveProgress from "./SaveProgress.vue";
 
 export default defineComponent({
   name: "Courses",
   components: {
     CourseQuery,
     CourseSelect,
+    SaveProgress,
   },
   computed: {
     notEmpty() {
@@ -31,36 +36,13 @@ export default defineComponent({
     },
   },
   methods: {
-    async findCourse(subject: string, number: string) {
-      subject = subject.toUpperCase();
-      number = number.toUpperCase();
-      let query = `https://cpp-scheduler.herokuapp.com/api/courses/Sp22/?Subject=${subject}&CourseNumber=${number}`.replace(
-        " ",
-        "+"
-      );
-      let response = await fetch(query);
-      let sections: Array<Section> = await response.json();
-      if (sections.length == 0) {
-        this.error(`No sections found under: ${subject}${number}`);
-      } else if (this.$store.state.courses.find((sectionsData) => sectionsData.name == `${subject} ${number}`)) {
-        this.error(`Course already added: ${subject}${number}`);
-      } else if (this.$store.state.courses.length >= 12) {
-        this.error(`Cannot add course. Maximum reached`);
-      } else {
-        sections.forEach((section) => (section.Selected = true));
-        sections.sort((a, b) => {
-          return a.Section - b.Section;
-        });
-        let course: Course = {
-          name: `${subject} ${number}`,
-          sections: sections,
-        };
-        this.$store.dispatch("addCourse", course);
-      }
+    findCourse(subject: string, courseNumber: string) {
+      this.$store.dispatch("findCourse", {
+        subject: subject,
+        courseNumber: courseNumber,
+      });
     },
-    error(error: String) {
-      alert(error);
-    },
+
     clearCourses() {
       this.$store.commit("clearCourses");
     },

@@ -54,3 +54,12 @@ export enum WeekDays {
   "Friday" = "07",
   "Saturday" = "08",
 }
+
+export interface SaveData {
+  courses: {
+    subject: string;
+    courseNumber: string;
+  }[];
+  activeSections: number[];
+  breaks: Block[];
+}
