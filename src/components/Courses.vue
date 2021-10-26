@@ -6,10 +6,13 @@
     <CourseQuery @find-course="findCourse" />
     <input type="button" value="Clear Courses" @click="clearCourses" class="button" />
 
-    <h3 class="name" v-if="notEmpty">Select Sections</h3>
-    <CourseSelect v-if="notEmpty" />
+    <h3 class="name" v-if="coursesNotEmpty">Select Sections</h3>
+    <CourseSelect v-if="coursesNotEmpty" />
 
-    <!-- <h3 class="name">Add Breaks</h3> -->
+    <h3 class="name">Add Breaks</h3>
+    <BreaksAdd />
+    <h3 class="name" v-if="breaksNotEmpty"></h3>
+    <BreaksDisplay v-if="breaksNotEmpty" />
 
     <h3 class="name">Save Progress</h3>
     <SaveProgress />
@@ -17,11 +20,12 @@
 </template>
 
 <script lang="ts">
-import { Section, Course } from "@/Classes";
 import { defineComponent } from "vue";
 import CourseQuery from "./CourseQuery.vue";
 import CourseSelect from "./CourseSelect.vue";
 import SaveProgress from "./SaveProgress.vue";
+import BreaksAdd from "./BreaksAdd.vue";
+import BreaksDisplay from "./BreaksDisplay.vue";
 
 export default defineComponent({
   name: "Courses",
@@ -29,10 +33,15 @@ export default defineComponent({
     CourseQuery,
     CourseSelect,
     SaveProgress,
+    BreaksAdd,
+    BreaksDisplay,
   },
   computed: {
-    notEmpty() {
+    coursesNotEmpty() {
       return this.$store.state.courses.length > 0;
+    },
+    breaksNotEmpty() {
+      return this.$store.state.breaks.length > 0;
     },
   },
   methods: {

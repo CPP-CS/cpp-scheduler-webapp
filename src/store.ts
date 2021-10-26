@@ -4,12 +4,14 @@ import VuexPersistence from 'vuex-persist';
 
 import { Block, Course, SaveData, Schedule, Section, WeekDays } from './Classes';
 
-function filterCourses(courses: Course[]) {
+function filterCourses(courses: Course[], breaks: Block[]) {
   let filteredCourses: Course[] = courses.map((sectionsData) => {
     return {
       name: sectionsData.name as string,
       sections: sectionsData.sections.filter((section: Section) => {
-        return section.Selected == true;
+        if (conflictsBreaks(section, breaks)) return false;
+        if (!section.Selected) return false;
+        return true;
       }),
     };
   });
@@ -20,6 +22,12 @@ function filterCourses(courses: Course[]) {
     }
   });
   return filteredCourses;
+}
+function conflictsBreaks(block: Block, breaks: Block[]) {
+  for (let breakBlock of breaks) {
+    if (blocksConflict(breakBlock, block)) return true;
+  }
+  return false;
 }
 function isValidSchedule(schedule: Schedule) {
   for (let day of Object.keys(WeekDays)) {
@@ -58,14 +66,44 @@ function getHours(str: string): number {
 function getMinutes(str: string): number {
   return parseInt(str.substring(3, 5));
 }
+function getTimeDouble(time: string): number {
+  return getHours(time) + getMinutes(time) / 100;
+}
 function error(error: String) {
   alert(error);
+}
+function blocksConflict(a: Block, b: Block): boolean {
+  for (let weekDay of Object.keys(WeekDays)) {
+    if ((a as any)[weekDay] == "True" && (b as any)[weekDay] == "True") {
+      if (
+        getTimeDouble(a.StartTime) <= getTimeDouble(b.StartTime) &&
+        getTimeDouble(a.EndTime) > getTimeDouble(b.StartTime)
+      )
+        return true;
+      if (
+        getTimeDouble(b.StartTime) <= getTimeDouble(a.StartTime) &&
+        getTimeDouble(b.EndTime) > getTimeDouble(a.StartTime)
+      )
+        return true;
+    }
+  }
+
+  return false;
+}
+function hasValidTime(block: Block): boolean {
+  return block.StartTime < block.EndTime;
+}
+function hasDays(block: Block): boolean {
+  for (let weekDay of Object.keys(WeekDays)) {
+    if ((block as any)[weekDay] == "True") return true;
+  }
+  return false;
 }
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
   reducer: (state: State) => {
-    return { courses: state.courses };
+    return { courses: state.courses, breaks: state.breaks };
   },
 });
 
@@ -106,7 +144,7 @@ const store = createStore({
           }
         }
       }
-      console.log("saved data", saveData);
+
       return LZUTF8.compress(JSON.stringify(saveData), {
         outputEncoding: "StorageBinaryString",
       });
@@ -151,8 +189,8 @@ const store = createStore({
     setCourses(state: State, courses: Course[]) {
       state.courses = courses;
     },
-    findSchedules(state) {
-      let courses = filterCourses(state.courses);
+    findSchedules(state: State) {
+      let courses = filterCourses(state.courses, state.breaks);
       if (courses.length == 0) {
         state.schedules = [];
         return;
@@ -178,8 +216,32 @@ const store = createStore({
       }
       state.schedules = result;
     },
+    sortBreaks(state: State) {
+      state.breaks.sort((a, b) => {
+        return getTimeDouble(a.StartTime) - getTimeDouble(b.StartTime);
+      });
+    },
+    deleteBreak(state: State, index: number) {
+      state.breaks.splice(index, 1);
+    },
   },
   actions: {
+    addBreak(context: ActionContext<State, State>, breakBlock: Block) {
+      if (conflictsBreaks(breakBlock, context.state.breaks)) {
+        error("Cannot add Break, time conflicts with other breaks.");
+        return;
+      }
+      if (!hasDays(breakBlock)) {
+        error("Cannot add break with no days selected");
+        return;
+      }
+      if (!hasValidTime(breakBlock)) {
+        error("Cannot add break with end time before start time");
+        return;
+      }
+      context.state.breaks.push(breakBlock);
+      context.commit("sortBreaks");
+    },
     async findCourse(context, parameters: { subject: string; courseNumber: string }) {
       parameters.subject = parameters.subject.toUpperCase();
       if (typeof parameters.courseNumber == "string") {
@@ -221,7 +283,6 @@ const store = createStore({
             inputEncoding: "StorageBinaryString",
           })
         );
-        console.log("Loaded Save Data", saveData);
 
         if ("breaks" in saveData) {
           context.state.breaks = saveData.breaks;
@@ -230,14 +291,9 @@ const store = createStore({
         if ("courses" in saveData) {
           context.state.courses = [];
           context.dispatch("findCourses", saveData).then(() => {
-            console.log("fixing sections");
-
-            console.log(saveData.activeSections);
             context.state.courses.forEach((course) => {
               course.sections.forEach((section) => {
-                // console.log(section.ClassNumber);
                 section.Selected = saveData.activeSections.includes(section.ClassNumber);
-                // console.log(saveData.activeSections.includes(section.CourseNumber), section.Selected);
               });
             });
           });
@@ -249,7 +305,6 @@ const store = createStore({
     async findCourses(context, saveData: SaveData) {
       for (let course of saveData.courses) {
         await context.dispatch("findCourse", course);
-        console.log("finding courses");
       }
     },
     addCourse(context, course: Course) {

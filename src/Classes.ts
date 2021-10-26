@@ -21,21 +21,14 @@ export interface Section extends Block {
   CourseNumber: number;
   EndDate: string;
   EndTime: string;
-  Friday: string;
   InstructionMode: string;
   Instructor: string;
-  Monday: string;
   Room: number;
-  Saturday: string;
   Section: number;
   StartDate: string;
   StartTime: string;
   Subject: string;
-  Sunday: string;
-  Thursday: string;
-  Tuesday: string;
   Units: number;
-  Wednesday: string;
 }
 
 export interface Course {
