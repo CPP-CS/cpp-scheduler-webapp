@@ -9,7 +9,7 @@ import "@fullcalendar/core/vdom";
 import FullCalendar, { EventApi } from "@fullcalendar/vue3";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { PropType, defineComponent } from "vue";
-import { Schedule, Section, WeekDays } from "@/Classes";
+import { Block, Schedule, Section, WeekDays } from "@/Classes";
 
 interface Event {
   title: String;
@@ -80,6 +80,7 @@ export default defineComponent({
     },
     events() {
       let res: Array<Event> = [];
+      //schedule
       for (let [index, section] of this.schedule.entries()) {
         for (let [day, num] of Object.entries(WeekDays)) {
           if ((section as any)[day] == "True") {
@@ -106,7 +107,23 @@ export default defineComponent({
           }
         }
       }
-      return res;
+      //breaks
+      for (let breakBlock of this.$store.state.breaks) {
+        for (let [day, num] of Object.entries(WeekDays)) {
+          if ((breakBlock as any)[day] == "True") {
+            res.push({
+              title: `Break`,
+              start: `2011-10-${num}T${breakBlock.StartTime}`,
+              end: `2011-10-${num}T${breakBlock.EndTime}`,
+              courseIndex: -1,
+              textColor: "black",
+              backgroundColor: "#eee",
+              borderColor: "black",
+            });
+          }
+        }
+        return res;
+      }
     },
   },
   props: {
@@ -128,6 +145,7 @@ export default defineComponent({
       return `${hours}:${minutes} ${end}`;
     },
     selectSection(courseIndex: Number) {
+      if (courseIndex == -1) return;
       this.$emit("select-section", courseIndex);
     },
   },
