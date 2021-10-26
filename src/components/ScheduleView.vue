@@ -24,20 +24,21 @@ interface Event {
 function getColor(section: Section) {
   let mode = section.InstructionMode;
   switch (mode.toLowerCase()) {
-    case "bisynchronous":
-      return "#fca9b0";
     case "face-to-face":
-      return "#cfecff";
+      return "#ffbfc5";
     case "fully synchronous":
-      return "#fff5cc";
-    case "fully asynchronous":
-      return "#7fd463";
-    case "hyflex":
-      return "#faefbe";
-    case "hybrid asynchronous component":
-      return "#ace0fc";
+      return "#ffc89c";
     case "hybrid synchronous component":
-      return "#beb8ff";
+      return "#faefbe";
+    case "fully asynchronous":
+      return "#8fffff";
+    case "hybrid asynchronous component":
+      return "#baffd5";
+    case "bisynchronous":
+      return "#d3cfff";
+    case "hyflex":
+      return "#fac4ff";
+
     default:
       return "white";
   }
@@ -86,7 +87,7 @@ export default defineComponent({
         for (let [day, num] of Object.entries(WeekDays)) {
           if ((section as any)[day] == "True") {
             res.push({
-              title: `${section.Subject}${section.CourseNumber}[${section.Section}] ${section.Instructor}`,
+              title: `${section.Subject}${section.CourseNumber} [${section.Section}] ${section.Instructor}`,
               start: `2011-10-${num}T${section.StartTime}`,
               end: `2011-10-${num}T${section.EndTime}`,
               courseIndex: index,
