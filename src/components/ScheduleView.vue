@@ -78,7 +78,7 @@ export default defineComponent({
       if (this.selectedSchedule == undefined || this.$store.state.schedules.length == 0) return [];
       return this.$store.state.schedules[this.selectedSchedule];
     },
-    events() {
+    events(): Array<Event> {
       let res: Array<Event> = [];
       //schedule
       for (let [index, section] of this.schedule.entries()) {
@@ -122,8 +122,8 @@ export default defineComponent({
             });
           }
         }
-        return res;
       }
+      return res;
     },
   },
   props: {
