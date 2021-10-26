@@ -81,6 +81,7 @@ export default defineComponent({
     events(): Array<Event> {
       let res: Array<Event> = [];
       //schedule
+
       for (let [index, section] of this.schedule.entries()) {
         for (let [day, num] of Object.entries(WeekDays)) {
           if ((section as any)[day] == "True") {

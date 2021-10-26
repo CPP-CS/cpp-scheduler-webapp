@@ -43,7 +43,10 @@ export default defineComponent({
   },
   watch: {
     scheduleCount() {
-      if (this.selectedSchedule > this.scheduleCount) this.selectedSchedule = this.scheduleCount - 1;
+      if (this.selectedSchedule > this.scheduleCount) {
+        this.selectedSchedule = this.scheduleCount - 1;
+        if (this.scheduleCount == 0) this.selectedSchedule = 0;
+      }
     },
   },
   methods: {
