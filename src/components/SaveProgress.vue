@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { SaveData } from "@/Classes";
-import LZUTF8 from "lzutf8";
+
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -52,9 +52,10 @@ export default defineComponent({
         }
       }
 
-      this.saveToken = await LZUTF8.compress(JSON.stringify(saveData), {
-        outputEncoding: "Base64",
-      });
+      // this.saveToken = await LZUTF8.compress(JSON.stringify(saveData), {
+      //   outputEncoding: "Base64",
+      // });
+      this.saveToken = JSON.stringify(saveData);
     },
     readSaveData() {
       this.$store.dispatch("loadSaveData", this.input);

@@ -1,4 +1,3 @@
-import LZUTF8 from "lzutf8";
 import { ActionContext, createStore } from "vuex";
 import VuexPersistence from "vuex-persist";
 
@@ -256,17 +255,8 @@ const store = createStore({
     },
     loadSaveData(context: ActionContext<State, State>, input: string) {
       let saveData: SaveData;
-      console.log(
-        LZUTF8.decompress(input, {
-          inputEncoding: "Base64",
-        })
-      );
       try {
-        saveData = JSON.parse(
-          LZUTF8.decompress(input, {
-            inputEncoding: "Base64",
-          })
-        );
+        saveData = JSON.parse(input);
 
         if ("breaks" in saveData) {
           context.state.breaks = saveData.breaks;

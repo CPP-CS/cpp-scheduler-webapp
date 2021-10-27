@@ -15,7 +15,6 @@
     "@fullcalendar/timegrid": "^5.10.0",
     "@fullcalendar/vue3": "^5.10.0",
     "core-js": "^3.19.0",
-    "lzutf8": "^0.6.0",
     "vue": "^3.2.20",
     "vue-class-component": "^8.0.0-0",
     "vuex": "^4.0.2",
