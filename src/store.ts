@@ -1,7 +1,7 @@
-import { ActionContext, createStore } from "vuex";
-import VuexPersistence from "vuex-persist";
+import { ActionContext, createStore } from 'vuex';
+import VuexPersistence from 'vuex-persist';
 
-import { Block, Course, SaveData, Schedule, Section, WeekDays } from "./Classes";
+import { Block, Course, SaveData, Schedule, Section, WeekDays } from './Classes';
 
 function filterCourses(courses: Course[], breaks: Block[]) {
   let filteredCourses: Course[] = courses.map((sectionsData) => {
@@ -167,6 +167,7 @@ const store = createStore({
       state.courses = courses;
     },
     findSchedules(state: State) {
+      console.log("Finding Schedules");
       let courses = filterCourses(state.courses, state.breaks);
       if (courses.length == 0) {
         state.schedules = [];
@@ -220,6 +221,7 @@ const store = createStore({
       context.commit("sortBreaks");
     },
     async findCourse(context, parameters: { subject: string; courseNumber: string }) {
+      console.log("Finding Course: ", parameters.subject + parameters.courseNumber);
       parameters.subject = parameters.subject.toUpperCase();
       if (typeof parameters.courseNumber == "string") {
         parameters.courseNumber.toUpperCase();
