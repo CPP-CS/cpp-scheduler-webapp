@@ -5,7 +5,14 @@
       Copy your courses/sections data. Send it to your friends, backup your data, or transfer it to a different device.
       It's recomended that you save this data token on a text file or word document in your computer.
     </h3>
-    <button @click="copySaveData" id="copyDataButton">Click to Copy Save Data Token</button>
+    <button @click="generateSaveData" id="generateDataButton">Click to Generate Save Data Token</button>
+    <textarea
+      id="output"
+      ref="output"
+      @dblclick="this.$refs.output.setSelectionRange(0, this.$refs.output.value.length)"
+      v-model="saveToken"
+      readonly
+    />
 
     <label name="pasteBox">Paste Your Token Below:</label>
     <input type="text" name="pasteBox" id="pasteBox" v-model="input" />
@@ -14,6 +21,8 @@
 </template>
 
 <script lang="ts">
+import { SaveData } from "@/Classes";
+import LZUTF8 from "lzutf8";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -21,11 +30,31 @@ export default defineComponent({
   data() {
     return {
       input: "",
+      saveToken: "",
     };
   },
   methods: {
-    copySaveData() {
-      navigator.clipboard.writeText(this.$store.getters.getSaveData);
+    async generateSaveData() {
+      let saveData: SaveData = {
+        breaks: this.$store.state.breaks,
+        courses: [],
+        activeSections: [],
+      };
+      for (let course of this.$store.state.courses) {
+        saveData.courses.push({
+          subject: course.sections[0].Subject,
+          courseNumber: course.sections[0].CourseNumber.toString(),
+        });
+        for (let section of course.sections) {
+          if (section.Selected) {
+            saveData.activeSections.push(section.ClassNumber);
+          }
+        }
+      }
+
+      this.saveToken = await LZUTF8.compress(JSON.stringify(saveData), {
+        outputEncoding: "Base64",
+      });
     },
     readSaveData() {
       this.$store.dispatch("loadSaveData", this.input);
@@ -52,12 +81,16 @@ export default defineComponent({
   padding-top: 0;
   border-bottom: black 1px solid;
 }
-#copyDataButton {
+#generateDataButton {
   margin: 5%;
   width: auto;
 }
 #loadDataButton {
   width: auto;
   margin: 3%;
+}
+#output {
+  resize: none;
+  text-align: center;
 }
 </style>

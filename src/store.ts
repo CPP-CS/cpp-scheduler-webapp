@@ -127,28 +127,6 @@ const store = createStore({
       store.commit("findSchedules");
       return state.schedules;
     },
-    getSaveData(state: State) {
-      let saveData: SaveData = {
-        breaks: state.breaks,
-        courses: [],
-        activeSections: [],
-      };
-      for (let course of state.courses) {
-        saveData.courses.push({
-          subject: course.sections[0].Subject,
-          courseNumber: course.sections[0].CourseNumber.toString(),
-        });
-        for (let section of course.sections) {
-          if (section.Selected) {
-            saveData.activeSections.push(section.ClassNumber);
-          }
-        }
-      }
-
-      return LZUTF8.compress(JSON.stringify(saveData), {
-        outputEncoding: "Base64",
-      });
-    },
   },
   mutations: {
     sortCourses(state: State) {
@@ -278,6 +256,11 @@ const store = createStore({
     },
     loadSaveData(context: ActionContext<State, State>, input: string) {
       let saveData: SaveData;
+      console.log(
+        LZUTF8.decompress(input, {
+          inputEncoding: "Base64",
+        })
+      );
       try {
         saveData = JSON.parse(
           LZUTF8.decompress(input, {
