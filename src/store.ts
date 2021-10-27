@@ -1,8 +1,8 @@
-import LZUTF8 from 'lzutf8';
-import { ActionContext, createStore } from 'vuex';
-import VuexPersistence from 'vuex-persist';
+import LZUTF8 from "lzutf8";
+import { ActionContext, createStore } from "vuex";
+import VuexPersistence from "vuex-persist";
 
-import { Block, Course, SaveData, Schedule, Section, WeekDays } from './Classes';
+import { Block, Course, SaveData, Schedule, Section, WeekDays } from "./Classes";
 
 function filterCourses(courses: Course[], breaks: Block[]) {
   let filteredCourses: Course[] = courses.map((sectionsData) => {
@@ -146,7 +146,7 @@ const store = createStore({
       }
 
       return LZUTF8.compress(JSON.stringify(saveData), {
-        outputEncoding: "StorageBinaryString",
+        outputEncoding: "Base64",
       });
     },
   },
@@ -247,10 +247,11 @@ const store = createStore({
       if (typeof parameters.courseNumber == "string") {
         parameters.courseNumber.toUpperCase();
       }
-      let query = `https://cpp-scheduler.herokuapp.com/api/courses/Sp22/?Subject=${parameters.subject}&CourseNumber=${parameters.courseNumber}`.replace(
-        " ",
-        "+"
-      );
+      let query =
+        `https://cpp-scheduler.herokuapp.com/api/courses/Sp22/?Subject=${parameters.subject}&CourseNumber=${parameters.courseNumber}`.replace(
+          " ",
+          "+"
+        );
       let response = await fetch(query);
       let sections: Array<Section> = await response.json();
       if (sections.length == 0) {
@@ -280,7 +281,7 @@ const store = createStore({
       try {
         saveData = JSON.parse(
           LZUTF8.decompress(input, {
-            inputEncoding: "StorageBinaryString",
+            inputEncoding: "Base64",
           })
         );
 
