@@ -1,5 +1,6 @@
 <template>
   <div id="saveProgressContainer">
+    <h3>[HIGHLY EXPERIMENTAL]</h3>
     <h3 id="instructions">
       Copy your courses/sections data. Send it to your friends, backup your data, or transfer it to a different device.
       It's recomended that you save this data token on a text file or word document in your computer.
