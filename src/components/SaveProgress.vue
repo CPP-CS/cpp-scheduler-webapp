@@ -84,13 +84,16 @@ export default defineComponent({
 #generateDataButton {
   margin: 5%;
   width: auto;
+  margin-bottom: 0;
 }
 #loadDataButton {
   width: auto;
   margin: 3%;
 }
 #output {
+  width: 80%;
   resize: none;
   text-align: center;
+  margin-bottom: 5%;
 }
 </style>
