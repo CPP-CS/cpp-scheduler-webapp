@@ -1,4 +1,5 @@
 import { ActionContext, createStore } from 'vuex';
+import VuexPersistence from 'vuex-persist';
 
 import { Block, Course, SaveData, Schedule, Section, WeekDays } from './Classes';
 
@@ -98,12 +99,12 @@ function hasDays(block: Block): boolean {
   return false;
 }
 
-// const vuexLocal = new VuexPersistence({
-//   storage: window.localStorage,
-//   reducer: (state: State) => {
-//     return { courses: state.courses, breaks: state.breaks };
-//   },
-// });
+const vuexLocal = new VuexPersistence({
+  storage: window.localStorage,
+  reducer: (state: State) => {
+    return { courses: state.courses, breaks: state.breaks };
+  },
+});
 
 interface State {
   courses: Course[];
@@ -112,7 +113,7 @@ interface State {
 }
 
 const store = createStore({
-  // plugins: [vuexLocal.plugin],
+  plugins: [vuexLocal.plugin],
   state() {
     return {
       courses: [] as Course[],
