@@ -1,1 +1,1 @@
-CPP Scheduler Frontend Webapp
+CPP Scheduler WebApp 
