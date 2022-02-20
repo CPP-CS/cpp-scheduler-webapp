@@ -1,9 +1,16 @@
 import {
+  AppsOutlined,
   CalendarViewDayOutlined,
+  ExpandLess,
+  ExpandMore,
   GradeOutlined,
   HomeMaxOutlined,
+  HouseOutlined,
   Menu as MenuIcon,
+  PeopleOutlined,
+  PersonOutlineSharp,
   QuestionMarkOutlined,
+  SchoolOutlined,
 } from "@mui/icons-material";
 import {
   AppBar,
@@ -18,6 +25,8 @@ import {
   ListItemButton,
   ListSubheader,
   Divider,
+  Collapse,
+  ListItemSecondaryAction,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -36,6 +45,8 @@ function ElevationScroll(props) {
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
+  const [grades, setGrades] = useState(true);
+  const navigate = useNavigate();
   return (
     <ElevationScroll>
       <AppBar>
@@ -49,20 +60,63 @@ export default function NavBar() {
                 <Typography variant='h2'>Navigation</Typography>
               </ListSubheader>
               <Divider sx={{ mt: 2 }}></Divider>
-              <NavLink to='/home' key='home' icon={<HomeMaxOutlined sx={{ fontSize: "2em" }} />}>
+              <NavLink to='/home' icon={<AppsOutlined sx={{ fontSize: "2em" }} />} setOpen={setOpen}>
                 Home
               </NavLink>
               <NavLink
                 to='/scheduleBuilder'
-                key='scheduleBuilder'
-                icon={<CalendarViewDayOutlined sx={{ fontSize: "2em" }} />}>
+                keyVal='scheduleBuilder'
+                icon={<CalendarViewDayOutlined sx={{ fontSize: "2em" }} />}
+                setOpen={setOpen}>
                 Schedule Builder
               </NavLink>
-              <NavLink to='/grades' key='grades' icon={<GradeOutlined sx={{ fontSize: "2em" }} />}>
-                Grades
-              </NavLink>
-              <NavLink to='/help' key='help' icon={<QuestionMarkOutlined sx={{ fontSize: "2em" }} />}>
+
+              {/* grades */}
+              <ListItemButton
+                divider
+                onClick={() => {
+                  navigate("/grades");
+                }}
+                sx={{ px: 2 }}>
+                <ListItemIcon>
+                  <GradeOutlined sx={{ fontSize: "2em" }} />
+                </ListItemIcon>
+                <ListItemText primary={<Typography variant='h5'>Grades</Typography>}></ListItemText>
+                <ListItemSecondaryAction>
+                  <IconButton
+                    onClick={() => {
+                      setGrades(!grades);
+                    }}>
+                    {grades ? <ExpandLess /> : <ExpandMore />}
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItemButton>
+              <Collapse in={grades} unmountOnExit>
+                <GradesNavLink
+                  to='/grades/professors'
+                  icon={<PersonOutlineSharp sx={{ fontSize: "2em" }} />}
+                  setOpen={setOpen}>
+                  Professors
+                </GradesNavLink>
+                <GradesNavLink
+                  to='/grades/departments'
+                  icon={<HouseOutlined sx={{ fontSize: "2em" }} />}
+                  setOpen={setOpen}>
+                  Departments
+                </GradesNavLink>
+                <GradesNavLink
+                  to='/grades/colleges'
+                  icon={<SchoolOutlined sx={{ fontSize: "2em" }} />}
+                  setOpen={setOpen}>
+                  Colleges
+                </GradesNavLink>
+              </Collapse>
+
+              <NavLink to='/help' icon={<QuestionMarkOutlined sx={{ fontSize: "2em" }} />} setOpen={setOpen}>
                 Help & Info
+              </NavLink>
+              <NavLink to='/credits' icon={<PeopleOutlined sx={{ fontSize: "2em" }} />} setOpen={setOpen}>
+                Credits
               </NavLink>
             </List>
           </Drawer>
@@ -76,7 +130,29 @@ export default function NavBar() {
 function NavLink(props) {
   const navigate = useNavigate();
   return (
-    <ListItemButton divider button key={props.key} onClick={() => navigate(props.to)} sx={{ px: 4 }}>
+    <ListItemButton
+      divider
+      onClick={() => {
+        navigate(props.to);
+        props.setOpen(false);
+      }}
+      sx={{ px: 2 }}>
+      <ListItemIcon> {props.icon}</ListItemIcon>
+      <ListItemText primary={<Typography variant='h5'>{props.children}</Typography>}></ListItemText>
+    </ListItemButton>
+  );
+}
+
+function GradesNavLink(props) {
+  const navigate = useNavigate();
+  return (
+    <ListItemButton
+      divider
+      onClick={() => {
+        navigate(props.to);
+        props.setOpen(false);
+      }}
+      sx={{ pr: 2, pl: 4 }}>
       <ListItemIcon> {props.icon}</ListItemIcon>
       <ListItemText primary={<Typography variant='h5'>{props.children}</Typography>}></ListItemText>
     </ListItemButton>

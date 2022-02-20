@@ -1,15 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
+import "./index.scss";
 import { store } from "./app/store";
 import { Provider } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-
-import "@fontsource/lato";
 import { ThemeProvider } from "@mui/material/styles";
-import { createTheme, Stack, Theme } from "@mui/material";
+import { createTheme, Theme } from "@mui/material";
 import Home from "./routes/Home";
 import NavBar from "./components/NavBar";
+
+import "@fontsource/lato";
+import "@fontsource/roboto";
+import Credits from "./routes/Credits";
+import ScheduleBuilder from "./routes/ScheduleBuilder";
+import Grades from "./routes/Grades";
+import Help from "./routes/Help";
 
 const theme: Theme = createTheme(createTheme(), {
   palette: {
@@ -39,6 +44,13 @@ ReactDOM.render(
           <NavBar />
           <Routes>
             <Route path='/' element={<Home />} />
+            <Route path='/scheduleBuilder' element={<ScheduleBuilder />} />
+            <Route path='/grades' element={<Grades />} />
+            <Route path='/grades/courses' element={<Grades />} />
+            <Route path='/grades/departments' element={<Grades />} />
+            <Route path='/grades/professors' element={<Grades />} />
+            <Route path='/help' element={<Help />} />
+            <Route path='/credits' element={<Credits />} />
             <Route path='*' element={<Navigate to={"/"} />} />
           </Routes>
         </BrowserRouter>
