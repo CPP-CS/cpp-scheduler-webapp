@@ -15,6 +15,9 @@ import Credits from "./routes/Credits";
 import ScheduleBuilder from "./routes/ScheduleBuilder";
 import Grades from "./routes/Grades";
 import Help from "./routes/Help";
+import { Professors } from "./routes/Grades/Professors";
+
+export const API = "http://localhost:3000/";
 
 const theme: Theme = createTheme(createTheme(), {
   palette: {
@@ -48,7 +51,7 @@ ReactDOM.render(
             <Route path='/grades' element={<Grades />} />
             <Route path='/grades/courses' element={<Grades />} />
             <Route path='/grades/departments' element={<Grades />} />
-            <Route path='/grades/professors' element={<Grades />} />
+            <Route path='/grades/professors' element={<Professors />} />
             <Route path='/help' element={<Help />} />
             <Route path='/credits' element={<Credits />} />
             <Route path='*' element={<Navigate to={"/"} />} />
