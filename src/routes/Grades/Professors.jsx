@@ -99,7 +99,7 @@ function calcAvg(sections) {
 class ProfessorData extends React.Component {
   constructor(props) {
     super(props);
-    let sections = props.sections;
+    let sections = this.props.sections;
     let professorData = {
       sectionCount: sections.length,
       gradedSections: 0,
@@ -111,12 +111,36 @@ class ProfessorData extends React.Component {
       professorData.subjects.add(section.Subject);
       professorData.courses.add(section.Subject + " " + section.CourseNumber);
     }
+    this.state = { professorData };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.professor !== this.props.professor) this.updateData();
+  }
+
+  updateData() {
+    let sections = this.props.sections;
+    let professorData = {
+      sectionCount: sections.length,
+      gradedSections: 0,
+      subjects: new Set(),
+      courses: new Set(),
+    };
+    for (let section of sections) {
+      if (section.A) professorData.gradedSections++;
+      professorData.subjects.add(section.Subject);
+      professorData.courses.add(section.Subject + " " + section.CourseNumber);
+    }
+    console.log(professorData.gradedSections);
+    this.setState({ professorData });
   }
   render() {
     return (
       <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: 10 }}>
         <Typography variant='h2'>{this.props.professor.label}</Typography>
-        <Typography variant='subtitle1'>Average GPA: {calcAvg(this.props.sections)}</Typography>
+        <Typography variant='subtitle1'>
+          Average GPA: {calcAvg(this.props.sections)} out of {this.state.professorData.gradedSections} Courses
+        </Typography>
       </Paper>
     );
   }
