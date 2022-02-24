@@ -75,21 +75,14 @@ export default function NavBar() {
               <ListItemButton
                 divider
                 onClick={() => {
-                  navigate("/grades");
+                  setGrades(!grades);
                 }}
                 sx={{ px: 2 }}>
                 <ListItemIcon>
                   <GradeOutlined sx={{ fontSize: "2em" }} />
                 </ListItemIcon>
                 <ListItemText primary={<Typography variant='h5'>Grades</Typography>}></ListItemText>
-                <ListItemSecondaryAction>
-                  <IconButton
-                    onClick={() => {
-                      setGrades(!grades);
-                    }}>
-                    {grades ? <ExpandLess /> : <ExpandMore />}
-                  </IconButton>
-                </ListItemSecondaryAction>
+                <ListItemSecondaryAction>{grades ? <ExpandLess /> : <ExpandMore />}</ListItemSecondaryAction>
               </ListItemButton>
               <Collapse in={grades} unmountOnExit>
                 <GradesNavLink
