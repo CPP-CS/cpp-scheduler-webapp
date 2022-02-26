@@ -1,7 +1,8 @@
-import { Autocomplete, Container, createFilterOptions, Paper, TextField, Typography } from "@mui/material";
+import { Autocomplete, Container, createFilterOptions, Grid, List, Paper, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { API } from "../..";
+import { calcAvg, getCourse } from "../../utils";
 
 export class Professors extends React.Component {
   constructor(props) {
@@ -33,7 +34,6 @@ export class Professors extends React.Component {
       .then((data) => data.json())
       .then((res) => {
         this.setState({ sections: res });
-        console.log(this.state.sections);
       });
   }
 
@@ -68,34 +68,6 @@ export class Professors extends React.Component {
   }
 }
 
-const GPA = {
-  A: 4.0,
-  "A-": 3.7,
-  "B+": 3.3,
-  B: 3.0,
-  "B-": 2.7,
-  "C+": 2.3,
-  C: 2.0,
-  "C-": 1.7,
-  "D+": 1.3,
-  D: 1.0,
-  "D-": 0.7,
-  F: 0,
-};
-
-function calcAvg(sections) {
-  let tEnrollment = 0;
-  let tPoints = 0;
-  for (let section of sections) {
-    if (!section.TotalEnrollment) continue;
-    tEnrollment += section.TotalEnrollment;
-    for (let grade of Object.keys(GPA)) {
-      tPoints += GPA[grade] * section[grade];
-    }
-  }
-  return Math.round((tPoints / tEnrollment) * 1000) / 1000;
-}
-
 class ProfessorData extends React.Component {
   constructor(props) {
     super(props);
@@ -103,14 +75,34 @@ class ProfessorData extends React.Component {
     let professorData = {
       sectionCount: sections.length,
       gradedSections: 0,
-      subjects: new Set(),
-      courses: new Set(),
+      subjects: {},
+      courses: {},
     };
+
+    // parse through sections
     for (let section of sections) {
+      // count graded sections
       if (section.A) professorData.gradedSections++;
-      professorData.subjects.add(section.Subject);
-      professorData.courses.add(section.Subject + " " + section.CourseNumber);
+      // sort by subject
+      let subjectList = professorData.subjects;
+      if (!subjectList[section.Subject]) subjectList[section.Subject] = {};
+      if (!(subjectList[section.Subject].sections instanceof Array)) subjectList[section.Subject].sections = [];
+      subjectList[section.Subject].sections.push(section);
+
+      // sort by courses
+      let courseList = professorData.courses;
+      if (!courseList[getCourse(section)]) courseList[getCourse(section)] = {};
+      if (!(courseList[getCourse(section)].sections instanceof Array)) courseList[getCourse(section)].sections = [];
+      courseList[getCourse(section)].sections.push(section);
     }
+
+    for (let subject in professorData.subjects) {
+      professorData.subjects[subject].avgGPA = calcAvg(professorData.subjects[subject].sections);
+    }
+    for (let course in professorData.courses) {
+      professorData.courses[course].avgGPA = calcAvg(professorData.courses[course].sections);
+    }
+
     this.state = { professorData };
   }
 
@@ -131,16 +123,21 @@ class ProfessorData extends React.Component {
       professorData.subjects.add(section.Subject);
       professorData.courses.add(section.Subject + " " + section.CourseNumber);
     }
-    console.log(professorData.gradedSections);
     this.setState({ professorData });
   }
   render() {
     return (
       <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: 10 }}>
-        <Typography variant='h2'>{this.props.professor.label}</Typography>
-        <Typography variant='subtitle1'>
-          Average GPA: {calcAvg(this.props.sections)} out of {this.state.professorData.gradedSections} Courses
-        </Typography>
+        <Grid container spacing={1}></Grid>
+        <Grid item xs={12}>
+          <Typography variant='h2'>{this.props.professor.label}</Typography>
+          <Typography variant='subtitle1'>
+            Average GPA: {calcAvg(this.props.sections)} out of {this.state.professorData.gradedSections} Courses
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <List></List>
+        </Grid>
       </Paper>
     );
   }
