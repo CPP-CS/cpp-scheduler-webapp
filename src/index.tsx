@@ -13,11 +13,11 @@ import "@fontsource/lato";
 import "@fontsource/roboto";
 import Credits from "./routes/Credits";
 import ScheduleBuilder from "./routes/ScheduleBuilder";
-import Grades from "./routes/Grades";
 import Help from "./routes/Help";
 import { Professors } from "./routes/Grades/Professors";
 
 import ReactGA from "react-ga";
+import UnderConstruction from "components/UnderConstruction";
 ReactGA.initialize("G-BFNLVWP9W2");
 ReactGA.pageview(window.location.pathname);
 
@@ -52,9 +52,8 @@ ReactDOM.render(
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/scheduleBuilder' element={<ScheduleBuilder />} />
-            <Route path='/grades' element={<Grades />} />
-            <Route path='/grades/courses' element={<Grades />} />
-            <Route path='/grades/departments' element={<Grades />} />
+            <Route path='/grades/courses' element={<UnderConstruction />} />
+            <Route path='/grades/departments' element={<UnderConstruction />} />
             <Route path='/grades/professors' element={<Professors />} />
             <Route path='/help' element={<Help />} />
             <Route path='/credits' element={<Credits />} />
