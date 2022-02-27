@@ -1,4 +1,18 @@
-import { Autocomplete, Container, createFilterOptions, Grid, List, Paper, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Container,
+  createFilterOptions,
+  Grid,
+  Paper,
+  TextField,
+  Typography,
+  TableContainer,
+  Table,
+  TableHead,
+  TableCell,
+  TableRow,
+  TableBody,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { API } from "../..";
@@ -8,7 +22,7 @@ export class Professors extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: { InstructorFirst: "Thanh", InstructorLast: "Nguyen", label: "Thanh Nguyen" },
+      value: null,
       professorList: null,
       sections: null,
     };
@@ -20,10 +34,10 @@ export class Professors extends React.Component {
       .then((res) => {
         this.setState({ professorList: res });
       });
-    this.getProfessorData();
   }
 
   getProfessorData() {
+    // if (!this.state.value) return;
     fetch(API + "professorSections", {
       method: "POST",
       headers: {
@@ -60,7 +74,9 @@ export class Professors extends React.Component {
             />
           </Box>
         )}
-        {this.state.sections == null || this.state.value == null ? null : (
+        {this.state.sections == null || this.state.value == null ? (
+          <SelectClass />
+        ) : (
           <ProfessorData professor={this.state.value} sections={this.state.sections} />
         )}
       </Container>
@@ -68,77 +84,107 @@ export class Professors extends React.Component {
   }
 }
 
-class ProfessorData extends React.Component {
-  constructor(props) {
-    super(props);
-    let sections = this.props.sections;
-    let professorData = {
-      sectionCount: sections.length,
-      gradedSections: 0,
-      subjects: {},
-      courses: {},
-    };
+function ProfessorData(props) {
+  let professorData = {
+    sectionCount: props.sections.length,
+    gradedSections: 0,
+    subjects: {},
+    courses: {},
+    gradeCount: 0,
+  };
 
-    // parse through sections
-    for (let section of sections) {
-      // count graded sections
-      if (section.A) professorData.gradedSections++;
-      // sort by subject
-      let subjectList = professorData.subjects;
-      if (!subjectList[section.Subject]) subjectList[section.Subject] = {};
-      if (!(subjectList[section.Subject].sections instanceof Array)) subjectList[section.Subject].sections = [];
-      subjectList[section.Subject].sections.push(section);
+  // parse through sections
+  for (let section of props.sections) {
+    // count graded sections
+    if (section.A) professorData.gradedSections++;
+    let sectionName = getCourse(section);
+    // // sort by subject
+    // let subjectList = professorData.subjects;
+    // if (!subjectList[section.Subject]) subjectList[section.Subject] = {};
+    // if (!(subjectList[section.Subject].sections instanceof Array)) subjectList[section.Subject].sections = [];
+    // subjectList[section.Subject].sections.push(section);
 
-      // sort by courses
-      let courseList = professorData.courses;
-      if (!courseList[getCourse(section)]) courseList[getCourse(section)] = {};
-      if (!(courseList[getCourse(section)].sections instanceof Array)) courseList[getCourse(section)].sections = [];
-      courseList[getCourse(section)].sections.push(section);
+    // sort by courses
+    let courseList = professorData.courses;
+    // create course and section data (if does not exist))
+    if (!courseList[sectionName]) courseList[sectionName] = {};
+    if (!(courseList[sectionName].sections instanceof Array)) courseList[sectionName].sections = [];
+    if (!courseList[sectionName].gradeCount) courseList[sectionName].gradeCount = 0;
+    if (!courseList[sectionName].label) courseList[sectionName].label = sectionName;
+    //adds ClassTitle if possible
+    if (section.ClassTitle) courseList[sectionName].label = `${sectionName} - ${section.ClassTitle}`;
+    // adds section to list
+    courseList[sectionName].sections.push(section);
+    // adds gradeCount
+    if (section.TotalEnrollment) {
+      professorData.gradeCount += section.TotalEnrollment;
+      courseList[sectionName].gradeCount += section.TotalEnrollment;
     }
-
-    for (let subject in professorData.subjects) {
-      professorData.subjects[subject].avgGPA = calcAvg(professorData.subjects[subject].sections);
-    }
-    for (let course in professorData.courses) {
-      professorData.courses[course].avgGPA = calcAvg(professorData.courses[course].sections);
-    }
-
-    this.state = { professorData };
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.professor !== this.props.professor) this.updateData();
+  // for (let subject in professorData.subjects) {
+  //   professorData.subjects[subject].avgGPA = calcAvg(professorData.subjects[subject].sections);
+  // }
+  for (let course in professorData.courses) {
+    professorData.courses[course].avgGPA = calcAvg(professorData.courses[course].sections);
   }
 
-  updateData() {
-    let sections = this.props.sections;
-    let professorData = {
-      sectionCount: sections.length,
-      gradedSections: 0,
-      subjects: new Set(),
-      courses: new Set(),
-    };
-    for (let section of sections) {
-      if (section.A) professorData.gradedSections++;
-      professorData.subjects.add(section.Subject);
-      professorData.courses.add(section.Subject + " " + section.CourseNumber);
-    }
-    this.setState({ professorData });
-  }
-  render() {
-    return (
-      <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: 10 }}>
-        <Grid container spacing={1}></Grid>
-        <Grid item xs={12}>
-          <Typography variant='h2'>{this.props.professor.label}</Typography>
-          <Typography variant='subtitle1'>
-            Average GPA: {calcAvg(this.props.sections)} out of {this.state.professorData.gradedSections} Courses
-          </Typography>
-        </Grid>
-        <Grid item xs={6}>
-          <List></List>
-        </Grid>
-      </Paper>
+  console.log(props.sections);
+
+  //create GPA table
+  let tableData = [];
+  let key = 0;
+
+  // for (let subject in professorData.subjects) {
+  //   tableData.push(
+  //     <TableRow key={key++}>
+  //       <TableCell>{`${subject}`}</TableCell>
+  //       <TableCell>{`${professorData.subjects[subject].avgGPA}`}</TableCell>
+  //     </TableRow>
+  //   );
+  // }
+
+  let courses = Object.keys(professorData.courses).sort();
+  for (let course of courses) {
+    tableData.push(
+      <TableRow key={key++}>
+        <TableCell>{`${professorData.courses[course].label}`}</TableCell>
+        <TableCell>{`${professorData.courses[course].avgGPA}`}</TableCell>
+        <TableCell>{`${professorData.courses[course].gradeCount}`}</TableCell>
+      </TableRow>
     );
   }
+  return (
+    <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: 10 }}>
+      <Grid container spacing={1}></Grid>
+      <Grid item xs={12}>
+        <Typography variant='h2'>{props.professor.label}</Typography>
+        <Typography variant='subtitle1'>
+          Average GPA: {calcAvg(props.sections)} out of {professorData.gradeCount} Students
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <TableContainer component={Paper} sx={{ mt: 2 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Subject / Course</TableCell>
+                <TableCell>Avg GPA</TableCell>
+                <TableCell>Total Grades</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>{tableData}</TableBody>
+          </Table>
+        </TableContainer>
+      </Grid>
+    </Paper>
+  );
+}
+
+function SelectClass() {
+  return (
+    <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: 10 }}>
+      <Typography variant='h2'>Select A Professor to see Data</Typography>
+    </Paper>
+  );
 }

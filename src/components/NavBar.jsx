@@ -4,7 +4,6 @@ import {
   ExpandLess,
   ExpandMore,
   GradeOutlined,
-  HomeMaxOutlined,
   HouseOutlined,
   Menu as MenuIcon,
   PeopleOutlined,
@@ -46,7 +45,6 @@ function ElevationScroll(props) {
 export default function NavBar() {
   const [open, setOpen] = useState(false);
   const [grades, setGrades] = useState(true);
-  const navigate = useNavigate();
   return (
     <ElevationScroll>
       <AppBar>

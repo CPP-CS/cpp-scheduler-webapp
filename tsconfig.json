@@ -18,7 +18,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+
+    //stuff I added
+    "baseUrl": "./src",
+    // "checkJs": true,
   },
   "include": [
     "src"
