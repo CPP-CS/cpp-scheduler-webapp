@@ -17,6 +17,7 @@ import { Box } from "@mui/system";
 import React from "react";
 import { API } from "../..";
 import { calcAvg, getCourse } from "../../utils";
+import ReactGA from "react-ga";
 
 export class Professors extends React.Component {
   constructor(props) {
@@ -49,6 +50,11 @@ export class Professors extends React.Component {
       .then((res) => {
         this.setState({ sections: res });
       });
+    // send professor search event to google analytics
+    ReactGA.event({
+      category: "Query",
+      action: "Professor Data Search",
+    });
   }
 
   componentDidUpdate(prevProps, prevState) {

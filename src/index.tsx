@@ -17,6 +17,10 @@ import Grades from "./routes/Grades";
 import Help from "./routes/Help";
 import { Professors } from "./routes/Grades/Professors";
 
+import ReactGA from "react-ga";
+ReactGA.initialize("G-BFNLVWP9W2");
+ReactGA.pageview(window.location.pathname);
+
 export const API = "http://localhost:3000/";
 
 const theme: Theme = createTheme(createTheme(), {
