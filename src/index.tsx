@@ -22,7 +22,7 @@ import { Courses } from "routes/Grades/Courses";
 ReactGA.initialize("G-BFNLVWP9W2");
 ReactGA.pageview(window.location.pathname);
 
-export const API = "http://localhost:3000/";
+export const API = "https://cpp-scheduler.herokuapp.com/";
 
 const theme: Theme = createTheme(createTheme(), {
   palette: {
