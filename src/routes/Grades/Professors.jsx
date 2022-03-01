@@ -14,7 +14,7 @@ import {
   TableBody,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { API } from "../..";
 import { calcAvg, getCourse } from "../../utils";
 import ReactGA from "react-ga";
@@ -94,7 +94,6 @@ function ProfessorData(props) {
   let professorData = {
     sectionCount: props.sections.length,
     gradedSections: 0,
-    subjects: {},
     courses: {},
     gradeCount: 0,
   };
@@ -104,11 +103,6 @@ function ProfessorData(props) {
     // count graded sections
     if (section.A) professorData.gradedSections++;
     let sectionName = getCourse(section);
-    // // sort by subject
-    // let subjectList = professorData.subjects;
-    // if (!subjectList[section.Subject]) subjectList[section.Subject] = {};
-    // if (!(subjectList[section.Subject].sections instanceof Array)) subjectList[section.Subject].sections = [];
-    // subjectList[section.Subject].sections.push(section);
 
     // sort by courses
     let courseList = professorData.courses;
@@ -117,6 +111,7 @@ function ProfessorData(props) {
     if (!(courseList[sectionName].sections instanceof Array)) courseList[sectionName].sections = [];
     if (!courseList[sectionName].gradeCount) courseList[sectionName].gradeCount = 0;
     if (!courseList[sectionName].label) courseList[sectionName].label = sectionName;
+
     //adds ClassTitle if possible
     if (section.ClassTitle) courseList[sectionName].label = `${sectionName} - ${section.ClassTitle}`;
     // adds section to list
@@ -128,12 +123,40 @@ function ProfessorData(props) {
     }
   }
 
-  // for (let subject in professorData.subjects) {
-  //   professorData.subjects[subject].avgGPA = calcAvg(professorData.subjects[subject].sections);
-  // }
   for (let course in professorData.courses) {
     professorData.courses[course].avgGPA = calcAvg(professorData.courses[course].sections);
   }
+
+  //convert professorData into state
+
+  const [data, setData] = useState(professorData);
+
+  // // find course average GPA
+  // let getGPA = async (section) => {
+  //   let sectionName = getCourse(section);
+  //   if (!professorData.courses[sectionName].courseGPA) {
+  //     fetch(API + "courseGPA", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ subject: section.Subject, courseNumber: section.CourseNumber }),
+  //     })
+  //       .then((data) => data.json())
+  //       .then((res) => {
+  //         console.log("res", res);
+  //         professorData.courses[sectionName].courseGPA = res.avgGPA;
+  //         console.log("professorData", professorData.courses[sectionName].courseGPA);
+  //         setData(professorData);
+  //         console.log("data after", data);
+  //       });
+  //   }
+  // };
+  // useEffect(() => {
+  //   for (let section of props.sections) {
+  //     getGPA(section);
+  //   }
+  // });
 
   console.log(props.sections);
 
@@ -141,22 +164,13 @@ function ProfessorData(props) {
   let tableData = [];
   let key = 0;
 
-  // for (let subject in professorData.subjects) {
-  //   tableData.push(
-  //     <TableRow key={key++}>
-  //       <TableCell>{`${subject}`}</TableCell>
-  //       <TableCell>{`${professorData.subjects[subject].avgGPA}`}</TableCell>
-  //     </TableRow>
-  //   );
-  // }
-
-  let courses = Object.keys(professorData.courses).sort();
+  let courses = Object.keys(data.courses).sort();
   for (let course of courses) {
     tableData.push(
       <TableRow key={key++}>
-        <TableCell>{`${professorData.courses[course].label}`}</TableCell>
-        <TableCell>{`${professorData.courses[course].avgGPA}`}</TableCell>
-        <TableCell>{`${professorData.courses[course].gradeCount}`}</TableCell>
+        <TableCell>{`${data.courses[course].label}`}</TableCell>
+        <TableCell>{`${data.courses[course].avgGPA}`}</TableCell>
+        <TableCell>{`${data.courses[course].gradeCount}`}</TableCell>
       </TableRow>
     );
   }
@@ -166,7 +180,7 @@ function ProfessorData(props) {
       <Grid item xs={12}>
         <Typography variant='h2'>{props.professor.label}</Typography>
         <Typography variant='subtitle1'>
-          Average GPA: {calcAvg(props.sections)} out of {professorData.gradeCount} Students
+          Average GPA: {calcAvg(props.sections)} out of {data.gradeCount} Students
         </Typography>
       </Grid>
       <Grid item xs={12}>
