@@ -18,6 +18,7 @@ import { Professors } from "./routes/Grades/Professors";
 
 import ReactGA from "react-ga";
 import UnderConstruction from "components/UnderConstruction";
+import { Courses } from "routes/Grades/Courses";
 ReactGA.initialize("G-BFNLVWP9W2");
 ReactGA.pageview(window.location.pathname);
 
@@ -52,7 +53,7 @@ ReactDOM.render(
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/scheduleBuilder' element={<ScheduleBuilder />} />
-            <Route path='/grades/courses' element={<UnderConstruction />} />
+            <Route path='/grades/courses' element={<Courses />} />
             <Route path='/grades/departments' element={<UnderConstruction />} />
             <Route path='/grades/professors' element={<Professors />} />
             <Route path='/help' element={<Help />} />

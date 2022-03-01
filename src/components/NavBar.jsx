@@ -1,6 +1,7 @@
 import {
   AppsOutlined,
   CalendarViewDayOutlined,
+  ClassOutlined,
   ExpandLess,
   ExpandMore,
   GradeOutlined,
@@ -89,17 +90,14 @@ export default function NavBar() {
                   setOpen={setOpen}>
                   Professors
                 </GradesNavLink>
+                <GradesNavLink to='/grades/courses' icon={<ClassOutlined sx={{ fontSize: "2em" }} />} setOpen={setOpen}>
+                  Courses
+                </GradesNavLink>
                 <GradesNavLink
                   to='/grades/departments'
                   icon={<HouseOutlined sx={{ fontSize: "2em" }} />}
                   setOpen={setOpen}>
                   Departments
-                </GradesNavLink>
-                <GradesNavLink
-                  to='/grades/colleges'
-                  icon={<SchoolOutlined sx={{ fontSize: "2em" }} />}
-                  setOpen={setOpen}>
-                  Colleges
                 </GradesNavLink>
               </Collapse>
 
