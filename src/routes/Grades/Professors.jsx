@@ -129,7 +129,7 @@ function ProfessorData(props) {
 
   //convert professorData into state
 
-  const [data, setData] = useState(professorData);
+  // const [data, setData] = useState(professorData);
 
   // // find course average GPA
   // let getGPA = async (section) => {
@@ -164,13 +164,13 @@ function ProfessorData(props) {
   let tableData = [];
   let key = 0;
 
-  let courses = Object.keys(data.courses).sort();
+  let courses = Object.keys(professorData.courses).sort();
   for (let course of courses) {
     tableData.push(
       <TableRow key={key++}>
-        <TableCell>{`${data.courses[course].label}`}</TableCell>
-        <TableCell>{`${data.courses[course].avgGPA}`}</TableCell>
-        <TableCell>{`${data.courses[course].gradeCount}`}</TableCell>
+        <TableCell>{`${professorData.courses[course].label}`}</TableCell>
+        <TableCell>{`${professorData.courses[course].avgGPA}`}</TableCell>
+        <TableCell>{`${professorData.courses[course].gradeCount}`}</TableCell>
       </TableRow>
     );
   }
@@ -180,7 +180,7 @@ function ProfessorData(props) {
       <Grid item xs={12}>
         <Typography variant='h2'>{props.professor.label}</Typography>
         <Typography variant='subtitle1'>
-          Average GPA: {calcAvg(props.sections)} out of {data.gradeCount} Students
+          Average GPA: {calcAvg(props.sections)} out of {professorData.gradeCount} Students
         </Typography>
       </Grid>
       <Grid item xs={12}>
