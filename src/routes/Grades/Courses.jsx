@@ -16,7 +16,7 @@ import {
 import { Box } from "@mui/system";
 import React from "react";
 import { API } from "../..";
-import { calcAvg, getCourse, getProfessor } from "../../utils";
+import { calcAvg, getProfessor } from "../../utils";
 import ReactGA from "react-ga";
 
 export class Courses extends React.Component {

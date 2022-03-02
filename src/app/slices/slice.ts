@@ -6,6 +6,6 @@ export const tempSlice = createSlice({
   reducers: {},
 });
 
-export const {} = tempSlice.actions;
+export const sliceActions = tempSlice.actions;
 
 export default tempSlice.reducer;

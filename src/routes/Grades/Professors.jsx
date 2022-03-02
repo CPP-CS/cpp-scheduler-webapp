@@ -14,7 +14,7 @@ import {
   TableBody,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { API } from "../..";
 import { calcAvg, getCourse } from "../../utils";
 import ReactGA from "react-ga";

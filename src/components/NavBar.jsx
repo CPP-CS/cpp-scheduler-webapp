@@ -10,7 +10,6 @@ import {
   PeopleOutlined,
   PersonOutlineSharp,
   QuestionMarkOutlined,
-  SchoolOutlined,
 } from "@mui/icons-material";
 import {
   AppBar,
