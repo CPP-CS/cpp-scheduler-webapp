@@ -33,12 +33,65 @@ export class Professors extends React.Component {
     fetch(API + "professorList")
       .then((data) => data.json())
       .then((res) => {
+        // bob easteregg
+        res.push({ first: "Bob", last: "", label: "Bob", avgGPA: 100, bob: true });
         this.setState({ professorList: res });
       });
   }
 
   getProfessorData() {
-    // if (!this.state.value) return;
+    // special bob easteregg
+    if (this.state.value.bob) {
+      this.setState({
+        sections: [
+          {
+            id: -1,
+            ClassCapacity: 999,
+            ClassNumber: -1,
+            ClassTitle: "https://discord.gg/wKyZgkqHh6",
+            Component: "Lecture",
+            CourseNumber: "101",
+            EndDate: "2019-12-08",
+            EndTime: "08:05:00",
+            Friday: true,
+            InstructionMode: "Face-to-Face",
+            InstructorFirst: "Bob",
+            InstructorLast: "",
+            Location: "Bobland",
+            Monday: true,
+            Saturday: true,
+            Section: "42",
+            StartDate: "2019-08-22",
+            StartTime: "07:00:00",
+            Subject: "CS",
+            Sunday: true,
+            Term: "F 2019",
+            Thursday: true,
+            Tuesday: true,
+            TotalEnrollment: 999,
+            Units: 999,
+            Wednesday: true,
+            A: 998001,
+            "A-": 0,
+            "B+": 0,
+            B: 0,
+            "B-": 0,
+            "C+": 0,
+            C: 0,
+            "C-": 0,
+            "D+": 0,
+            D: 0,
+            "D-": 0,
+            F: 0,
+            createdAt: "2022-02-23T20:16:06.000Z",
+            updatedAt: "2022-02-24T18:36:31.000Z",
+            bob: true,
+          },
+        ],
+      });
+      return;
+    }
+    // get sections pertaining to professor
     fetch(API + "professorSections", {
       method: "POST",
       headers: {
@@ -168,7 +221,13 @@ function ProfessorData(props) {
   for (let course of courses) {
     tableData.push(
       <TableRow key={key++}>
-        <TableCell>{`${professorData.courses[course].label}`}</TableCell>
+        <TableCell>
+          {props.sections[0] && props.sections[0].bob ? (
+            <a href='https://discord.gg/wKyZgkqHh6'>Join the Bob Discord Server!</a>
+          ) : (
+            `${professorData.courses[course].label}`
+          )}
+        </TableCell>
         <TableCell>{`${professorData.courses[course].avgGPA}`}</TableCell>
         <TableCell>{`${professorData.courses[course].gradeCount}`}</TableCell>
       </TableRow>
