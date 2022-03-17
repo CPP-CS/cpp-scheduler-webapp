@@ -12,6 +12,7 @@ import {
   TableCell,
   TableRow,
   TableBody,
+  Alert,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
@@ -138,6 +139,7 @@ export class Professors extends React.Component {
         ) : (
           <ProfessorData professor={this.state.value} sections={this.state.sections} />
         )}
+        <Disclaimer />
       </Container>
     );
   }
@@ -234,27 +236,28 @@ function ProfessorData(props) {
     );
   }
   return (
-    <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: 10 }}>
-      <Grid container spacing={1}></Grid>
-      <Grid item xs={12}>
-        <Typography variant='h2'>{props.professor.label}</Typography>
-        <Typography variant='subtitle1'>
-          Average GPA: {calcAvg(props.sections)} out of {professorData.gradeCount} Students
-        </Typography>
-      </Grid>
-      <Grid item xs={12}>
-        <TableContainer component={Paper} sx={{ mt: 2 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Subject / Course</TableCell>
-                <TableCell>Avg GPA</TableCell>
-                <TableCell>Total Grades</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>{tableData}</TableBody>
-          </Table>
-        </TableContainer>
+    <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: { md: 10, xs: 2 } }}>
+      <Grid container spacing={1}>
+        <Grid item xs={12}>
+          <Typography variant='h2'>{props.professor.label}</Typography>
+          <Typography variant='subtitle1'>
+            Average GPA: {calcAvg(props.sections)} out of {professorData.gradeCount} Students
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <TableContainer component={Paper} sx={{ mt: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow hover>
+                  <TableCell>Subject / Course</TableCell>
+                  <TableCell>Avg GPA</TableCell>
+                  <TableCell>Total Grades</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>{tableData}</TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
       </Grid>
     </Paper>
   );
@@ -262,8 +265,17 @@ function ProfessorData(props) {
 
 function SelectClass() {
   return (
-    <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: 10 }}>
+    <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: { md: 10, xs: 2 } }}>
       <Typography variant='h2'>Select A Professor to see Data</Typography>
     </Paper>
+  );
+}
+
+function Disclaimer() {
+  return (
+    <Alert severity='info' sx={{ mt: 2 }}>
+      Disclaimer: GPA does not strictly reflect the teaching quality or profficiency of an instructor. It is highly
+      recommended to consider other factors when selecting classes, such as student reviews and course difficulty.
+    </Alert>
   );
 }

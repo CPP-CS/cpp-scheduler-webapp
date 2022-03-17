@@ -143,7 +143,7 @@ function CourseData(props) {
     );
   }
   return (
-    <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: 10 }}>
+    <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: { md: 10, xs: 2 } }}>
       <Grid container spacing={1}></Grid>
       <Grid item xs={12}>
         <Typography variant='h2'>{props.course.label}</Typography>
@@ -171,7 +171,7 @@ function CourseData(props) {
 
 function SelectClass() {
   return (
-    <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: 10 }}>
+    <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: { md: 10, xs: 2 } }}>
       <Typography variant='h2'>Select a Course to See Data</Typography>
     </Paper>
   );
