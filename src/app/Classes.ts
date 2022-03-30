@@ -36,16 +36,25 @@
 //   sections: Array<Section>;
 // }
 
-// export interface Schedule extends Array<Section> {}
+export interface Schedule extends Array<Section> {}
 
-// export enum WeekDays {
-//   "Sunday" = "02",
-//   "Monday" = "03",
-//   "Tuesday" = "04",
-//   "Wednesday" = "05",
-//   "Thursday" = "06",
-//   "Friday" = "07",
-//   "Saturday" = "08",
+export enum WeekDays {
+  "Sunday" = "02",
+  "Monday" = "03",
+  "Tuesday" = "04",
+  "Wednesday" = "05",
+  "Thursday" = "06",
+  "Friday" = "07",
+  "Saturday" = "08",
+}
+
+// export interface SaveData {
+//   courses: {
+//     subject: string;
+//     courseNumber: string;
+//   }[];
+//   activeSections: number[];
+//   breaks: Block[];
 // }
 
 type GPAType = {
@@ -107,11 +116,39 @@ export interface Section {
   F: number;
 }
 
-// export interface SaveData {
-//   courses: {
-//     subject: string;
-//     courseNumber: string;
-//   }[];
-//   activeSections: number[];
-//   breaks: Block[];
-// }
+export const enum QueryType {
+  byCourse,
+}
+
+// stores the info of the query (this info is saved)
+export interface Query {
+  type: QueryType;
+  minGPA: number;
+  course?: Course;
+}
+
+// the results of a query
+export interface QueryResult {
+  sections: Array<Section>;
+  query: Query;
+}
+
+export interface Course {
+  Subject: string;
+  CourseNumber: string;
+  AvgGPA: number;
+  label: string;
+}
+
+export interface CourseList extends Array<Course> {}
+
+export interface CalendarEvent {
+  title: string;
+  start: string;
+  end: string;
+  courseIndex: number;
+  textColor: string;
+  backgroundColor: string;
+  borderColor: string;
+  section: Section;
+}
