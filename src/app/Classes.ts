@@ -36,17 +36,17 @@
 //   sections: Array<Section>;
 // }
 
-// export interface Schedule extends Array<Section> {}
+export interface Schedule extends Array<Section> {}
 
-// export enum WeekDays {
-//   "Sunday" = "02",
-//   "Monday" = "03",
-//   "Tuesday" = "04",
-//   "Wednesday" = "05",
-//   "Thursday" = "06",
-//   "Friday" = "07",
-//   "Saturday" = "08",
-// }
+export enum WeekDays {
+  "Sunday" = "02",
+  "Monday" = "03",
+  "Tuesday" = "04",
+  "Wednesday" = "05",
+  "Thursday" = "06",
+  "Friday" = "07",
+  "Saturday" = "08",
+}
 
 // export interface SaveData {
 //   courses: {
@@ -141,3 +141,14 @@ export interface Course {
 }
 
 export interface CourseList extends Array<Course> {}
+
+export interface CalendarEvent {
+  title: string;
+  start: string;
+  end: string;
+  courseIndex: number;
+  textColor: string;
+  backgroundColor: string;
+  borderColor: string;
+  section: Section;
+}
