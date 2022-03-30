@@ -48,6 +48,15 @@
 //   "Saturday" = "08",
 // }
 
+// export interface SaveData {
+//   courses: {
+//     subject: string;
+//     courseNumber: string;
+//   }[];
+//   activeSections: number[];
+//   breaks: Block[];
+// }
+
 type GPAType = {
   [key: string]: number;
 };
@@ -107,11 +116,26 @@ export interface Section {
   F: number;
 }
 
-// export interface SaveData {
-//   courses: {
-//     subject: string;
-//     courseNumber: string;
-//   }[];
-//   activeSections: number[];
-//   breaks: Block[];
-// }
+// stores the info of the query (this info is saved)
+export interface Query {
+  minGPA: number;
+}
+
+export interface CourseQuery extends Query {
+  subject: string;
+  courseNumber: string;
+}
+
+// the results of the query along with its parameters (this info is requested every time based on query)
+export interface QueryData {
+  query: Query;
+  results: Section[];
+}
+
+export interface CourseList
+  extends Array<{
+    Subject: string;
+    CourseNumber: string;
+    AvgGPA: number;
+    label: string;
+  }> {}
