@@ -116,26 +116,28 @@ export interface Section {
   F: number;
 }
 
+export const enum QueryType {
+  byCourse,
+}
+
 // stores the info of the query (this info is saved)
 export interface Query {
+  type: QueryType;
   minGPA: number;
+  course?: Course;
 }
 
-export interface CourseQuery extends Query {
-  subject: string;
-  courseNumber: string;
-}
-
-// the results of the query along with its parameters (this info is requested every time based on query)
-export interface QueryData {
+// the results of a query
+export interface QueryResult {
+  sections: Array<Section>;
   query: Query;
-  results: Section[];
 }
 
-export interface CourseList
-  extends Array<{
-    Subject: string;
-    CourseNumber: string;
-    AvgGPA: number;
-    label: string;
-  }> {}
+export interface Course {
+  Subject: string;
+  CourseNumber: string;
+  AvgGPA: number;
+  label: string;
+}
+
+export interface CourseList extends Array<Course> {}
