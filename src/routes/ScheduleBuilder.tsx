@@ -129,6 +129,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
     this.removeQuery = this.removeQuery.bind(this);
     this.addQuery = this.addQuery.bind(this);
     this.setCurrentSchedule = this.setCurrentSchedule.bind(this);
+    this.setQueryResults = this.setQueryResults.bind(this);
     this.state = {
       courseList: [],
       queryList: queryList,
@@ -158,7 +159,13 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
       let queries: Query[] | undefined = undefined;
       let stored: string | null = window.localStorage.getItem("queries");
       if (stored !== null) queries = JSON.parse(stored);
-      return queries ? queries : null;
+      if (queries) {
+        for (let query of queries) {
+          if (!query.expanded) query.expanded = false;
+        }
+        return queries;
+      }
+      return null;
     } catch (e) {
       return null;
     }
@@ -175,9 +182,62 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
     });
   }
 
+  addQuery(query: Query) {
+    // console.log("QueryList: ", this.state.queryList);
+    this.setState({ queryList: [...this.state.queryList, query] });
+  }
+
+  removeQuery(query: Query) {
+    let { queryList } = this.state;
+    for (let i = 0; i < queryList.length; i++) {
+      if (queryList[i] === query) {
+        let newList: Query[] = queryList.splice(0, i).concat(queryList.splice(1));
+        this.setState({ queryList: newList });
+        return;
+      }
+    }
+  }
+
   setCurrentSchedule(currentSchedule: number) {
     // console.log("Current Schedule Changed: ", currentSchedule);
     this.setState({ currentSchedule });
+  }
+
+  setQueryResults(queryResults: QueryResult[]) {
+    this.setState({ queryResults });
+  }
+
+  async query() {
+    // console.log("Querying....", this.state.queryList);
+    this.setState({ loading: true });
+    let queryResults: QueryResult[] = [];
+    for (const query of this.state.queryList) {
+      const { type, course } = query;
+      if (type === QueryType.byCourse) {
+        let data = await fetch(API + "query", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            term: DEFAULT_TERM,
+            subject: course?.Subject,
+            courseNumber: course?.CourseNumber,
+          }),
+        });
+        let res: Section[] = (await data.json()).sections;
+        console.log("Query Result Sections: ", res);
+        let queryResult: QueryResult = {
+          sections: res,
+          query: query,
+        };
+        queryResults.push(queryResult);
+      }
+      // console.log("Query Results: ", queryResults);
+    }
+    this.setState({ queryResults, loading: false });
+
+    this.calculateSchedules();
   }
 
   componentDidMount() {
@@ -227,39 +287,6 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
     // console.log("Calculated Schedules: ", this.state.schedules);
   }
 
-  async query() {
-    // console.log("Querying....", this.state.queryList);
-    this.setState({ loading: true });
-    let queryResults: QueryResult[] = [];
-    for (const query of this.state.queryList) {
-      const { type, course } = query;
-      if (type === QueryType.byCourse) {
-        let data = await fetch(API + "query", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            term: DEFAULT_TERM,
-            subject: course?.Subject,
-            courseNumber: course?.CourseNumber,
-          }),
-        });
-        let res: Section[] = (await data.json()).sections;
-        console.log("Query Result Sections: ", res);
-        let queryResult: QueryResult = {
-          sections: res,
-          query: query,
-        };
-        queryResults.push(queryResult);
-      }
-      // console.log("Query Results: ", queryResults);
-    }
-    this.setState({ queryResults, loading: false });
-
-    this.calculateSchedules();
-  }
-
   componentDidUpdate(
     prevProps: any,
     prevState: {
@@ -289,21 +316,6 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
     }
   }
 
-  addQuery(query: Query) {
-    // console.log("QueryList: ", this.state.queryList);
-    this.setState({ queryList: [...this.state.queryList, query] });
-  }
-
-  removeQuery(query: Query) {
-    let { queryList } = this.state;
-    for (let i = 0; i < queryList.length; i++) {
-      if (queryList[i] === query) {
-        let newList: Query[] = queryList.splice(0, i).concat(queryList.splice(1));
-        this.setState({ queryList: newList });
-        return;
-      }
-    }
-  }
   render() {
     if (this.state.loading) return <Loading />;
     return (
@@ -336,7 +348,11 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
         <Grid item xs={12} md={4} sx={{ height: { md: "100%" } }}>
           <Box overflow='scroll' sx={{ height: { md: "100%" } }}>
             <AddQuery addQuery={this.addQuery} courseList={this.state.courseList} />
-            <QueryList queryResults={this.state.queryResults} removeQuery={this.removeQuery} />
+            <QueryList
+              queryResults={this.state.queryResults}
+              removeQuery={this.removeQuery}
+              setQueryResults={this.setQueryResults}
+            />
           </Box>
         </Grid>
         <Grid item xs={12} md={8}>
@@ -405,7 +421,7 @@ function CourseQuery(props: { courseList: CourseList; addQuery: (query: Query) =
       <Button
         variant='outlined'
         onClick={() => {
-          if (course) props.addQuery({ type: QueryType.byCourse, course: course, minGPA: 0 });
+          if (course) props.addQuery({ type: QueryType.byCourse, course: course, minGPA: 0, expanded: false });
         }}>
         Add Course
       </Button>
@@ -413,7 +429,11 @@ function CourseQuery(props: { courseList: CourseList; addQuery: (query: Query) =
   );
 }
 
-function QueryList(props: { queryResults: Array<QueryResult>; removeQuery: (query: Query) => void }) {
+function QueryList(props: {
+  queryResults: Array<QueryResult>;
+  removeQuery: (query: Query) => void;
+  setQueryResults: (queryResults: QueryResult[]) => void;
+}) {
   // console.log("Query Results: ", props.queryResults);
   return (
     <Paper sx={{ p: 3 }} elevation={4}>
@@ -423,7 +443,14 @@ function QueryList(props: { queryResults: Array<QueryResult>; removeQuery: (quer
         let title: string = "";
         if (query.type === QueryType.byCourse) title = `Course: ${query.course?.Subject}${query.course?.CourseNumber}`;
         return (
-          <Accordion key={query.course?.label} defaultExpanded elevation={5}>
+          <Accordion
+            key={query.course?.label}
+            expanded={query.expanded}
+            elevation={5}
+            onChange={() => {
+              query.expanded = !query.expanded;
+              props.setQueryResults(props.queryResults);
+            }}>
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Grid container alignItems='center'>
                 <Grid item>

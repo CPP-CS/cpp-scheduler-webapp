@@ -122,6 +122,7 @@ export const enum QueryType {
 
 // stores the info of the query (this info is saved)
 export interface Query {
+  expanded: boolean;
   type: QueryType;
   minGPA: number;
   course?: Course;
