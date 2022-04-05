@@ -191,7 +191,8 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
     let { queryList } = this.state;
     for (let i = 0; i < queryList.length; i++) {
       if (queryList[i] === query) {
-        let newList: Query[] = queryList.splice(0, i).concat(queryList.splice(1));
+        let newList: Query[] = [...queryList.splice(0, i), ...queryList.splice(1)];
+        console.log("newList:", newList);
         this.setState({ queryList: newList });
         return;
       }
@@ -235,8 +236,8 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
       }
       // console.log("Query Results: ", queryResults);
     }
-    this.setState({ queryResults, loading: false });
 
+    this.setState({ queryResults, loading: false });
     this.calculateSchedules();
   }
 
@@ -249,6 +250,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
   }
 
   calculateSchedules() {
+    this.setState({ loading: true });
     const { queryResults } = this.state;
     if (queryResults.length === 0) {
       this.setState({ schedules: [] });
@@ -283,7 +285,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
         result = tempSchedules;
       }
     }
-    this.setState({ schedules: result });
+    this.setState({ schedules: result, loading: false });
     // console.log("Calculated Schedules: ", this.state.schedules);
   }
 
@@ -298,10 +300,12 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
       currentSchedule: number;
     }
   ) {
-    if (this.state.queryList.length !== prevState.queryList.length) {
+    console.log("querylists:", this.state.queryList, prevState.queryList);
+    if (this.state.queryList !== prevState.queryList) {
       this.query();
     }
-    if (this.state.schedules.length !== prevState.schedules.length) {
+    console.log("schedules:", this.state.schedules, prevState.schedules);
+    if (this.state.schedules !== prevState.schedules) {
       // console.log(
       //   "Change in Schedule Length: ",
       //   prevState.schedules.length,
@@ -562,7 +566,7 @@ function ScheduleDisplay(props: { schedules: Schedule[]; currentSchedule: number
       }
     }
   }
-  console.log("Events: ", events);
+  // console.log("Events: ", events);
   return (
     <FullCalendar
       plugins={[timeGridPlugin]}
