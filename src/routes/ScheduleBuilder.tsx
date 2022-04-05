@@ -51,8 +51,8 @@ function sortSchedule(schedule: Schedule) {
   schedule.sort((first, second) => {
     let one = first.StartTime;
     let two = second.StartTime;
-    if (one === "TBA") return 1;
-    if (two === "TBA") return -1;
+    if (one === null) return 1;
+    if (two === null) return -1;
     if (getHours(one) === getHours(two)) return getMinutes(one) - getMinutes(two);
     return getHours(one) - getHours(two);
   });
@@ -214,7 +214,10 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
     let queryResults: QueryResult[] = [];
     for (const query of this.state.queryList) {
       const { type, course } = query;
+
       if (type === QueryType.byCourse) {
+        // make sure no duplicate courses
+        // query
         let data = await fetch(API + "query", {
           method: "POST",
           headers: {
@@ -273,6 +276,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
         overflow: for (let section of queryResults[i].sections) {
           for (let schedule of result) {
             let newSchedule: Schedule = [...schedule, section];
+            console.log("About to sort schedule:", newSchedule);
             sortSchedule(newSchedule);
             if (isValidSchedule(newSchedule)) tempSchedules.push(newSchedule);
 
