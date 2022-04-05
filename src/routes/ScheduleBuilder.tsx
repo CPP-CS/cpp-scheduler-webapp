@@ -216,7 +216,6 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
       const { type, course } = query;
 
       if (type === QueryType.byCourse) {
-        // make sure no duplicate courses
         // query
         let data = await fetch(API + "query", {
           method: "POST",
@@ -552,7 +551,7 @@ function ScheduleDisplay(props: { schedules: Schedule[]; currentSchedule: number
           section: section,
         });
       }
-      if (section.StartTime === "TBA" && section.EndTime === "TBA") {
+      if (section.StartTime === null && section.EndTime === null) {
         events.push({
           title: `${section.Subject}${section.CourseNumber}[${section.Section}] ${
             section.InstructorFirst ? section.InstructorFirst : "Staff"
