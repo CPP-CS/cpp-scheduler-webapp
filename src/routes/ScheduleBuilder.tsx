@@ -250,6 +250,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
   }
 
   calculateSchedules(queryResults: QueryResult[]) {
+    this.setState({ loading: true });
     console.log("Calculating schedules queryresults:", queryResults);
     if (queryResults.length === 0) {
       this.setState({ schedules: [], currentSchedule: -1 });
@@ -285,12 +286,12 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
         result = tempSchedules;
       }
     }
-    this.setState({ schedules: result });
+    this.setState({ schedules: result, loading: false });
     // console.log("Calculated Schedules: ", this.state.schedules);
   }
 
   componentDidUpdate(prevProps: any, prevState: ScheduleState) {
-    if (this.state.queryList.length !== prevState.queryList.length) {
+    if (this.state.queryList !== prevState.queryList) {
       this.query();
     }
     console.log("schedules:", this.state.schedules, prevState.schedules);
