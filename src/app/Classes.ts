@@ -10,6 +10,8 @@
 //   Wednesday: string;
 // }
 
+import { Course, Section } from "models";
+
 // export interface Section extends Block {
 //   Selected: boolean;
 //   AcademicSession: string;
@@ -76,45 +78,45 @@ export const GPA: GPAType = {
   F: 0,
 };
 
-export interface Section {
-  ClassCapacity: number;
-  ClassNumber: number;
-  ClassTitle: string;
-  Component: string;
-  CourseNumber: string;
-  EndDate: string;
-  EndTime: string;
-  Friday: boolean;
-  InstructionMode: string;
-  InstructorFirst: string;
-  InstructorLast: string;
-  Location: string;
-  Monday: boolean;
-  Saturday: boolean;
-  Section: string;
-  StartDate: string;
-  StartTime: string;
-  Subject: string;
-  Sunday: boolean;
-  Term: string;
-  Thursday: boolean;
-  Tuesday: boolean;
-  TotalEnrollment: number;
-  Units: number;
-  Wednesday: boolean;
-  A: number;
-  "A-": number;
-  "B+": number;
-  B: number;
-  "B-": number;
-  "C+": number;
-  C: number;
-  "C-": number;
-  "D+": number;
-  D: number;
-  "D-": number;
-  F: number;
-}
+// export interface Section {
+//   ClassCapacity: number;
+//   ClassNumber: number;
+//   ClassTitle: string;
+//   Component: string;
+//   CourseNumber: string;
+//   EndDate: string;
+//   EndTime: string;
+//   Friday: boolean;
+//   InstructionMode: string;
+//   InstructorFirst: string;
+//   InstructorLast: string;
+//   Location: string;
+//   Monday: boolean;
+//   Saturday: boolean;
+//   Section: string;
+//   StartDate: string;
+//   StartTime: string;
+//   Subject: string;
+//   Sunday: boolean;
+//   Term: string;
+//   Thursday: boolean;
+//   Tuesday: boolean;
+//   TotalEnrollment: number;
+//   Units: number;
+//   Wednesday: boolean;
+//   A: number;
+//   "A-": number;
+//   "B+": number;
+//   B: number;
+//   "B-": number;
+//   "C+": number;
+//   C: number;
+//   "C-": number;
+//   "D+": number;
+//   D: number;
+//   "D-": number;
+//   F: number;
+// }
 
 export const enum QueryType {
   byCourse,
@@ -133,14 +135,12 @@ export interface QueryResult {
   query: Query;
 }
 
-export interface Course {
-  Subject: string;
-  CourseNumber: string;
-  AvgGPA: number;
-  label: string;
-}
-
-export interface CourseList extends Array<Course> {}
+// export interface CourseQuery {
+//   Subject: string;
+//   CourseNumber: string;
+//   AvgGPA: number;
+//   Label: string;
+// }
 
 export interface CalendarEvent {
   title: string;

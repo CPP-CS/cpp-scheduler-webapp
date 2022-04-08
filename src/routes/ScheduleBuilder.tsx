@@ -26,35 +26,21 @@ import {
 import { Box } from "@mui/system";
 import { Loading } from "components/Loading";
 import { API } from "index";
+import { Course, Section } from "models";
 import moment from "moment";
 import React, { Fragment, useState } from "react";
-import {
-  CalendarEvent,
-  Course,
-  CourseList,
-  Query,
-  QueryResult,
-  QueryType,
-  Schedule,
-  Section,
-  WeekDays,
-} from "../app/Classes";
+import { CalendarEvent, Query, QueryResult, QueryType, Schedule, WeekDays } from "../app/Classes";
 
 const DEFAULT_TERM = "F 2022";
-function getHours(str: string): number {
-  return parseInt(str.substring(0, 2));
-}
-function getMinutes(str: string): number {
-  return parseInt(str.substring(3, 5));
-}
+
 function sortSchedule(schedule: Schedule) {
   schedule.sort((first, second) => {
-    let one = first.StartTime;
-    let two = second.StartTime;
-    if (one === "TBA") return 1;
-    if (two === "TBA") return -1;
-    if (getHours(one) === getHours(two)) return getMinutes(one) - getMinutes(two);
-    return getHours(one) - getHours(two);
+    if (first === null) return 1;
+    if (second === null) return -1;
+    let one = first.StartTime as Date;
+    let two = second.StartTime as Date;
+    if (one.getHours() === two.getHours()) return one.getMinutes() - two.getMinutes();
+    return one.getHours() - two.getHours();
   });
 }
 function isValidSchedule(schedule: Schedule) {
@@ -63,14 +49,23 @@ function isValidSchedule(schedule: Schedule) {
     let second: Section;
     for (let section of schedule) {
       if ((section as any)[day] === true) {
-        if (first! === undefined) {
+        // check for course missing start/endtime(but has days for some reason???)
+        if (!section.StartTime || !section.EndTime) {
+          console.log("Section doesn't have start/endtime despite having days of the week? SKIPPING", section);
+          alert(
+            `One of your sections has a start/endtime despite having days of the week? Please contact the developer to look at this error. Section: ${section.Term} ${section.Subject} ${section.CourseNumber} ${section.Section} ${section.ClassNumber} id: ${section.id}`
+          );
+          continue;
+        }
+
+        if (first! === undefined || first! === undefined) {
           first = section;
         } else {
           second = section;
-          if (getHours(first.EndTime) === getHours(second.StartTime)) {
-            if (getMinutes(first.EndTime) > getMinutes(second.StartTime)) return false;
+          if (first.EndTime!.getHours() === second.StartTime!.getHours()) {
+            if (first.EndTime!.getMinutes() > second.StartTime!.getMinutes()) return false;
           }
-          if (getHours(first.EndTime) > getHours(second.StartTime)) return false;
+          if (first.EndTime!.getHours() > second.StartTime!.getHours()) return false;
           first = second;
         }
       }
@@ -79,7 +74,7 @@ function isValidSchedule(schedule: Schedule) {
   return true;
 }
 function getColor(section: Section) {
-  let mode = section.InstructionMode;
+  let mode = section.InstructionMode || "TBA";
   switch (mode.toLowerCase()) {
     case "face-to-face":
       return "#ffbfc5";
@@ -113,7 +108,7 @@ function getDays(section: Section) {
 
 interface ScheduleState {
   loading: boolean;
-  courseList: CourseList;
+  courseList: Course[];
   queryList: Array<Query>;
   queryResults: Array<QueryResult>;
   schedules: Schedule[];
@@ -181,9 +176,12 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
   }
 
   componentDidMount() {
-    fetch(API + "courseList")
+    fetch(API + "data/courses/find", {
+      method: "POST",
+    })
       .then((data) => data.json())
-      .then((courseList) => {
+      .then((res) => {
+        let courseList = res as Course[];
         this.setState({ courseList, loading: false });
       });
   }
@@ -234,18 +232,18 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
     for (const query of this.state.queryList) {
       const { type, course } = query;
       if (type === QueryType.byCourse) {
-        let data = await fetch(API + "query", {
+        let data = await fetch(API + "data/sections/find", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            term: DEFAULT_TERM,
-            subject: course?.Subject,
-            courseNumber: course?.CourseNumber,
+            Term: DEFAULT_TERM,
+            Subject: course?.Subject,
+            CourseNumber: course?.CourseNumber,
           }),
         });
-        let res: Section[] = (await data.json()).sections;
+        let res: Section[] = await data.json();
         console.log("Query Result Sections: ", res);
         let queryResult: QueryResult = {
           sections: res,
@@ -260,17 +258,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
     this.calculateSchedules();
   }
 
-  componentDidUpdate(
-    prevProps: any,
-    prevState: {
-      loading: boolean;
-      courseList: CourseList;
-      queryList: Array<Query>;
-      queryResults: Array<QueryResult>;
-      schedules: Schedule[];
-      currentSchedule: number;
-    }
-  ) {
+  componentDidUpdate(prevProps: any, prevState: ScheduleState) {
     if (this.state.queryList.length !== prevState.queryList.length) {
       this.query();
     }
@@ -358,7 +346,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
   }
 }
 
-function AddQuery(props: { courseList: CourseList; addQuery: (query: Query) => void }) {
+function AddQuery(props: { courseList: Course[]; addQuery: (query: Query) => void }) {
   // default query type is by course
   const [queryType, setQueryType] = useState<QueryType | undefined>(QueryType.byCourse);
 
@@ -384,11 +372,12 @@ function AddQuery(props: { courseList: CourseList; addQuery: (query: Query) => v
   );
 }
 
-function CourseQuery(props: { courseList: CourseList; addQuery: (query: Query) => void }) {
+function CourseQuery(props: { courseList: Course[]; addQuery: (query: Query) => void }) {
   const [course, setCourse] = useState<Course | null>();
   return (
     <div>
       <Autocomplete
+        getOptionLabel={(option) => option.Label || "No Option Label"}
         fullWidth
         id='course'
         options={props.courseList}
@@ -423,7 +412,7 @@ function QueryList(props: { queryResults: Array<QueryResult>; removeQuery: (quer
         let title: string = "";
         if (query.type === QueryType.byCourse) title = `Course: ${query.course?.Subject}${query.course?.CourseNumber}`;
         return (
-          <Accordion key={query.course?.label} defaultExpanded elevation={5}>
+          <Accordion key={query.course?.Label} defaultExpanded elevation={5}>
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Grid container alignItems='center'>
                 <Grid item>
@@ -519,7 +508,7 @@ function ScheduleDisplay(props: { schedules: Schedule[]; currentSchedule: number
           section: section,
         });
       }
-      if (section.StartTime === "TBA" && section.EndTime === "TBA") {
+      if (section.StartTime === null && section.EndTime === null) {
         events.push({
           title: `${section.Subject}${section.CourseNumber}[${section.Section}] ${
             section.InstructorFirst ? section.InstructorFirst : "Staff"
