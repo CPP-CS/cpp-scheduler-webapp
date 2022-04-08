@@ -27,7 +27,7 @@ import { Box } from "@mui/system";
 import { Loading } from "components/Loading";
 import { API } from "index";
 import { Course, Section } from "models";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import React, { Fragment, useState } from "react";
 import { CalendarEvent, Query, QueryResult, QueryType, Schedule, WeekDays } from "../app/Classes";
 
@@ -38,14 +38,14 @@ function sortSchedule(schedule: Schedule) {
     if (!first || !first.StartTime) return 1;
     if (!second || !second.StartTime) return -1;
 
-    let one: Date = new Date(first.StartTime);
-    let two: Date = new Date(second.StartTime);
+    let one: Moment = moment(first.StartTime, "HH:mm");
+    let two: Moment = moment(second.StartTime, "HH:mm");
 
-    console.log("one", one);
-    console.log("two", two);
+    // console.log("one", one);
+    // console.log("two", two);
 
-    if (one.getHours() === two.getHours()) return one.getMinutes() - two.getMinutes();
-    return one.getHours() - two.getHours();
+    if (one.hour() === two.hour()) return one.minute() - two.minute();
+    return one.hour() - two.hour();
   });
 }
 function isValidSchedule(schedule: Schedule) {
@@ -67,10 +67,10 @@ function isValidSchedule(schedule: Schedule) {
           first = section;
         } else {
           second = section;
-          if (new Date(first.EndTime!).getHours() === new Date(second.StartTime!).getHours()) {
-            if (new Date(first.EndTime!).getMinutes() > new Date(second.StartTime!).getMinutes()) return false;
+          if (moment(first.EndTime!, "HH:mm").hour() === moment(second.StartTime!, "HH:mm").hour()) {
+            if (moment(first.EndTime!, "HH:mm").minute() > moment(second.StartTime!, "HH:mm").minute()) return false;
           }
-          if (new Date(first.EndTime!).getHours() > new Date(second.StartTime!).getHours()) return false;
+          if (moment(first.EndTime!, "HH:mm").hour() > moment(second.StartTime!, "HH:mm").hour()) return false;
           first = second;
         }
       }
@@ -531,16 +531,22 @@ function ScheduleDisplay(props: { schedules: Schedule[]; currentSchedule: number
   //schedule
   for (let index = 0; index < schedule.length; index++) {
     let section: Section = schedule[index];
-    // console.log("Section: ", section);
+    console.log("Section: ", section);
     for (let [day, num] of Object.entries(WeekDays)) {
       if ((section as any)[day] === true) {
         // console.log(day, section);
+        console.log(
+          "Start Time: ",
+          `2011-10-${num}T${moment(section.StartTime, "HH:mm").format("hh:mm")}:00.000Z`,
+          "End Time: ",
+          `2011-10-${num}T${moment(section.EndTime, "HH:mm").format("hh:mm")}:00.000Z`
+        );
         events.push({
           title: `${section.Subject}${section.CourseNumber} [${section.Section}] ${
             section.InstructorFirst ? section.InstructorFirst : "Staff"
           } ${section.InstructorLast ? section.InstructorLast : ""}`,
-          start: `2011-10-${num}T${section.StartTime?.toString().substring(11, 19)}`,
-          end: `2011-10-${num}T${section.EndTime?.toString().substring(11, 19)}`,
+          start: `2011-10-${num}T${moment(section.StartTime, "HH:mm").format("hh:mm")}:00`,
+          end: `2011-10-${num}T${moment(section.EndTime, "HH:mm").format("hh:mm")}:00`,
           courseIndex: index,
           textColor: "black",
           backgroundColor: getColor(section),
@@ -591,9 +597,9 @@ function ScheduleDisplay(props: { schedules: Schedule[]; currentSchedule: number
                 <Typography>Days: {getDays(section)}</Typography>
                 <Typography>
                   {section.StartTime && section.EndTime
-                    ? `Time: ${moment(section.StartTime, "h:mm:ss").format("h:mma")} - ${moment(
+                    ? `Time: ${moment(section.StartTime, "HH:mm").format("h:mma")} - ${moment(
                         section.EndTime,
-                        "h:mm:ss"
+                        "HH:mm"
                       ).format("h:mma")}`
                     : "Time: TBA"}
                 </Typography>
