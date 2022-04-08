@@ -14,11 +14,11 @@ import "@fontsource/roboto";
 import Credits from "./routes/Credits";
 import ScheduleBuilder from "./routes/ScheduleBuilder";
 import Help from "./routes/Help";
-import { Professors } from "./routes/Grades/Professors";
+import { Instructors } from "./routes/Data/Instructors";
 
 import ReactGA from "react-ga4";
 import UnderConstruction from "components/UnderConstruction";
-import { Courses } from "routes/Grades/Courses";
+import { Courses } from "routes/Data/Courses";
 
 const theme: Theme = createTheme(createTheme(), {
   palette: {
@@ -55,9 +55,9 @@ export class App extends React.Component {
               <Routes>
                 <Route path='/' element={<Home />} />
                 <Route path='/scheduleBuilder' element={<ScheduleBuilder />} />
-                <Route path='/grades/courses' element={<Courses />} />
-                <Route path='/grades/departments' element={<UnderConstruction />} />
-                <Route path='/grades/professors' element={<Professors />} />
+                <Route path='/data/courses' element={<Courses />} />
+                <Route path='/data/departments' element={<UnderConstruction />} />
+                <Route path='/data/professors' element={<Instructors />} />
                 <Route path='/help' element={<Help />} />
                 <Route path='/credits' element={<Credits />} />
                 <Route path='*' element={<Navigate to={"/"} />} />

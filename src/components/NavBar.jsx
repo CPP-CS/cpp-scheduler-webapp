@@ -84,16 +84,16 @@ export default function NavBar() {
               </ListItemButton>
               <Collapse in={grades} unmountOnExit>
                 <GradesNavLink
-                  to='/grades/professors'
+                  to='/data/professors'
                   icon={<PersonOutlineSharp sx={{ fontSize: "2em" }} />}
                   setOpen={setOpen}>
                   Professors
                 </GradesNavLink>
-                <GradesNavLink to='/grades/courses' icon={<ClassOutlined sx={{ fontSize: "2em" }} />} setOpen={setOpen}>
+                <GradesNavLink to='/data/courses' icon={<ClassOutlined sx={{ fontSize: "2em" }} />} setOpen={setOpen}>
                   Courses
                 </GradesNavLink>
                 <GradesNavLink
-                  to='/grades/departments'
+                  to='/data/departments'
                   icon={<HouseOutlined sx={{ fontSize: "2em" }} />}
                   setOpen={setOpen}>
                   Departments
