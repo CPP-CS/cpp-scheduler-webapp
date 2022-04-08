@@ -544,8 +544,8 @@ function ScheduleDisplay(props: { schedules: Schedule[]; currentSchedule: number
           title: `${section.Subject}${section.CourseNumber} [${section.Section}] ${
             section.InstructorFirst ? section.InstructorFirst : "Staff"
           } ${section.InstructorLast ? section.InstructorLast : ""}`,
-          start: `2011-10-${num}T${moment(section.StartTime, "HH:mm").format("hh:mm")}:00`,
-          end: `2011-10-${num}T${moment(section.EndTime, "HH:mm").format("hh:mm")}:00`,
+          start: `2011-10-${num}T${moment(section.StartTime, "HH:mm").format("HH:mm")}:00`,
+          end: `2011-10-${num}T${moment(section.EndTime, "HH:mm").format("HH:mm")}:00`,
           courseIndex: index,
           textColor: "black",
           backgroundColor: getColor(section),
