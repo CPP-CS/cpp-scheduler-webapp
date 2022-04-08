@@ -35,8 +35,8 @@ const DEFAULT_TERM = "F 2022";
 
 function sortSchedule(schedule: Schedule) {
   schedule.sort((first, second) => {
-    if (first === null) return 1;
-    if (second === null) return -1;
+    if (first.StartTime === null || first.StartTime === null) return 1;
+    if (second.StartTime === null || second.StartTime === null) return -1;
     let one = first.StartTime as Date;
     let two = second.StartTime as Date;
     if (one.getHours() === two.getHours()) return one.getMinutes() - two.getMinutes();
@@ -103,6 +103,7 @@ function getDays(section: Section) {
   if (section.Thursday) res += "Th";
   if (section.Friday) res += "F";
   if (section.Saturday) res += "S";
+  if (res === "") return "TBA";
   return res;
 }
 
@@ -187,7 +188,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
     for (let i = 0; i < queryList.length; i++) {
       if (queryList[i] === query) {
         let newList: Query[] = [...queryList.splice(0, i), ...queryList.splice(1)];
-        console.log("newList:", newList);
+        // console.log("newList:", newList);
         this.setState({ queryList: newList });
         return;
       }
@@ -225,7 +226,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
           }),
         });
         let res: Section[] = await data.json();
-        console.log("Query Result Sections: ", res);
+        // console.log("Query Result Sections: ", res);
         let queryResult: QueryResult = {
           sections: res,
           query: query,
@@ -251,7 +252,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
 
   calculateSchedules(queryResults: QueryResult[]) {
     this.setState({ loading: true });
-    console.log("Calculating schedules queryresults:", queryResults);
+    // console.log("Calculating schedules queryresults:", queryResults);
     if (queryResults.length === 0) {
       this.setState({ schedules: [], currentSchedule: -1 });
       return;
@@ -275,7 +276,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
         overflow: for (let section of queryResults[i].sections) {
           for (let schedule of result) {
             let newSchedule: Schedule = [...schedule, section];
-            console.log("About to sort schedule:", newSchedule);
+            // console.log("About to sort schedule:", newSchedule);
             sortSchedule(newSchedule);
             if (isValidSchedule(newSchedule)) tempSchedules.push(newSchedule);
 
@@ -294,7 +295,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
     if (this.state.queryList !== prevState.queryList) {
       this.query();
     }
-    console.log("schedules:", this.state.schedules, prevState.schedules);
+    // console.log("schedules:", this.state.schedules, prevState.schedules);
     if (this.state.schedules !== prevState.schedules) {
       // console.log(
       //   "Change in Schedule Length: ",
@@ -485,9 +486,9 @@ function QueryList(props: {
                               section.EndTime,
                               "h:mm:ss"
                             ).format("h:mma")}`
-                          : "TBA"}
+                          : "Time: TBA"}
                       </Typography>
-                      <Typography>Location: {section.Location}</Typography>
+                      <Typography>Location: {section.Location || "TBA"}</Typography>
                       <Typography>Component: {section.Component}</Typography>
                       <Typography>Units: {section.Units}</Typography>
                     </AccordionDetails>
@@ -528,12 +529,13 @@ function ScheduleDisplay(props: { schedules: Schedule[]; currentSchedule: number
     // console.log("Section: ", section);
     for (let [day, num] of Object.entries(WeekDays)) {
       if ((section as any)[day] === true) {
+        // console.log(day, section);
         events.push({
           title: `${section.Subject}${section.CourseNumber} [${section.Section}] ${
             section.InstructorFirst ? section.InstructorFirst : "Staff"
           } ${section.InstructorLast ? section.InstructorLast : ""}`,
-          start: `2011-10-${num}T${section.StartTime}`,
-          end: `2011-10-${num}T${section.EndTime}`,
+          start: `2011-10-${num}T${section.StartTime?.toString().substring(11, 19)}`,
+          end: `2011-10-${num}T${section.EndTime?.toString().substring(11, 19)}`,
           courseIndex: index,
           textColor: "black",
           backgroundColor: getColor(section),
@@ -577,6 +579,7 @@ function ScheduleDisplay(props: { schedules: Schedule[]; currentSchedule: number
         let section: Section = event.section as Section;
         return (
           <Tooltip
+            enterTouchDelay={0}
             title={
               <Box>
                 <Typography>Class Number: {section.ClassNumber}</Typography>
@@ -587,9 +590,9 @@ function ScheduleDisplay(props: { schedules: Schedule[]; currentSchedule: number
                         section.EndTime,
                         "h:mm:ss"
                       ).format("h:mma")}`
-                    : "TBA"}
+                    : "Time: TBA"}
                 </Typography>
-                <Typography>Location: {section.Location}</Typography>
+                <Typography>Location: {section.Location || "TBA"}</Typography>
                 <Typography>Component: {section.Component}</Typography>
                 <Typography>Units: {section.Units}</Typography>
               </Box>
