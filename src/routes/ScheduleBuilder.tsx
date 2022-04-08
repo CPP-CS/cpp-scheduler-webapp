@@ -37,8 +37,13 @@ function sortSchedule(schedule: Schedule) {
   schedule.sort((first, second) => {
     if (!first || !first.StartTime) return 1;
     if (!second || !second.StartTime) return -1;
-    let one = first.StartTime;
-    let two = second.StartTime;
+
+    let one: Date = new Date(first.StartTime);
+    let two: Date = new Date(second.StartTime);
+
+    console.log("one", one);
+    console.log("two", two);
+
     if (one.getHours() === two.getHours()) return one.getMinutes() - two.getMinutes();
     return one.getHours() - two.getHours();
   });
@@ -62,10 +67,10 @@ function isValidSchedule(schedule: Schedule) {
           first = section;
         } else {
           second = section;
-          if (first.EndTime!.getHours() === second.StartTime!.getHours()) {
-            if (first.EndTime!.getMinutes() > second.StartTime!.getMinutes()) return false;
+          if (new Date(first.EndTime!).getHours() === new Date(second.StartTime!).getHours()) {
+            if (new Date(first.EndTime!).getMinutes() > new Date(second.StartTime!).getMinutes()) return false;
           }
-          if (first.EndTime!.getHours() > second.StartTime!.getHours()) return false;
+          if (new Date(first.EndTime!).getHours() > new Date(second.StartTime!).getHours()) return false;
           first = second;
         }
       }
