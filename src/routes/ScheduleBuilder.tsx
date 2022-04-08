@@ -35,10 +35,10 @@ const DEFAULT_TERM = "F 2022";
 
 function sortSchedule(schedule: Schedule) {
   schedule.sort((first, second) => {
-    if (first.StartTime === null || first.StartTime === null) return 1;
-    if (second.StartTime === null || second.StartTime === null) return -1;
-    let one = first.StartTime as Date;
-    let two = second.StartTime as Date;
+    if (!first || !first.StartTime) return 1;
+    if (!second || !second.StartTime) return -1;
+    let one = first.StartTime;
+    let two = second.StartTime;
     if (one.getHours() === two.getHours()) return one.getMinutes() - two.getMinutes();
     return one.getHours() - two.getHours();
   });
@@ -205,7 +205,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
   }
 
   async query() {
-    // console.log("Querying....", this.state.queryList);
+    console.log("Querying....", this.state.queryList);
     this.setState({ loading: true });
     let queryResults: QueryResult[] = [];
     for (const query of this.state.queryList) {
@@ -233,7 +233,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
         };
         queryResults.push(queryResult);
       }
-      // console.log("Query Results: ", queryResults);
+      console.log("Query Results: ", queryResults);
     }
     this.calculateSchedules(queryResults);
     this.setState({ queryResults, loading: false });
