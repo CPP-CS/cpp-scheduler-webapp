@@ -57,7 +57,7 @@ export class App extends React.Component {
                 <Route path='/scheduleBuilder' element={<ScheduleBuilder />} />
                 <Route path='/data/courses' element={<Courses />} />
                 <Route path='/data/departments' element={<UnderConstruction />} />
-                <Route path='/data/professors' element={<Instructors />} />
+                <Route path='/data/instructors' element={<Instructors />} />
                 <Route path='/help' element={<Help />} />
                 <Route path='/credits' element={<Credits />} />
                 <Route path='*' element={<Navigate to={"/"} />} />

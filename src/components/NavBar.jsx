@@ -4,8 +4,8 @@ import {
   ClassOutlined,
   ExpandLess,
   ExpandMore,
-  GradeOutlined,
   HouseOutlined,
+  InsertChartOutlined,
   Menu as MenuIcon,
   PeopleOutlined,
   PersonOutlineSharp,
@@ -77,27 +77,27 @@ export default function NavBar() {
                 }}
                 sx={{ px: 2 }}>
                 <ListItemIcon>
-                  <GradeOutlined sx={{ fontSize: "2em" }} />
+                  <InsertChartOutlined sx={{ fontSize: "2em" }} />
                 </ListItemIcon>
-                <ListItemText primary={<Typography variant='h5'>Grades</Typography>}></ListItemText>
+                <ListItemText primary={<Typography variant='h5'>Data</Typography>}></ListItemText>
                 <ListItemSecondaryAction>{grades ? <ExpandLess /> : <ExpandMore />}</ListItemSecondaryAction>
               </ListItemButton>
               <Collapse in={grades} unmountOnExit>
                 <GradesNavLink
-                  to='/data/professors'
+                  to='/data/instructors'
                   icon={<PersonOutlineSharp sx={{ fontSize: "2em" }} />}
                   setOpen={setOpen}>
-                  Professors
+                  Instructors
                 </GradesNavLink>
                 <GradesNavLink to='/data/courses' icon={<ClassOutlined sx={{ fontSize: "2em" }} />} setOpen={setOpen}>
                   Courses
                 </GradesNavLink>
-                <GradesNavLink
+                {/* <GradesNavLink
                   to='/data/departments'
                   icon={<HouseOutlined sx={{ fontSize: "2em" }} />}
                   setOpen={setOpen}>
                   Departments
-                </GradesNavLink>
+                </GradesNavLink> */}
               </Collapse>
 
               <NavLink to='/help' icon={<QuestionMarkOutlined sx={{ fontSize: "2em" }} />} setOpen={setOpen}>
