@@ -4,7 +4,6 @@ import {
   ClassOutlined,
   ExpandLess,
   ExpandMore,
-  HouseOutlined,
   InsertChartOutlined,
   Menu as MenuIcon,
   PeopleOutlined,
