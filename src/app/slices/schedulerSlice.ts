@@ -316,4 +316,4 @@ export const schedulerSlice = createSlice({
 
 export const schedulerActions = schedulerSlice.actions;
 
-export default persistReducer({ key: "scheduler", storage }, schedulerSlice.reducer);
+export default persistReducer({ key: "release", storage }, schedulerSlice.reducer);
