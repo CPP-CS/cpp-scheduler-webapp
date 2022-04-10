@@ -151,5 +151,5 @@ export interface CalendarEvent {
   textColor: string;
   backgroundColor: string;
   borderColor: string;
-  section: Section;
+  section: Section | Break;
 }

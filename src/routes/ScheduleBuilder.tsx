@@ -305,7 +305,7 @@ function SelectSchedule(props: {}) {
 }
 
 function ScheduleDisplay(props: {}) {
-  let { schedules, currentSchedule } = useAppSelector((state) => state.scheduler);
+  let { schedules, currentSchedule, breakList } = useAppSelector((state) => state.scheduler);
   let schedule = schedules[currentSchedule];
   let events: Array<CalendarEvent> = [];
   //schedule
@@ -350,6 +350,23 @@ function ScheduleDisplay(props: {}) {
       }
     }
   }
+  for (let index = 0; index < breakList.length; index++) {
+    let currBreak: Break = breakList[index];
+    for (let [day, num] of Object.entries(WeekDays)) {
+      if ((currBreak as any)[day] === true) {
+        events.push({
+          title: currBreak.name,
+          start: `2011-10-${num}T${moment(currBreak.StartTime, "HH:mm").format("HH:mm")}:00`,
+          end: `2011-10-${num}T${moment(currBreak.EndTime, "HH:mm").format("HH:mm")}:00`,
+          courseIndex: index,
+          textColor: "black",
+          backgroundColor: "gray",
+          borderColor: "black",
+          section: currBreak,
+        });
+      }
+    }
+  }
   // console.log("Events: ", events);
   return (
     <FullCalendar
@@ -373,7 +390,7 @@ function ScheduleDisplay(props: {}) {
             enterTouchDelay={0}
             title={
               <Box>
-                <Typography>Class Number: {section.ClassNumber}</Typography>
+                <Typography>Class Number: {section.ClassNumber || "TBA"}</Typography>
                 <Typography>Days: {getDays(section)}</Typography>
                 <Typography>
                   {section.StartTime && section.EndTime
@@ -384,8 +401,8 @@ function ScheduleDisplay(props: {}) {
                     : "Time: TBA"}
                 </Typography>
                 <Typography>Location: {section.Location || "TBA"}</Typography>
-                <Typography>Component: {section.Component}</Typography>
-                <Typography>Units: {section.Units}</Typography>
+                <Typography>Component: {section.Component || "TBA"}</Typography>
+                <Typography>Units: {section.Units || "TBA"}</Typography>
               </Box>
             }>
             <div className='fc-event-main-frame'>
