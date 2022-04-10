@@ -223,10 +223,12 @@ export const schedulerSlice = createSlice({
 
       //sort sections
       queryList.forEach((query) => {
-        query.sections.sort((a, b) => (a.AvgGPA || 0) - (b.AvgGPA || 0));
+        query.sections.sort((a, b) => {
+          return (b.instructions.AvgGPA || 0) - (a.instructions.AvgGPA || 0);
+        });
       });
 
-      // console.log("Calculating schedules queryresults:", queryResults);
+      console.log("Calculating schedules queryList:", JSON.parse(JSON.stringify(queryList)));
       if (queryList.length === 0) {
         state.schedules = [];
         state.currentSchedule = -1;
