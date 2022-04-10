@@ -216,6 +216,12 @@ export const schedulerSlice = createSlice({
     calculateSchedules: (state) => {
       // let queryList = state.queryList;
       let queryList = filterCourses(state.queryList, state.breakList);
+
+      //sort sections
+      queryList.forEach((query) => {
+        query.sections.sort((a, b) => (a.AvgGPA || 0) - (b.AvgGPA || 0));
+      });
+
       // console.log("Calculating schedules queryresults:", queryResults);
       if (queryList.length === 0) {
         state.schedules = [];
