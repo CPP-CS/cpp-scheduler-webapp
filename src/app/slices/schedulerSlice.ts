@@ -218,7 +218,6 @@ export const schedulerSlice = createSlice({
     },
 
     calculateSchedules: (state) => {
-      // let queryList = state.queryList;
       let queryList = filterCourses(state.queryList, state.breakList);
 
       //sort sections
