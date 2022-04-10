@@ -1,15 +1,3 @@
-// export interface Block {
-//   EndTime: string;
-//   Friday: string;
-//   Monday: string;
-//   Saturday: string;
-//   StartTime: string;
-//   Sunday: string;
-//   Thursday: string;
-//   Tuesday: string;
-//   Wednesday: string;
-// }
-
 import { Course, Section } from "models";
 
 // export interface Section extends Block {
@@ -117,6 +105,22 @@ export const GPA: GPAType = {
 //   "D-": number;
 //   F: number;
 // }
+
+export interface Break {
+  Friday: boolean;
+  Monday: boolean;
+  Saturday: boolean;
+  Sunday: boolean;
+  Thursday: boolean;
+  Tuesday: boolean;
+  Wednesday: boolean;
+
+  StartTime: string;
+  EndTime: string;
+
+  name: string;
+  selected: boolean;
+}
 
 export const enum QueryType {
   byCourse,

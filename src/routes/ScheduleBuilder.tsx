@@ -12,6 +12,7 @@ import {
   Grid,
   IconButton,
   InputLabel,
+  List,
   MenuItem,
   Pagination,
   Paper,
@@ -19,6 +20,8 @@ import {
   Stack,
   Switch,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -32,7 +35,7 @@ import moment from "moment";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { round } from "utils";
-import { CalendarEvent, Query, QueryType, WeekDays } from "../app/Classes";
+import { Break, CalendarEvent, Query, QueryType, WeekDays } from "../app/Classes";
 
 function getColor(section: Section) {
   let mode = section.InstructionMode || "TBA";
@@ -56,7 +59,7 @@ function getColor(section: Section) {
   }
 }
 
-function getDays(section: Section) {
+function getDays(section: Section | Break) {
   let res: string = "";
   if (section.Sunday) res += "Su";
   if (section.Monday) res += "M";
@@ -107,6 +110,8 @@ export default function ScheduleBuilder(props: {}) {
         <Box overflow='scroll' sx={{ height: { md: "100%" } }}>
           <AddQuery />
           <QueryList />
+          <AddBreak />
+          <BreakList />
         </Box>
       </Grid>
       <Grid item xs={12} md={8}>
@@ -396,122 +401,176 @@ function ScheduleDisplay(props: {}) {
   );
 }
 
-// interface ScheduleState {}
-//
-// export default class ScheduleBuilder extends React.Component<{}, ScheduleState> {
-//   // constructor(props: any) {
-//   //   super(props);
-//   // let queryList: Query[] = this.getSaveData() || [];
-//   // this.initSaveOnClose();
-//   // this.removeQuery = this.removeQuery.bind(this);
-//   // this.addQuery = this.addQuery.bind(this);
-//   // this.setCurrentSchedule = this.setCurrentSchedule.bind(this);
-//   // this.setQueryResults = this.setQueryResults.bind(this);
-//   // this.setQueryList = this.setQueryList.bind(this);
-//   // this.state = {};
-//   // this.query();
-//   // }
+function AddBreak() {
+  const dispatch = useAppDispatch();
+  const [breakData, setBreakData] = useState<Break>({
+    Sunday: false,
+    Monday: false,
+    Tuesday: false,
+    Wednesday: false,
+    Thursday: false,
+    Friday: false,
+    Saturday: false,
 
-//   // showNotif(msg?: string | undefined, severity?: "warning" | "error" | "success" | "info" | undefined) {
-//   //   this.setState((prevState: ScheduleState) => {
-//   //     return {
-//   //       notif: {
-//   //         on: true,
-//   //         msg: msg || "There was a problem...",
-//   //         severity: severity || "warning",
-//   //       },
-//   //     };
-//   //   });
-//   // }
+    StartTime: "12:00",
+    EndTime: "13:00",
 
-//   componentDidMount() {
-//     let { setLoading, setCourseList, initSaveOnClose } = schedulerActions;
-//     store.dispatch(setLoading(true));
-//     store.dispatch(initSaveOnClose());
-//     // ADD LOAD SAVE DATA HERE
+    name: "Break Name",
+    selected: true,
+  });
+  return (
+    <Paper sx={{ p: 3 }} elevation={4}>
+      <Stack direction='column' spacing={2}>
+        <Typography variant='h3'>Add Break</Typography>
+        <TextField
+          id='breakName'
+          label='Break Name'
+          variant='outlined'
+          value={breakData.name}
+          onChange={(e) => {
+            setBreakData({ ...breakData, name: e.target.value });
+          }}
+        />
+        <ToggleButtonGroup value=''>
+          <ToggleButton
+            selected={breakData.Sunday}
+            value={breakData.Sunday}
+            onClick={() => {
+              setBreakData({
+                ...breakData,
+                Sunday: !breakData.Sunday,
+              });
+            }}>
+            <Typography>Su</Typography>
+          </ToggleButton>
+          <ToggleButton
+            selected={breakData.Monday}
+            value={breakData.Monday}
+            onClick={() => {
+              setBreakData({
+                ...breakData,
+                Monday: !breakData.Monday,
+              });
+            }}>
+            <Typography>Mo</Typography>
+          </ToggleButton>
+          <ToggleButton
+            selected={breakData.Tuesday}
+            value={breakData.Tuesday}
+            onClick={() => {
+              setBreakData({
+                ...breakData,
+                Tuesday: !breakData.Tuesday,
+              });
+            }}>
+            <Typography>Tu</Typography>
+          </ToggleButton>
+          <ToggleButton
+            selected={breakData.Wednesday}
+            value={breakData.Wednesday}
+            onClick={() => {
+              setBreakData({
+                ...breakData,
+                Wednesday: !breakData.Wednesday,
+              });
+            }}>
+            <Typography>We</Typography>
+          </ToggleButton>
+          <ToggleButton
+            selected={breakData.Thursday}
+            value={breakData.Thursday}
+            onClick={() => {
+              setBreakData({
+                ...breakData,
+                Thursday: !breakData.Thursday,
+              });
+            }}>
+            <Typography>Th</Typography>
+          </ToggleButton>
+          <ToggleButton
+            selected={breakData.Friday}
+            value={breakData.Friday}
+            onClick={() => {
+              setBreakData({
+                ...breakData,
+                Friday: !breakData.Friday,
+              });
+            }}>
+            <Typography>Fr</Typography>
+          </ToggleButton>
+          <ToggleButton
+            selected={breakData.Saturday}
+            value={breakData.Saturday}
+            onClick={() => {
+              setBreakData({
+                ...breakData,
+                Saturday: !breakData.Saturday,
+              });
+            }}>
+            <Typography>Sa</Typography>
+          </ToggleButton>
+        </ToggleButtonGroup>
+        <Stack direction='row'>
+          <TextField
+            label='Start Time'
+            value={breakData.StartTime}
+            type='time'
+            onChange={(e) => {
+              setBreakData({ ...breakData, StartTime: e.target.value });
+            }}
+          />
+          <TextField
+            label='End Time'
+            value={breakData.EndTime}
+            type='time'
+            onChange={(e) => {
+              setBreakData({ ...breakData, EndTime: e.target.value });
+            }}
+          />
+        </Stack>
+        <Button
+          variant='outlined'
+          onClick={() => {
+            dispatch(schedulerActions.addBreak(breakData));
+            dispatch(schedulerActions.calculateSchedules());
+          }}>
+          Add Break
+        </Button>
+      </Stack>
+    </Paper>
+  );
+}
 
-//     // query
-//     query(store.dispatch);
-//     // get courses
-//     fetch(API + "data/courses/find", {
-//       method: "POST",
-//     })
-//       .then((data) => data.json())
-//       .then((res) => {
-//         let courseList = res as Course[];
-//         store.dispatch(setCourseList(courseList));
-//         store.dispatch(setLoading(false));
-//       });
-//   }
-
-//   // componentDidUpdate(prevProps: any, prevState: ScheduleState) {
-//   //   if (this.state.queryList !== prevState.queryList) {
-//   //     // console.log("Query List changed: ", prevState.queryList, this.state.queryList);
-//   //     this.query();
-//   //   }
-//   //   // console.log("schedules:", this.state.schedules, prevState.schedules);
-//   //   if (this.state.schedules !== prevState.schedules) {
-//   //     // console.log(
-//   //     //   "Change in Schedule Length: ",
-//   //     //   prevState.schedules.length,
-//   //     //   this.state.schedules.length,
-//   //     //   this.state.currentSchedule
-//   //     // );
-//   //     let scheduleCount = this.state.schedules.length;
-//   //     if (prevState.currentSchedule === -1) this.setCurrentSchedule(0);
-//   //     if (scheduleCount === 0) this.setCurrentSchedule(-1);
-//   //     if (this.state.currentSchedule >= scheduleCount) this.setCurrentSchedule(scheduleCount - 1);
-//   //     // console.log("New Current Schedule Index: ", this.state.currentSchedule);
-//   //   }
-//   // }
-
-//   render() {
-//     let state = store.getState().scheduler;
-//     if (state.loading) return <Loading />;
-//     return (
-//       <Grid
-//         container
-//         sx={{
-//           pt: 10,
-//           height: {
-//             md: "100vh",
-//           },
-//         }}>
-//         {/* <Snackbar
-//           open={this.state.notif.on}
-//           autoHideDuration={6000}
-//           onClose={() => {
-//             this.setState((prevState: ScheduleState) => {
-//               return {
-//                 notif: {
-//                   on: false,
-//                   msg: prevState.notif.msg,
-//                   severity: prevState.notif.severity,
-//                 },
-//               };
-//             });
-//           }}>
-//           <Alert severity={this.state.notif.severity} sx={{ width: "100%" }}>
-//             {this.state.notif.msg}
-//           </Alert>
-//         </Snackbar> */}
-//         <Grid item xs={12} md={4} sx={{ height: { md: "100%" } }}>
-//           <Box overflow='scroll' sx={{ height: { md: "100%" } }}>
-//             <AddQuery courseList={state.courseList} />
-//             <QueryList queryResults={state.queryResults} />
-//           </Box>
-//         </Grid>
-//         <Grid item xs={12} md={8}>
-//           <Stack height='100%' direction='column' alignItems='center'>
-//             <SelectSchedule schedules={state.schedules} currentIndex={state.currentSchedule} />
-//             <Box minHeight={800} height='100%' width='100%'>
-//               {state.currentSchedule !== -1 ? (
-//                 <ScheduleDisplay schedules={state.schedules} currentSchedule={state.currentSchedule} />
-//               ) : null}
-//             </Box>
-//           </Stack>
-//         </Grid>
-//       </Grid>
-//     );
-//   }
-// }
+function BreakList() {
+  const dispatch = useAppDispatch();
+  const breakList = useAppSelector((state) => state.scheduler.breakList);
+  return (
+    <Paper sx={{ p: 3 }} elevation={4}>
+      <Typography variant='h3'>Break List</Typography>
+      <List>
+        {breakList.map((currBreak, index) => {
+          return (
+            <Paper key={index} elevation={2} sx={{ px: 3, py: 1 }}>
+              <Stack direction='row' alignItems='center'>
+                <IconButton
+                  onClick={() => {
+                    dispatch(schedulerActions.removeBreak(index));
+                    dispatch(schedulerActions.calculateSchedules());
+                  }}>
+                  <Delete />
+                </IconButton>
+                <Stack direction='column'>
+                  <Typography>Name: {currBreak.name}</Typography>
+                  <Typography>
+                    Time: {currBreak.StartTime} - {currBreak.EndTime}
+                  </Typography>
+                  <Typography>Days: {getDays(currBreak)}</Typography>
+                </Stack>
+              </Stack>
+            </Paper>
+          );
+        })}
+      </List>
+    </Paper>
+  );
+}

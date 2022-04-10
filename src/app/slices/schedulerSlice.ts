@@ -1,5 +1,5 @@
 import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
-import { Query, QueryType, Schedule, WeekDays } from "app/Classes";
+import { Break, Query, QueryType, Schedule, WeekDays } from "app/Classes";
 import { RootState, store } from "app/store";
 import { API } from "index";
 import { Course, Section } from "models";
@@ -11,28 +11,29 @@ import storage from "redux-persist/lib/storage";
 interface SchedulerState {
   loading: boolean;
   courseList: Course[];
-  queryList: Array<Query>;
+  queryList: Query[];
+  breakList: Break[];
   schedules: Schedule[];
   currentSchedule: number;
-  notif: { on: boolean; msg: string; severity: "warning" | "error" | "success" | "info" | undefined };
 }
 const initialState: SchedulerState = {
   courseList: [],
   queryList: [],
+  breakList: [],
   loading: true,
   schedules: [],
   currentSchedule: -1,
-  notif: { on: false, msg: "There was a problem...", severity: "warning" },
 };
 
 const DEFAULT_TERM = "F 2022";
 
-function filterCourses(queryList: Query[]): Query[] {
+function filterCourses(queryList: Query[], breakList: Break[]): Query[] {
   return queryList.map((query) => {
     // copy query
     let newQuery = Object.assign({}, query);
     newQuery.sections = query.sections.filter((section) => {
       if (!section.selected) return false;
+      if (conflictsWithBreak(section, breakList)) return false;
       return true;
     });
     return newQuery;
@@ -54,6 +55,22 @@ function sortSchedule(schedule: Schedule) {
     return one.hour() - two.hour();
   });
 }
+
+function conflictsWithBreak(section: Section, breakList: Break[]): boolean {
+  let sectionStart = moment(section.StartTime, "HH:mm");
+  let sectionEnd = moment(section.EndTime, "HH:mm");
+  for (let currBreak of breakList) {
+    let breakStart = moment(currBreak.StartTime, "HH:mm");
+    let breakEnd = moment(currBreak.EndTime, "HH:mm");
+    for (let weekDay of Object.keys(WeekDays)) {
+      if ((section as any)[weekDay] === true && (currBreak as any)[weekDay] === true) {
+        if (!(sectionStart.isSameOrBefore(breakEnd) && sectionEnd.isSameOrAfter(breakStart))) return true;
+      }
+    }
+  }
+  return false;
+}
+
 function isValidSchedule(schedule: Schedule) {
   for (let day of Object.keys(WeekDays)) {
     let first: Section;
@@ -198,7 +215,7 @@ export const schedulerSlice = createSlice({
 
     calculateSchedules: (state) => {
       // let queryList = state.queryList;
-      let queryList = filterCourses(state.queryList);
+      let queryList = filterCourses(state.queryList, state.breakList);
       // console.log("Calculating schedules queryresults:", queryResults);
       if (queryList.length === 0) {
         state.schedules = [];
@@ -268,6 +285,21 @@ export const schedulerSlice = createSlice({
       let { queryIndex, sectionIndex } = action.payload;
       state.queryList[queryIndex].sections[sectionIndex].selected =
         !state.queryList[queryIndex].sections[sectionIndex].selected;
+    },
+
+    addBreak(state, action: PayloadAction<Break>) {
+      let currBreak = action.payload;
+      let breakStart = moment(currBreak.StartTime, "HH:mm");
+      let breakEnd = moment(currBreak.EndTime, "HH:mm");
+      if (breakEnd.isAfter(breakStart)) {
+        state.breakList.push(action.payload);
+      } else {
+        alert("Invalid break time, make sure start is before end");
+      }
+    },
+
+    removeBreak(state, action: PayloadAction<number>) {
+      state.breakList.splice(action.payload, 1);
     },
   },
 });
