@@ -5,7 +5,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Alert,
   Autocomplete,
   Button,
   createFilterOptions,
@@ -17,68 +16,23 @@ import {
   Pagination,
   Paper,
   Select,
-  Snackbar,
   Stack,
   TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
 import { Box } from "@mui/system";
+import { fetchQueries, schedulerActions } from "app/slices/schedulerSlice";
+import { store, useAppDispatch, useAppSelector } from "app/store";
 import { Loading } from "components/Loading";
 import { API } from "index";
 import { Course, Section } from "models";
-import moment, { Moment } from "moment";
-import React, { Fragment, useState } from "react";
+import moment from "moment";
+import { Fragment, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { round } from "utils";
-import { CalendarEvent, Query, QueryResult, QueryType, Schedule, WeekDays } from "../app/Classes";
+import { CalendarEvent, QueryResult, QueryType, WeekDays } from "../app/Classes";
 
-const DEFAULT_TERM = "F 2022";
-
-function sortSchedule(schedule: Schedule) {
-  schedule.sort((first, second) => {
-    if (!first || !first.StartTime) return 1;
-    if (!second || !second.StartTime) return -1;
-
-    let one: Moment = moment(first.StartTime, "HH:mm");
-    let two: Moment = moment(second.StartTime, "HH:mm");
-
-    // console.log("one", one);
-    // console.log("two", two);
-
-    if (one.hour() === two.hour()) return one.minute() - two.minute();
-    return one.hour() - two.hour();
-  });
-}
-function isValidSchedule(schedule: Schedule) {
-  for (let day of Object.keys(WeekDays)) {
-    let first: Section;
-    let second: Section;
-    for (let section of schedule) {
-      if ((section as any)[day] === true) {
-        // check for course missing start/endtime(but has days for some reason???)
-        if (!section.StartTime || !section.EndTime) {
-          console.log("Section doesn't have start/endtime despite having days of the week? SKIPPING", section);
-          alert(
-            `One of your sections has a start/endtime despite having days of the week? Please contact the developer to look at this error. Section: ${section.Term} ${section.Subject} ${section.CourseNumber} ${section.Section} ${section.ClassNumber} id: ${section.id}`
-          );
-          continue;
-        }
-
-        if (first! === undefined || first! === undefined) {
-          first = section;
-        } else {
-          second = section;
-          if (moment(first.EndTime!, "HH:mm").hour() === moment(second.StartTime!, "HH:mm").hour()) {
-            if (moment(first.EndTime!, "HH:mm").minute() > moment(second.StartTime!, "HH:mm").minute()) return false;
-          }
-          if (moment(first.EndTime!, "HH:mm").hour() > moment(second.StartTime!, "HH:mm").hour()) return false;
-          first = second;
-        }
-      }
-    }
-  }
-  return true;
-}
 function getColor(section: Section) {
   let mode = section.InstructionMode || "TBA";
   switch (mode.toLowerCase()) {
@@ -100,6 +54,7 @@ function getColor(section: Section) {
       return "white";
   }
 }
+
 function getDays(section: Section) {
   let res: string = "";
   if (section.Sunday) res += "Su";
@@ -113,302 +68,58 @@ function getDays(section: Section) {
   return res;
 }
 
-interface ScheduleState {
-  loading: boolean;
-  courseList: Course[];
-  queryList: Array<Query>;
-  queryResults: Array<QueryResult>;
-  schedules: Schedule[];
-  currentSchedule: number;
-  notif: { on: boolean; msg: string; severity: "warning" | "error" | "success" | "info" | undefined };
-}
+export default function ScheduleBuilder(props: {}) {
+  let { setLoading, setCourseList } = schedulerActions;
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setLoading(true));
 
-export default class ScheduleBuilder extends React.Component<{}, ScheduleState> {
-  constructor(props: any) {
-    super(props);
-    let queryList: Query[] = this.getSaveData() || [];
-    this.initSaveOnClose();
-    this.removeQuery = this.removeQuery.bind(this);
-    this.addQuery = this.addQuery.bind(this);
-    this.setCurrentSchedule = this.setCurrentSchedule.bind(this);
-    this.setQueryResults = this.setQueryResults.bind(this);
-    this.setQueryList = this.setQueryList.bind(this);
-    this.state = {
-      courseList: [],
-      queryList: queryList,
-      queryResults: [],
-      loading: true,
-      schedules: [],
-      currentSchedule: -1,
-      notif: { on: false, msg: "There was a problem...", severity: "warning" },
-    };
-    this.query();
-  }
+    // ADD LOAD SAVE DATA HERE
 
-  showNotif(msg?: string | undefined, severity?: "warning" | "error" | "success" | "info" | undefined) {
-    this.setState((prevState: ScheduleState) => {
-      return {
-        notif: {
-          on: true,
-          msg: msg || "There was a problem...",
-          severity: severity || "warning",
-        },
-      };
-    });
-  }
-
-  getSaveData() {
-    try {
-      let queries: Query[] | undefined = undefined;
-      let stored: string | null = window.localStorage.getItem("queries");
-      if (stored !== null) queries = JSON.parse(stored);
-      if (queries) {
-        for (let query of queries) {
-          if (!query.expanded) query.expanded = false;
-        }
-        return queries;
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  initSaveOnClose() {
-    window.addEventListener("beforeunload", (e) => {
-      e.preventDefault();
-      try {
-        window.localStorage.setItem("queries", JSON.stringify(this.state.queryList));
-      } catch (e) {
-        console.log("Failed to save data: ", e);
-      }
-    });
-  }
-
-  addQuery(query: Query) {
-    // console.log("QueryList: ", this.state.queryList);
-    this.setState({ queryList: [...this.state.queryList, query] });
-  }
-
-  removeQuery(query: Query) {
-    let { queryList } = this.state;
-    for (let i = 0; i < queryList.length; i++) {
-      if (queryList[i] === query) {
-        let newList: Query[] = [...queryList.splice(0, i), ...queryList.splice(1)];
-        // console.log("newList:", newList);
-        this.setState({ queryList: newList });
-        return;
-      }
-    }
-  }
-
-  setCurrentSchedule(currentSchedule: number) {
-    // console.log("Current Schedule Changed: ", currentSchedule);
-    this.setState({ currentSchedule });
-  }
-
-  setQueryResults(queryResults: QueryResult[]) {
-    this.setState({ queryResults });
-  }
-
-  setQueryList(queryList: Query[]) {
-    this.setState({ queryList });
-  }
-
-  filterCourses(queryResults: QueryResult[]): QueryResult[] {
-    // console.log(
-    //   "Filtered Courses:",
-    //   queryResults.map((result) => {
-    //     return {
-    //       query: result.query,
-    //       sections: result.sections.filter((section) => {
-    //         if ((!section.InstructorFirst || section.InstructorFirst === "Staff") && !result.query.allowStaff)
-    //           return false;
-    //         return true;
-    //       }),
-    //     };
-    //   })
-    // );
-    return queryResults.map((result) => {
-      return {
-        query: result.query,
-
-        sections: result.sections.filter((section) => {
-          if ((!section.InstructorFirst || section.InstructorFirst === "Staff") && !result.query.allowStaff)
-            return false;
-          return true;
-        }),
-      };
-    });
-  }
-
-  async query() {
-    console.log("Querying....", this.state.queryList);
-    this.setState({ loading: true });
-    let queryResults: QueryResult[] = [];
-    for (const query of this.state.queryList) {
-      const { type, course } = query;
-
-      if (type === QueryType.byCourse) {
-        // query
-        let data = await fetch(API + "data/sections/find", {
-          method: "POST",
-          mode: "cors",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            Term: DEFAULT_TERM,
-            Subject: course?.Subject,
-            CourseNumber: course?.CourseNumber,
-          }),
-        });
-        let res: Section[] = await data.json();
-        // console.log("Query Result Sections: ", res);
-        let queryResult: QueryResult = {
-          sections: res,
-          query: query,
-        };
-        queryResults.push(queryResult);
-      }
-      console.log("Query Results: ", queryResults);
-    }
-    this.calculateSchedules(this.filterCourses(queryResults));
-    this.setState({ queryResults, loading: false });
-  }
-
-  componentDidMount() {
+    // query
+    dispatch(fetchQueries);
+    // get courses
     fetch(API + "data/courses/find", {
       method: "POST",
     })
       .then((data) => data.json())
       .then((res) => {
         let courseList = res as Course[];
-        this.setState({ courseList, loading: false });
+        dispatch(setCourseList(courseList));
+        dispatch(setLoading(false));
       });
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  calculateSchedules(queryResults: QueryResult[]) {
-    // console.log("Calculating schedules queryresults:", queryResults);
-    if (queryResults.length === 0) {
-      this.setState({ schedules: [], currentSchedule: -1 });
-      return;
-    }
-    let result: Schedule[] = [];
-    for (let i = 0; i < queryResults.length; i++) {
-      let queryResult = queryResults[i];
-
-      if (queryResult.sections.length === 0) {
-        this.showNotif(
-          "There are no available sections for one of your queries, it will not be in your schedule",
-          "warning"
-        );
-        continue;
-      }
-
-      if (result.length === 0) {
-        result = queryResult.sections.map((section) => [section]);
-      } else {
-        let tempSchedules: Schedule[] = [];
-        overflow: for (let section of queryResults[i].sections) {
-          for (let schedule of result) {
-            let newSchedule: Schedule = [...schedule, section];
-            // console.log("About to sort schedule:", newSchedule);
-            sortSchedule(newSchedule);
-            if (isValidSchedule(newSchedule)) tempSchedules.push(newSchedule);
-
-            //cap schedules
-            if (tempSchedules.length > 999) break overflow;
-          }
-        }
-        result = tempSchedules;
-      }
-    }
-    this.setState({ schedules: result });
-    // console.log("Calculated Schedules: ", this.state.schedules);
-  }
-
-  componentDidUpdate(prevProps: any, prevState: ScheduleState) {
-    if (this.state.queryList !== prevState.queryList) {
-      // console.log("Query List changed: ", prevState.queryList, this.state.queryList);
-      this.query();
-    }
-    // console.log("schedules:", this.state.schedules, prevState.schedules);
-    if (this.state.schedules !== prevState.schedules) {
-      // console.log(
-      //   "Change in Schedule Length: ",
-      //   prevState.schedules.length,
-      //   this.state.schedules.length,
-      //   this.state.currentSchedule
-      // );
-      let scheduleCount = this.state.schedules.length;
-      if (prevState.currentSchedule === -1) this.setCurrentSchedule(0);
-      if (scheduleCount === 0) this.setCurrentSchedule(-1);
-      if (this.state.currentSchedule >= scheduleCount) this.setCurrentSchedule(scheduleCount - 1);
-      // console.log("New Current Schedule Index: ", this.state.currentSchedule);
-    }
-  }
-
-  render() {
-    if (this.state.loading) return <Loading />;
-    return (
-      <Grid
-        container
-        sx={{
-          pt: 10,
-          height: {
-            md: "100vh",
-          },
-        }}>
-        <Snackbar
-          open={this.state.notif.on}
-          autoHideDuration={6000}
-          onClose={() => {
-            this.setState((prevState: ScheduleState) => {
-              return {
-                notif: {
-                  on: false,
-                  msg: prevState.notif.msg,
-                  severity: prevState.notif.severity,
-                },
-              };
-            });
-          }}>
-          <Alert severity={this.state.notif.severity} sx={{ width: "100%" }}>
-            {this.state.notif.msg}
-          </Alert>
-        </Snackbar>
-        <Grid item xs={12} md={4} sx={{ height: { md: "100%" } }}>
-          <Box overflow='scroll' sx={{ height: { md: "100%" } }}>
-            <AddQuery addQuery={this.addQuery} courseList={this.state.courseList} />
-            <QueryList
-              queryResults={this.state.queryResults}
-              removeQuery={this.removeQuery}
-              setQueryResults={this.setQueryResults}
-              setQueryList={this.setQueryList}
-            />
-          </Box>
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <Stack height='100%' direction='column' alignItems='center'>
-            <SelectSchedule
-              schedules={this.state.schedules}
-              currentIndex={this.state.currentSchedule}
-              setCurrentIndex={this.setCurrentSchedule}
-            />
-            <Box minHeight={800} height='100%' width='100%'>
-              {this.state.currentSchedule !== -1 ? (
-                <ScheduleDisplay schedules={this.state.schedules} currentSchedule={this.state.currentSchedule} />
-              ) : null}
-            </Box>
-          </Stack>
-        </Grid>
+  const { loading, currentSchedule } = useAppSelector((state) => state.scheduler);
+  if (loading) return <Loading />;
+  return (
+    <Grid
+      container
+      sx={{
+        pt: 10,
+        height: {
+          md: "100vh",
+        },
+      }}>
+      <Grid item xs={12} md={4} sx={{ height: { md: "100%" } }}>
+        <Box overflow='scroll' sx={{ height: { md: "100%" } }}>
+          <AddQuery />
+          <QueryList />
+        </Box>
       </Grid>
-    );
-  }
+      <Grid item xs={12} md={8}>
+        <Stack height='100%' direction='column' alignItems='center'>
+          <SelectSchedule />
+          <Box minHeight={800} height='100%' width='100%'>
+            {currentSchedule !== -1 ? <ScheduleDisplay /> : null}
+          </Box>
+        </Stack>
+      </Grid>
+    </Grid>
+  );
 }
-
-function AddQuery(props: { courseList: Course[]; addQuery: (query: Query) => void }) {
+function AddQuery(props: {}) {
   // default query type is by course
   const [queryType, setQueryType] = useState<QueryType | undefined>(QueryType.byCourse);
 
@@ -427,22 +138,23 @@ function AddQuery(props: { courseList: Course[]; addQuery: (query: Query) => voi
       </Select>
 
       {/* course query */}
-      {queryType === QueryType.byCourse ? (
-        <CourseQuery courseList={props.courseList} addQuery={props.addQuery} />
-      ) : null}
+      {queryType === QueryType.byCourse ? <CourseQuery /> : null}
     </Paper>
   );
 }
 
-function CourseQuery(props: { courseList: Course[]; addQuery: (query: Query) => void }) {
+function CourseQuery(props: {}) {
   const [course, setCourse] = useState<Course | null>();
+  const courseList: Course[] = useAppSelector((state) => state.scheduler.courseList);
+  const dispatch = useAppDispatch();
+  // console.log("CourseList in CourseQuery:", courseList);
   return (
     <div>
       <Autocomplete
         getOptionLabel={(option) => option.Label || "No Option Label"}
         fullWidth
         id='course'
-        options={props.courseList}
+        options={courseList}
         renderInput={(params) => <TextField {...params} label='Select Course' />}
         value={course}
         onChange={(e, val) => {
@@ -456,8 +168,18 @@ function CourseQuery(props: { courseList: Course[]; addQuery: (query: Query) => 
       <Button
         variant='outlined'
         onClick={() => {
-          if (course)
-            props.addQuery({ type: QueryType.byCourse, course: course, minGPA: 0, expanded: false, allowStaff: true });
+          if (course) {
+            store.dispatch(
+              schedulerActions.addQuery({
+                type: QueryType.byCourse,
+                course: course,
+                minGPA: 0,
+                expanded: false,
+                allowStaff: true,
+              })
+            );
+            dispatch(fetchQueries);
+          }
         }}>
         Add Course
       </Button>
@@ -465,17 +187,13 @@ function CourseQuery(props: { courseList: Course[]; addQuery: (query: Query) => 
   );
 }
 
-function QueryList(props: {
-  queryResults: Array<QueryResult>;
-  removeQuery: (query: Query) => void;
-  setQueryResults: (queryResults: QueryResult[]) => void;
-  setQueryList: (queryList: Query[]) => void;
-}) {
-  // console.log("Query Results: ", props.queryResults);
+function QueryList(props: {}) {
+  let queryResults: QueryResult[] = useAppSelector((state) => state.scheduler.queryResults);
+  const dispatch = useDispatch();
   return (
     <Paper sx={{ p: 3 }} elevation={4}>
       <Typography variant='h3'>Query List</Typography>
-      {props.queryResults.map((queryResult: QueryResult) => {
+      {queryResults.map((queryResult: QueryResult, index: number) => {
         let { query } = queryResult;
         let title: string = "";
         if (query.type === QueryType.byCourse)
@@ -488,13 +206,18 @@ function QueryList(props: {
             expanded={query.expanded}
             elevation={5}
             onChange={() => {
-              query.expanded = !query.expanded;
-              props.setQueryResults(props.queryResults);
+              dispatch(schedulerActions.toggleExpanded(index));
             }}>
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Grid container alignItems='center'>
                 <Grid item xs={1}>
-                  <IconButton onClick={() => props.removeQuery(query)}>
+                  <IconButton
+                    onClick={() => {
+                      // console.log("removing query");
+                      dispatch(schedulerActions.removeQuery(index));
+                      // console.log("dispatched query");
+                      dispatch(fetchQueries);
+                    }}>
                     <Delete />
                   </IconButton>
                 </Grid>
@@ -519,11 +242,6 @@ function QueryList(props: {
                   }
                 />
               } */}
-              {/* <Typography>
-                {`Avg GPA: ${
-                  query.course?.AvgGPA ? (Math.round(query.course?.AvgGPA * 100) / 100).toFixed(2) : "No Data"
-                }`}
-              </Typography> */}
               {queryResult.sections.map((section) => {
                 return (
                   <Accordion key={section.Section} elevation={5}>
@@ -561,25 +279,23 @@ function QueryList(props: {
   );
 }
 
-function SelectSchedule(props: {
-  schedules: Schedule[];
-  currentIndex: number;
-  setCurrentIndex: (currentIndex: number) => void;
-}) {
-  if (props.schedules.length === 0) return null;
+function SelectSchedule(props: {}) {
+  let { schedules, currentSchedule } = useAppSelector((state) => state.scheduler);
+  if (schedules.length === 0) return null;
   return (
     <Pagination
       size='large'
       siblingCount={3}
-      count={props.schedules.length}
-      page={props.currentIndex + 1}
-      onChange={(event, val) => props.setCurrentIndex(val - 1)}
+      count={schedules.length}
+      page={currentSchedule + 1}
+      onChange={(event, val) => store.dispatch(schedulerActions.setCurrentSchedule(val - 1))}
     />
   );
 }
 
-function ScheduleDisplay(props: { schedules: Schedule[]; currentSchedule: number }) {
-  let schedule = props.schedules[props.currentSchedule];
+function ScheduleDisplay(props: {}) {
+  let { schedules, currentSchedule } = useAppSelector((state) => state.scheduler);
+  let schedule = schedules[currentSchedule];
   let events: Array<CalendarEvent> = [];
   //schedule
   for (let index = 0; index < schedule.length; index++) {
@@ -673,3 +389,123 @@ function ScheduleDisplay(props: { schedules: Schedule[]; currentSchedule: number
     />
   );
 }
+
+// interface ScheduleState {}
+//
+// export default class ScheduleBuilder extends React.Component<{}, ScheduleState> {
+//   // constructor(props: any) {
+//   //   super(props);
+//   // let queryList: Query[] = this.getSaveData() || [];
+//   // this.initSaveOnClose();
+//   // this.removeQuery = this.removeQuery.bind(this);
+//   // this.addQuery = this.addQuery.bind(this);
+//   // this.setCurrentSchedule = this.setCurrentSchedule.bind(this);
+//   // this.setQueryResults = this.setQueryResults.bind(this);
+//   // this.setQueryList = this.setQueryList.bind(this);
+//   // this.state = {};
+//   // this.query();
+//   // }
+
+//   // showNotif(msg?: string | undefined, severity?: "warning" | "error" | "success" | "info" | undefined) {
+//   //   this.setState((prevState: ScheduleState) => {
+//   //     return {
+//   //       notif: {
+//   //         on: true,
+//   //         msg: msg || "There was a problem...",
+//   //         severity: severity || "warning",
+//   //       },
+//   //     };
+//   //   });
+//   // }
+
+//   componentDidMount() {
+//     let { setLoading, setCourseList, initSaveOnClose } = schedulerActions;
+//     store.dispatch(setLoading(true));
+//     store.dispatch(initSaveOnClose());
+//     // ADD LOAD SAVE DATA HERE
+
+//     // query
+//     query(store.dispatch);
+//     // get courses
+//     fetch(API + "data/courses/find", {
+//       method: "POST",
+//     })
+//       .then((data) => data.json())
+//       .then((res) => {
+//         let courseList = res as Course[];
+//         store.dispatch(setCourseList(courseList));
+//         store.dispatch(setLoading(false));
+//       });
+//   }
+
+//   // componentDidUpdate(prevProps: any, prevState: ScheduleState) {
+//   //   if (this.state.queryList !== prevState.queryList) {
+//   //     // console.log("Query List changed: ", prevState.queryList, this.state.queryList);
+//   //     this.query();
+//   //   }
+//   //   // console.log("schedules:", this.state.schedules, prevState.schedules);
+//   //   if (this.state.schedules !== prevState.schedules) {
+//   //     // console.log(
+//   //     //   "Change in Schedule Length: ",
+//   //     //   prevState.schedules.length,
+//   //     //   this.state.schedules.length,
+//   //     //   this.state.currentSchedule
+//   //     // );
+//   //     let scheduleCount = this.state.schedules.length;
+//   //     if (prevState.currentSchedule === -1) this.setCurrentSchedule(0);
+//   //     if (scheduleCount === 0) this.setCurrentSchedule(-1);
+//   //     if (this.state.currentSchedule >= scheduleCount) this.setCurrentSchedule(scheduleCount - 1);
+//   //     // console.log("New Current Schedule Index: ", this.state.currentSchedule);
+//   //   }
+//   // }
+
+//   render() {
+//     let state = store.getState().scheduler;
+//     if (state.loading) return <Loading />;
+//     return (
+//       <Grid
+//         container
+//         sx={{
+//           pt: 10,
+//           height: {
+//             md: "100vh",
+//           },
+//         }}>
+//         {/* <Snackbar
+//           open={this.state.notif.on}
+//           autoHideDuration={6000}
+//           onClose={() => {
+//             this.setState((prevState: ScheduleState) => {
+//               return {
+//                 notif: {
+//                   on: false,
+//                   msg: prevState.notif.msg,
+//                   severity: prevState.notif.severity,
+//                 },
+//               };
+//             });
+//           }}>
+//           <Alert severity={this.state.notif.severity} sx={{ width: "100%" }}>
+//             {this.state.notif.msg}
+//           </Alert>
+//         </Snackbar> */}
+//         <Grid item xs={12} md={4} sx={{ height: { md: "100%" } }}>
+//           <Box overflow='scroll' sx={{ height: { md: "100%" } }}>
+//             <AddQuery courseList={state.courseList} />
+//             <QueryList queryResults={state.queryResults} />
+//           </Box>
+//         </Grid>
+//         <Grid item xs={12} md={8}>
+//           <Stack height='100%' direction='column' alignItems='center'>
+//             <SelectSchedule schedules={state.schedules} currentIndex={state.currentSchedule} />
+//             <Box minHeight={800} height='100%' width='100%'>
+//               {state.currentSchedule !== -1 ? (
+//                 <ScheduleDisplay schedules={state.schedules} currentSchedule={state.currentSchedule} />
+//               ) : null}
+//             </Box>
+//           </Stack>
+//         </Grid>
+//       </Grid>
+//     );
+//   }
+// }

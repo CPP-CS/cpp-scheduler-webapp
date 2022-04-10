@@ -127,6 +127,7 @@ export interface Query {
   expanded: boolean;
   type: QueryType;
   minGPA: number;
+  allowStaff?: boolean;
   course?: Course;
 }
 
