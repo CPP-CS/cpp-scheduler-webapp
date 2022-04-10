@@ -1,16 +1,17 @@
 import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
-import { Query, QueryResult, QueryType, Schedule, WeekDays } from "app/Classes";
+import { Query, QueryType, Schedule, WeekDays } from "app/Classes";
 import { RootState, store } from "app/store";
 import { API } from "index";
 import { Course, Section } from "models";
 import moment from "moment";
 import { Moment } from "moment";
+import { persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
 interface SchedulerState {
   loading: boolean;
   courseList: Course[];
   queryList: Array<Query>;
-  queryResults: Array<QueryResult>;
   schedules: Schedule[];
   currentSchedule: number;
   notif: { on: boolean; msg: string; severity: "warning" | "error" | "success" | "info" | undefined };
@@ -18,7 +19,6 @@ interface SchedulerState {
 const initialState: SchedulerState = {
   courseList: [],
   queryList: [],
-  queryResults: [],
   loading: true,
   schedules: [],
   currentSchedule: -1,
@@ -27,29 +27,15 @@ const initialState: SchedulerState = {
 
 const DEFAULT_TERM = "F 2022";
 
-function filterCourses(queryResults: QueryResult[]): QueryResult[] {
-  // console.log(
-  //   "Filtered Courses:",
-  //   queryResults.map((result) => {
-  //     return {
-  //       query: result.query,
-  //       sections: result.sections.filter((section) => {
-  //         if ((!section.InstructorFirst || section.InstructorFirst === "Staff") && !result.query.allowStaff)
-  //           return false;
-  //         return true;
-  //       }),
-  //     };
-  //   })
-  // );
-  return queryResults.map((result) => {
-    return {
-      query: result.query,
-
-      sections: result.sections.filter((section) => {
-        if ((!section.InstructorFirst || section.InstructorFirst === "Staff") && !result.query.allowStaff) return false;
-        return true;
-      }),
-    };
+function filterCourses(queryList: Query[]): Query[] {
+  return queryList.map((query) => {
+    // copy query
+    let newQuery = Object.assign({}, query);
+    newQuery.sections = query.sections.filter((section) => {
+      if (!section.selected) return false;
+      return true;
+    });
+    return newQuery;
   });
 }
 
@@ -99,41 +85,92 @@ function isValidSchedule(schedule: Schedule) {
   return true;
 }
 
-export async function fetchQueries(dispatch: Dispatch, getState: () => RootState) {
-  let state = getState().scheduler;
-  console.log("Querying....", state.queryList);
-  store.dispatch(schedulerActions.setLoading(true));
-  let queryResults: QueryResult[] = [];
-  for (const query of state.queryList) {
-    const { type, course } = query;
+async function fetchByCourse(course: Course | undefined): Promise<Section[]> {
+  // query
+  let data = await fetch(API + "data/sections/find", {
+    method: "POST",
+    mode: "cors",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      Term: DEFAULT_TERM,
+      Subject: course?.Subject,
+      CourseNumber: course?.CourseNumber,
+    }),
+  });
+  let res: Section[] = await data.json();
+  // console.log("Query Result Sections: ", res);
+  return res;
+}
 
-    if (type === QueryType.byCourse) {
-      // query
-      let data = await fetch(API + "data/sections/find", {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          Term: DEFAULT_TERM,
-          Subject: course?.Subject,
-          CourseNumber: course?.CourseNumber,
-        }),
-      });
-      let res: Section[] = await data.json();
-      // console.log("Query Result Sections: ", res);
-      let queryResult: QueryResult = {
-        sections: res,
-        query: query,
-      };
-      queryResults.push(queryResult);
+function reconcileQuerySections(query: Query, queryResults: Section[]) {
+  // copy query
+  query = JSON.parse(JSON.stringify(query));
+  // add/update sections
+  for (let queryResult of queryResults) {
+    let found = false;
+    // update existing section
+
+    for (let section of query.sections) {
+      if (
+        queryResult.Subject === section.Subject &&
+        queryResult.CourseNumber === section.CourseNumber &&
+        queryResult.Section === section.Section
+      ) {
+        Object.assign(section, queryResult);
+        console.log("Updated existing section:", section);
+        found = true;
+      }
     }
-    console.log("Query Results: ", queryResults);
+    // add new section
+    if (!found) {
+      console.log("Adding new section:", queryResult, "to", query.sections);
+      query.sections.push({
+        ...queryResult,
+        // set default values
+        expanded: true,
+        selected: true,
+      });
+    }
   }
 
-  dispatch(schedulerActions.setQueryResults(queryResults));
-  dispatch(schedulerActions.calculateSchedules(filterCourses(queryResults)));
+  // remove deleted(by school) sections
+  for (let i = 0; i < query.sections.length; i++) {
+    let section = query.sections[i];
+    if (
+      !queryResults.some(
+        (queryResult) =>
+          queryResult.Subject === section.Subject &&
+          queryResult.CourseNumber === section.CourseNumber &&
+          queryResult.Section === section.Section
+      )
+    ) {
+      query.sections.splice(i, 1);
+    }
+  }
+  return query;
+}
+
+export async function fetchQueries(dispatch: Dispatch, getState: () => RootState) {
+  let queryList = getState().scheduler.queryList;
+  console.log("Querying....", queryList);
+  store.dispatch(schedulerActions.setLoading(true));
+  let newQueryList: Query[] = [];
+  for (const query of queryList) {
+    const { type, course } = query;
+    let queryResults: Section[];
+    if (type === QueryType.byCourse) {
+      queryResults = await fetchByCourse(course);
+      newQueryList.push(reconcileQuerySections(query, queryResults));
+    }
+    console.log("Query Results: ", queryResults! || "No type?");
+  }
+
+  dispatch(schedulerActions.setQueryList(newQueryList));
+  // console.log("Before calculate schedules: ", getState().scheduler.queryList);
+  dispatch(schedulerActions.calculateSchedules());
+  // console.log("After calculate schedules: ", getState().scheduler.queryList);
   dispatch(schedulerActions.setLoading(false));
 }
 
@@ -155,27 +192,24 @@ export const schedulerSlice = createSlice({
       state.currentSchedule = action.payload;
     },
 
-    setQueryResults(state, action: PayloadAction<QueryResult[]>) {
-      state.queryResults = action.payload;
-    },
-
     setQueryList(state, action: PayloadAction<Query[]>) {
       state.queryList = action.payload;
     },
 
-    calculateSchedules: (state, action: PayloadAction<QueryResult[]>) => {
-      let { queryResults } = state;
+    calculateSchedules: (state) => {
+      // let queryList = state.queryList;
+      let queryList = filterCourses(state.queryList);
       // console.log("Calculating schedules queryresults:", queryResults);
-      if (queryResults.length === 0) {
+      if (queryList.length === 0) {
         state.schedules = [];
         state.currentSchedule = -1;
         return;
       }
       let result: Schedule[] = [];
-      for (let i = 0; i < queryResults.length; i++) {
-        let queryResult = queryResults[i];
+      for (let i = 0; i < queryList.length; i++) {
+        let query = queryList[i];
 
-        if (queryResult.sections.length === 0) {
+        if (query.sections.length === 0) {
           alert(
             "There are no available sections for one of your queries, it will not be in your schedule"
             // "warning"
@@ -184,10 +218,10 @@ export const schedulerSlice = createSlice({
         }
 
         if (result.length === 0) {
-          result = queryResult.sections.map((section) => [section]);
+          result = query.sections.map((section) => [section]);
         } else {
           let tempSchedules: Schedule[] = [];
-          overflow: for (let section of queryResults[i].sections) {
+          overflow: for (let section of queryList[i].sections) {
             for (let schedule of result) {
               let newSchedule: Schedule = [...schedule, section];
               // console.log("About to sort schedule:", newSchedule);
@@ -220,12 +254,24 @@ export const schedulerSlice = createSlice({
       state.courseList = action.payload;
     },
 
-    toggleExpanded: (state, action: PayloadAction<number>) => {
-      state.queryResults[action.payload].query.expanded = !state.queryResults[action.payload].query.expanded;
+    toggleQueryExpanded: (state, action: PayloadAction<number>) => {
+      state.queryList[action.payload].expanded = !state.queryList[action.payload].expanded;
+    },
+
+    toggleSectionExpanded: (state, action: PayloadAction<{ queryIndex: number; sectionIndex: number }>) => {
+      let { queryIndex, sectionIndex } = action.payload;
+      state.queryList[queryIndex].sections[sectionIndex].expanded =
+        !state.queryList[queryIndex].sections[sectionIndex].expanded;
+    },
+
+    toggleSectionSelected: (state, action: PayloadAction<{ queryIndex: number; sectionIndex: number }>) => {
+      let { queryIndex, sectionIndex } = action.payload;
+      state.queryList[queryIndex].sections[sectionIndex].selected =
+        !state.queryList[queryIndex].sections[sectionIndex].selected;
     },
   },
 });
 
 export const schedulerActions = schedulerSlice.actions;
 
-export default schedulerSlice.reducer;
+export default persistReducer({ key: "scheduler", storage }, schedulerSlice.reducer);

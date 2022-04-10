@@ -17,6 +17,7 @@ import {
   Paper,
   Select,
   Stack,
+  Switch,
   TextField,
   Tooltip,
   Typography,
@@ -31,7 +32,7 @@ import moment from "moment";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { round } from "utils";
-import { CalendarEvent, QueryResult, QueryType, WeekDays } from "../app/Classes";
+import { CalendarEvent, Query, QueryType, WeekDays } from "../app/Classes";
 
 function getColor(section: Section) {
   let mode = section.InstructionMode || "TBA";
@@ -176,6 +177,7 @@ function CourseQuery(props: {}) {
                 minGPA: 0,
                 expanded: false,
                 allowStaff: true,
+                sections: [],
               })
             );
             dispatch(fetchQueries);
@@ -188,13 +190,12 @@ function CourseQuery(props: {}) {
 }
 
 function QueryList(props: {}) {
-  let queryResults: QueryResult[] = useAppSelector((state) => state.scheduler.queryResults);
+  let queries: Query[] = useAppSelector((state) => state.scheduler.queryList);
   const dispatch = useDispatch();
   return (
     <Paper sx={{ p: 3 }} elevation={4}>
       <Typography variant='h3'>Query List</Typography>
-      {queryResults.map((queryResult: QueryResult, index: number) => {
-        let { query } = queryResult;
+      {queries.map((query: Query, queryIndex: number) => {
         let title: string = "";
         if (query.type === QueryType.byCourse)
           title = `Course: ${query.course?.Subject}${query.course?.CourseNumber} | GPA:${round(
@@ -206,15 +207,16 @@ function QueryList(props: {}) {
             expanded={query.expanded}
             elevation={5}
             onChange={() => {
-              dispatch(schedulerActions.toggleExpanded(index));
+              dispatch(schedulerActions.toggleQueryExpanded(queryIndex));
             }}>
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Grid container alignItems='center'>
                 <Grid item xs={1}>
                   <IconButton
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       // console.log("removing query");
-                      dispatch(schedulerActions.removeQuery(index));
+                      dispatch(schedulerActions.removeQuery(queryIndex));
                       // console.log("dispatched query");
                       dispatch(fetchQueries);
                     }}>
@@ -228,29 +230,33 @@ function QueryList(props: {}) {
             </AccordionSummary>
             <Divider />
             <AccordionDetails>
-              {/* {
-                <FormControlLabel
-                  label='Allow Staff'
-                  control={
-                    <Checkbox
-                      checked={queryResult.query.allowStaff}
-                      onChange={(ev) => {
-                        queryResult.query.allowStaff = ev.target.checked;
-                        console.log("Allow Staff on query: ", queryResult);
-                        props.setQueryList(props.queryResults.map((queryResult) => queryResult.query));
-                      }}></Checkbox>
-                  }
-                />
-              } */}
-              {queryResult.sections.map((section) => {
+              {query.sections.map((section, sectionIndex) => {
                 return (
-                  <Accordion key={section.Section} elevation={5}>
+                  <Accordion
+                    key={section.Section}
+                    elevation={5}
+                    expanded={section.expanded}
+                    onChange={() => {
+                      dispatch(schedulerActions.toggleSectionExpanded({ queryIndex, sectionIndex }));
+                    }}>
                     <AccordionSummary expandIcon={<ExpandMore />}>
+                      <Switch
+                        checked={section.selected}
+                        size='small'
+                        onChange={(e) => {
+                          // negate expanded call
+                          dispatch(schedulerActions.toggleSectionExpanded({ queryIndex, sectionIndex }));
+                          dispatch(schedulerActions.toggleSectionSelected({ queryIndex, sectionIndex }));
+                          dispatch(fetchQueries);
+                        }}
+                      />
                       <Typography>{`${section.Section} - ${
                         section.InstructorFirst ? section.InstructorFirst : "Staff"
                       } ${section.InstructorLast ? section.InstructorLast : ""} - ${
                         section.InstructionMode ? section.InstructionMode : "TBA"
-                      } | GPA:${round(section.AvgGPA || 0)}(${section.TotalEnrollment})`}</Typography>
+                      } | GPA:${round(section.instructions.AvgGPA || 0)}(${
+                        section.instructions.TotalEnrollment
+                      })`}</Typography>
                     </AccordionSummary>
                     <Divider />
                     <AccordionDetails>

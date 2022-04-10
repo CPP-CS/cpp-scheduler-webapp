@@ -129,12 +129,7 @@ export interface Query {
   minGPA: number;
   allowStaff?: boolean;
   course?: Course;
-}
-
-// the results of a query
-export interface QueryResult {
   sections: Array<Section>;
-  query: Query;
 }
 
 // export interface CourseQuery {

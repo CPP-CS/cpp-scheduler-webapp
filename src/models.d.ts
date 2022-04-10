@@ -40,6 +40,10 @@ export type Section = {
   AvgGPA: number | null;
   instructionId: number | null;
   instructions: Instruction;
+
+  // local properties
+  selected: boolean;
+  expanded: boolean;
 };
 
 export type Instruction = {
