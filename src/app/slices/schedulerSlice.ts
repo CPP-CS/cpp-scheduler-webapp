@@ -57,6 +57,7 @@ function sortSchedule(schedule: Schedule) {
 }
 
 function conflictsWithBreak(section: Section, breakList: Break[]): boolean {
+  if (section.StartTime === null && section.EndTime === null) return false;
   let sectionStart = moment(section.StartTime, "HH:mm");
   let sectionEnd = moment(section.EndTime, "HH:mm");
   for (let currBreak of breakList) {
@@ -64,7 +65,10 @@ function conflictsWithBreak(section: Section, breakList: Break[]): boolean {
     let breakEnd = moment(currBreak.EndTime, "HH:mm");
     for (let weekDay of Object.keys(WeekDays)) {
       if ((section as any)[weekDay] === true && (currBreak as any)[weekDay] === true) {
-        if (!(sectionStart.isSameOrBefore(breakEnd) && sectionEnd.isSameOrAfter(breakStart))) return true;
+        if (sectionStart.isSameOrBefore(breakEnd) && sectionEnd.isSameOrAfter(breakStart)) {
+          console.log("Section Filtered:", JSON.parse(JSON.stringify(section)));
+          return true;
+        }
       }
     }
   }
