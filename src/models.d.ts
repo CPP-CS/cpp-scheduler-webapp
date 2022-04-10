@@ -39,6 +39,7 @@ export type Section = {
   F: number | null;
   AvgGPA: number | null;
   instructionId: number | null;
+  instructions: Instruction;
 };
 
 export type Instruction = {

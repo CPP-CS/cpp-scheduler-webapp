@@ -29,6 +29,7 @@ import { API } from "index";
 import { Course, Section } from "models";
 import moment, { Moment } from "moment";
 import React, { Fragment, useState } from "react";
+import { round } from "utils";
 import { CalendarEvent, Query, QueryResult, QueryType, Schedule, WeekDays } from "../app/Classes";
 
 const DEFAULT_TERM = "F 2022";
@@ -131,6 +132,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
     this.addQuery = this.addQuery.bind(this);
     this.setCurrentSchedule = this.setCurrentSchedule.bind(this);
     this.setQueryResults = this.setQueryResults.bind(this);
+    this.setQueryList = this.setQueryList.bind(this);
     this.state = {
       courseList: [],
       queryList: queryList,
@@ -209,6 +211,37 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
     this.setState({ queryResults });
   }
 
+  setQueryList(queryList: Query[]) {
+    this.setState({ queryList });
+  }
+
+  filterCourses(queryResults: QueryResult[]): QueryResult[] {
+    // console.log(
+    //   "Filtered Courses:",
+    //   queryResults.map((result) => {
+    //     return {
+    //       query: result.query,
+    //       sections: result.sections.filter((section) => {
+    //         if ((!section.InstructorFirst || section.InstructorFirst === "Staff") && !result.query.allowStaff)
+    //           return false;
+    //         return true;
+    //       }),
+    //     };
+    //   })
+    // );
+    return queryResults.map((result) => {
+      return {
+        query: result.query,
+
+        sections: result.sections.filter((section) => {
+          if ((!section.InstructorFirst || section.InstructorFirst === "Staff") && !result.query.allowStaff)
+            return false;
+          return true;
+        }),
+      };
+    });
+  }
+
   async query() {
     console.log("Querying....", this.state.queryList);
     this.setState({ loading: true });
@@ -240,7 +273,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
       }
       console.log("Query Results: ", queryResults);
     }
-    this.calculateSchedules(queryResults);
+    this.calculateSchedules(this.filterCourses(queryResults));
     this.setState({ queryResults, loading: false });
   }
 
@@ -297,6 +330,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
 
   componentDidUpdate(prevProps: any, prevState: ScheduleState) {
     if (this.state.queryList !== prevState.queryList) {
+      // console.log("Query List changed: ", prevState.queryList, this.state.queryList);
       this.query();
     }
     // console.log("schedules:", this.state.schedules, prevState.schedules);
@@ -351,6 +385,7 @@ export default class ScheduleBuilder extends React.Component<{}, ScheduleState> 
               queryResults={this.state.queryResults}
               removeQuery={this.removeQuery}
               setQueryResults={this.setQueryResults}
+              setQueryList={this.setQueryList}
             />
           </Box>
         </Grid>
@@ -421,7 +456,8 @@ function CourseQuery(props: { courseList: Course[]; addQuery: (query: Query) => 
       <Button
         variant='outlined'
         onClick={() => {
-          if (course) props.addQuery({ type: QueryType.byCourse, course: course, minGPA: 0, expanded: false });
+          if (course)
+            props.addQuery({ type: QueryType.byCourse, course: course, minGPA: 0, expanded: false, allowStaff: true });
         }}>
         Add Course
       </Button>
@@ -433,6 +469,7 @@ function QueryList(props: {
   queryResults: Array<QueryResult>;
   removeQuery: (query: Query) => void;
   setQueryResults: (queryResults: QueryResult[]) => void;
+  setQueryList: (queryList: Query[]) => void;
 }) {
   // console.log("Query Results: ", props.queryResults);
   return (
@@ -441,7 +478,10 @@ function QueryList(props: {
       {props.queryResults.map((queryResult: QueryResult) => {
         let { query } = queryResult;
         let title: string = "";
-        if (query.type === QueryType.byCourse) title = `Course: ${query.course?.Subject}${query.course?.CourseNumber}`;
+        if (query.type === QueryType.byCourse)
+          title = `Course: ${query.course?.Subject}${query.course?.CourseNumber} | GPA:${round(
+            query.course?.AvgGPA || 0
+          )}(${query.course?.TotalEnrollment})`;
         return (
           <Accordion
             key={query.course?.Label}
@@ -453,32 +493,46 @@ function QueryList(props: {
             }}>
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Grid container alignItems='center'>
-                <Grid item>
+                <Grid item xs={1}>
                   <IconButton onClick={() => props.removeQuery(query)}>
                     <Delete />
                   </IconButton>
                 </Grid>
-                <Grid item>
-                  <Typography>{title}</Typography>
+                <Grid item xs={11}>
+                  <Typography variant='h5'>{title}</Typography>
                 </Grid>
               </Grid>
             </AccordionSummary>
             <Divider />
             <AccordionDetails>
-              <Typography>
+              {/* {
+                <FormControlLabel
+                  label='Allow Staff'
+                  control={
+                    <Checkbox
+                      checked={queryResult.query.allowStaff}
+                      onChange={(ev) => {
+                        queryResult.query.allowStaff = ev.target.checked;
+                        console.log("Allow Staff on query: ", queryResult);
+                        props.setQueryList(props.queryResults.map((queryResult) => queryResult.query));
+                      }}></Checkbox>
+                  }
+                />
+              } */}
+              {/* <Typography>
                 {`Avg GPA: ${
                   query.course?.AvgGPA ? (Math.round(query.course?.AvgGPA * 100) / 100).toFixed(2) : "No Data"
                 }`}
-              </Typography>
+              </Typography> */}
               {queryResult.sections.map((section) => {
                 return (
                   <Accordion key={section.Section} elevation={5}>
                     <AccordionSummary expandIcon={<ExpandMore />}>
-                      <Typography>{`Section ${section.Section} - ${
+                      <Typography>{`${section.Section} - ${
                         section.InstructorFirst ? section.InstructorFirst : "Staff"
                       } ${section.InstructorLast ? section.InstructorLast : ""} - ${
                         section.InstructionMode ? section.InstructionMode : "TBA"
-                      }`}</Typography>
+                      } | GPA:${round(section.AvgGPA || 0)}(${section.TotalEnrollment})`}</Typography>
                     </AccordionSummary>
                     <Divider />
                     <AccordionDetails>
@@ -530,16 +584,16 @@ function ScheduleDisplay(props: { schedules: Schedule[]; currentSchedule: number
   //schedule
   for (let index = 0; index < schedule.length; index++) {
     let section: Section = schedule[index];
-    console.log("Section: ", section);
+    // console.log("Section: ", section);
     for (let [day, num] of Object.entries(WeekDays)) {
       if ((section as any)[day] === true) {
         // console.log(day, section);
-        console.log(
-          "Start Time: ",
-          `2011-10-${num}T${moment(section.StartTime, "HH:mm").format("hh:mm")}:00.000Z`,
-          "End Time: ",
-          `2011-10-${num}T${moment(section.EndTime, "HH:mm").format("hh:mm")}:00.000Z`
-        );
+        // console.log(
+        //   "Start Time: ",
+        //   `2011-10-${num}T${moment(section.StartTime, "HH:mm").format("hh:mm")}:00.000Z`,
+        //   "End Time: ",
+        //   `2011-10-${num}T${moment(section.EndTime, "HH:mm").format("hh:mm")}:00.000Z`
+        // );
         events.push({
           title: `${section.Subject}${section.CourseNumber} [${section.Section}] ${
             section.InstructorFirst ? section.InstructorFirst : "Staff"
