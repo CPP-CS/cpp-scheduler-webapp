@@ -223,6 +223,8 @@ export const schedulerSlice = createSlice({
       //sort sections
       queryList.forEach((query) => {
         query.sections.sort((a, b) => {
+          if (!b.InstructorFirst || b.InstructorFirst === "Staff") return -999;
+          if (!a.InstructorFirst || a.InstructorFirst === "Staff") return 999;
           return (b.instructions.AvgGPA || 0) - (a.instructions.AvgGPA || 0);
         });
       });
