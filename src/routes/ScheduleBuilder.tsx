@@ -7,6 +7,7 @@ import {
   AccordionSummary,
   Autocomplete,
   Button,
+  CircularProgress,
   createFilterOptions,
   Divider,
   Grid,
@@ -28,7 +29,6 @@ import {
 import { Box } from "@mui/system";
 import { fetchQueries, schedulerActions } from "app/slices/schedulerSlice";
 import { store, useAppDispatch, useAppSelector } from "app/store";
-import { Loading } from "components/Loading";
 import { API } from "index";
 import { Course, Section } from "models";
 import moment from "moment";
@@ -95,8 +95,7 @@ export default function ScheduleBuilder(props: {}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { loading, currentSchedule } = useAppSelector((state) => state.scheduler);
-  if (loading) return <Loading />;
+  const { currentSchedule } = useAppSelector((state) => state.scheduler);
   return (
     <Grid
       container
@@ -196,10 +195,14 @@ function CourseQuery(props: {}) {
 
 function QueryList(props: {}) {
   let queries: Query[] = useAppSelector((state) => state.scheduler.queryList);
+  let loading: boolean = useAppSelector((state) => state.scheduler.loading)
   const dispatch = useDispatch();
   return (
     <Paper sx={{ p: 3 }} elevation={4}>
-      <Typography variant='h3'>Query List</Typography>
+      <Stack direction="row" spacing={1}>
+        <Typography variant='h3'>Query List</Typography>
+        {loading && <CircularProgress />}
+      </Stack>
       {queries.map((query: Query, queryIndex: number) => {
         let title: string = "";
         if (query.type === QueryType.byCourse)
