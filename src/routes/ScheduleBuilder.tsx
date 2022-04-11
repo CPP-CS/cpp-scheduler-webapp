@@ -116,7 +116,7 @@ export default function ScheduleBuilder(props: {}) {
       <Grid item xs={12} md={8}>
         <Stack height='100%' direction='column' alignItems='center'>
           <SelectSchedule />
-          <Box minHeight={800} height='100%' width='100%'>
+          <Box minHeight={600} height='100%' width='100%'>
             {currentSchedule !== -1 ? <ScheduleDisplay /> : null}
           </Box>
         </Stack>
@@ -195,11 +195,11 @@ function CourseQuery(props: {}) {
 
 function QueryList(props: {}) {
   let queries: Query[] = useAppSelector((state) => state.scheduler.queryList);
-  let loading: boolean = useAppSelector((state) => state.scheduler.loading)
+  let loading: boolean = useAppSelector((state) => state.scheduler.loading);
   const dispatch = useDispatch();
   return (
     <Paper sx={{ p: 3 }} elevation={4}>
-      <Stack direction="row" spacing={1}>
+      <Stack direction='row'>
         <Typography variant='h3'>Query List</Typography>
         {loading && <CircularProgress />}
       </Stack>
@@ -219,7 +219,7 @@ function QueryList(props: {}) {
             }}>
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Grid container alignItems='center'>
-                <Grid item xs={1}>
+                <Grid item xs='auto'>
                   <IconButton
                     onClick={(e) => {
                       e.stopPropagation();
@@ -231,7 +231,7 @@ function QueryList(props: {}) {
                     <Delete />
                   </IconButton>
                 </Grid>
-                <Grid item xs={11}>
+                <Grid item xs>
                   <Typography variant='h5'>{title}</Typography>
                 </Grid>
               </Grid>
