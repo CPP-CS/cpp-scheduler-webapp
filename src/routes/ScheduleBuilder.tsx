@@ -29,6 +29,7 @@ import {
 import { Box } from "@mui/system";
 import { fetchQueries, schedulerActions } from "app/slices/schedulerSlice";
 import { store, useAppDispatch, useAppSelector } from "app/store";
+import { Loading } from "components/Loading";
 import { API } from "index";
 import { Course, Section } from "models";
 import moment from "moment";
@@ -73,13 +74,10 @@ function getDays(section: Section | Break) {
 }
 
 export default function ScheduleBuilder(props: {}) {
-  let { setLoading, setCourseList } = schedulerActions;
+  let { setCourseList } = schedulerActions;
   const dispatch = useDispatch();
+  const [loadingCourses, setLoadingCourses] = useState<boolean>(true);
   useEffect(() => {
-    dispatch(setLoading(true));
-
-    // ADD LOAD SAVE DATA HERE
-
     // query
     dispatch(fetchQueries);
     // get courses
@@ -90,13 +88,15 @@ export default function ScheduleBuilder(props: {}) {
       .then((res) => {
         let courseList = res as Course[];
         dispatch(setCourseList(courseList));
-        dispatch(setLoading(false));
+        setLoadingCourses(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { currentSchedule } = useAppSelector((state) => state.scheduler);
-  return (
+  return loadingCourses ? (
+    <Loading />
+  ) : (
     <Grid
       container
       sx={{
@@ -308,7 +308,7 @@ function SelectSchedule(props: {}) {
 }
 
 function ScheduleDisplay(props: {}) {
-  let { schedules, currentSchedule, breakList } = useAppSelector((state) => state.scheduler);
+  let { schedules, currentSchedule, breakList, loading } = useAppSelector((state) => state.scheduler);
   let schedule = schedules[currentSchedule];
   let events: Array<CalendarEvent> = [];
   //schedule
@@ -371,7 +371,9 @@ function ScheduleDisplay(props: {}) {
     }
   }
   // console.log("Events: ", events);
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <FullCalendar
       plugins={[timeGridPlugin]}
       initialView='timeGridWeek'
