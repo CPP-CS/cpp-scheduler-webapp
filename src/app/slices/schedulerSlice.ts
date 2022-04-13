@@ -8,8 +8,9 @@ import { Moment } from "moment";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-interface SchedulerState {
+export interface SchedulerState {
   loading: boolean;
+  resetting: boolean;
   courseList: Course[];
   queryList: Query[];
   breakList: Break[];
@@ -21,6 +22,7 @@ const initialState: SchedulerState = {
   queryList: [],
   breakList: [],
   loading: true,
+  resetting: true,
   schedules: [],
   currentSchedule: -1,
 };
@@ -134,6 +136,8 @@ function reconcileQuerySections(query: Query, queryResults: Section[]) {
     // update existing section
 
     for (let section of query.sections) {
+      console.log("Query Result: ", queryResult.Subject, queryResult.CourseNumber, queryResult.Section);
+      console.log("Existing section: ", queryResult.Subject, queryResult.CourseNumber, queryResult.Section);
       if (
         queryResult.Subject === section.Subject &&
         queryResult.CourseNumber === section.CourseNumber &&
@@ -313,6 +317,19 @@ export const schedulerSlice = createSlice({
 
     removeBreak(state, action: PayloadAction<number>) {
       state.breakList.splice(action.payload, 1);
+    },
+
+    setState(state, action: PayloadAction<SchedulerState | {}>) {
+      try {
+        Object.assign(state, action.payload);
+        // console.log("Loading save data: ", JSON.parse(JSON.stringify(state)));
+      } catch (e) {
+        console.log("Error setting state: ", e);
+      }
+    },
+
+    setResetting(state, action: PayloadAction<boolean>) {
+      state.resetting = action.payload;
     },
   },
 });

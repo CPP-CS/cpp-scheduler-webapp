@@ -30,6 +30,7 @@ import { Box } from "@mui/system";
 import { fetchQueries, schedulerActions } from "app/slices/schedulerSlice";
 import { store, useAppDispatch, useAppSelector } from "app/store";
 import { Loading } from "components/Loading";
+import { GetSave, LoadSave } from "components/Save";
 import { API } from "index";
 import { Course, Section } from "models";
 import moment from "moment";
@@ -75,8 +76,8 @@ function getDays(section: Section | Break) {
 
 export default function ScheduleBuilder(props: {}) {
   let { setCourseList } = schedulerActions;
+  let { resetting } = useAppSelector((state) => state.scheduler);
   const dispatch = useDispatch();
-  const [loadingCourses, setLoadingCourses] = useState<boolean>(true);
   useEffect(() => {
     // query
     dispatch(fetchQueries);
@@ -88,13 +89,13 @@ export default function ScheduleBuilder(props: {}) {
       .then((res) => {
         let courseList = res as Course[];
         dispatch(setCourseList(courseList));
-        setLoadingCourses(false);
+        dispatch(schedulerActions.setResetting(false));
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { currentSchedule } = useAppSelector((state) => state.scheduler);
-  return loadingCourses ? (
+  return resetting ? (
     <Loading />
   ) : (
     <Grid
@@ -111,6 +112,8 @@ export default function ScheduleBuilder(props: {}) {
           <QueryList />
           <AddBreak />
           <BreakList />
+          <GetSave />
+          <LoadSave />
         </Box>
       </Grid>
       <Grid item xs={12} md={8}>

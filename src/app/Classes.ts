@@ -1,31 +1,5 @@
 import { Course, Section } from "models";
 
-// export interface Section extends Block {
-//   Selected: boolean;
-//   AcademicSession: string;
-//   Building: number;
-//   ClassCapacity: number;
-//   ClassNumber: number;
-//   ClassTitle: string;
-//   Component: string;
-//   CourseNumber: number;
-//   EndDate: string;
-//   EndTime: string;
-//   InstructionMode: string;
-//   Instructor: string;
-//   Room: number;
-//   Section: number;
-//   StartDate: string;
-//   StartTime: string;
-//   Subject: string;
-//   Units: number;
-// }
-
-// export interface Course {
-//   name: string;
-//   sections: Array<Section>;
-// }
-
 export interface Schedule extends Array<Section> {}
 
 export enum WeekDays {
@@ -37,15 +11,6 @@ export enum WeekDays {
   "Friday" = "07",
   "Saturday" = "08",
 }
-
-// export interface SaveData {
-//   courses: {
-//     subject: string;
-//     courseNumber: string;
-//   }[];
-//   activeSections: number[];
-//   breaks: Block[];
-// }
 
 type GPAType = {
   [key: string]: number;
@@ -65,46 +30,6 @@ export const GPA: GPAType = {
   "D-": 0.7,
   F: 0,
 };
-
-// export interface Section {
-//   ClassCapacity: number;
-//   ClassNumber: number;
-//   ClassTitle: string;
-//   Component: string;
-//   CourseNumber: string;
-//   EndDate: string;
-//   EndTime: string;
-//   Friday: boolean;
-//   InstructionMode: string;
-//   InstructorFirst: string;
-//   InstructorLast: string;
-//   Location: string;
-//   Monday: boolean;
-//   Saturday: boolean;
-//   Section: string;
-//   StartDate: string;
-//   StartTime: string;
-//   Subject: string;
-//   Sunday: boolean;
-//   Term: string;
-//   Thursday: boolean;
-//   Tuesday: boolean;
-//   TotalEnrollment: number;
-//   Units: number;
-//   Wednesday: boolean;
-//   A: number;
-//   "A-": number;
-//   "B+": number;
-//   B: number;
-//   "B-": number;
-//   "C+": number;
-//   C: number;
-//   "C-": number;
-//   "D+": number;
-//   D: number;
-//   "D-": number;
-//   F: number;
-// }
 
 export interface Break {
   Friday: boolean;
@@ -136,13 +61,6 @@ export interface Query {
   sections: Array<Section>;
 }
 
-// export interface CourseQuery {
-//   Subject: string;
-//   CourseNumber: string;
-//   AvgGPA: number;
-//   Label: string;
-// }
-
 export interface CalendarEvent {
   title: string;
   start: string;
@@ -152,4 +70,29 @@ export interface CalendarEvent {
   backgroundColor: string;
   borderColor: string;
   section: Section | Break;
+}
+
+export interface CompressedCourse {
+  Subject: string;
+  CourseNumber: string;
+}
+
+export interface CompressedSection {
+  selected: boolean;
+  Subject: string;
+  CourseNumber: string;
+  Section: string;
+}
+export interface CompressedQuery {
+  type: QueryType;
+  minGPA: number;
+  allowStaff: boolean;
+  course?: CompressedCourse;
+  sections: Array<CompressedSection>;
+}
+
+export interface SaveData {
+  queryList: Array<CompressedQuery>;
+  breakList: Array<Break>;
+  currentSchedule: number;
 }
