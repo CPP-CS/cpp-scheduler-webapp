@@ -262,7 +262,7 @@ function QueryList(props: {}) {
                         section.InstructorFirst ? section.InstructorFirst : "Staff"
                       } ${section.InstructorLast ? section.InstructorLast : ""} - ${
                         section.InstructionMode ? section.InstructionMode : "TBA"
-                      } | GPA:${round(section.instructions.AvgGPA || 0)}(${
+                      } | GPA:${round(section.instructions?.AvgGPA || 0)}(${
                         section.instructions.TotalEnrollment
                       })`}</Typography>
                     </AccordionSummary>
