@@ -266,7 +266,7 @@ function QueryList(props: {}) {
                       } ${section.InstructorLast ? section.InstructorLast : ""} - ${
                         section.InstructionMode ? section.InstructionMode : "TBA"
                       } | GPA:${round(section.instructions?.AvgGPA || 0)}(${
-                        section.instructions.TotalEnrollment
+                        section.instructions?.TotalEnrollment
                       })`}</Typography>
                     </AccordionSummary>
                     <Divider />
