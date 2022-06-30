@@ -2,14 +2,19 @@ import { configureStore } from "@reduxjs/toolkit";
 import schedulerSlice from "./slices/schedulerSlice";
 import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
 import thunkMiddleware from "redux-thunk";
-import { persistStore } from "redux-persist";
+import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, persistStore } from "redux-persist";
 import { createWrapper } from "next-redux-wrapper";
 
 export const store = configureStore({
   reducer: {
     scheduler: schedulerSlice,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(thunkMiddleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }).concat(thunkMiddleware),
 });
 
 export let persistor = persistStore(store);
