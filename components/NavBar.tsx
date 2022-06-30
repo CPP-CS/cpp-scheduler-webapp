@@ -27,9 +27,9 @@ import {
   ListItemSecondaryAction,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 
-function ElevationScroll(props) {
+function ElevationScroll(props: any) {
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 0,
@@ -62,7 +62,6 @@ export default function NavBar() {
               </NavLink>
               <NavLink
                 to='/scheduleBuilder'
-                keyVal='scheduleBuilder'
                 icon={<CalendarViewDayOutlined sx={{ fontSize: "2em" }} />}
                 setOpen={setOpen}>
                 Schedule Builder
@@ -114,7 +113,12 @@ export default function NavBar() {
   );
 }
 
-function NavLink(props) {
+function NavLink(props: {
+  to: string;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  icon: JSX.Element;
+  children: JSX.Element | string;
+}) {
   let router = useRouter();
   return (
     <ListItemButton
@@ -130,7 +134,12 @@ function NavLink(props) {
   );
 }
 
-function GradesNavLink(props) {
+function GradesNavLink(props: {
+  to: string;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  icon: JSX.Element;
+  children: JSX.Element | string;
+}) {
   let router = useRouter();
   return (
     <ListItemButton

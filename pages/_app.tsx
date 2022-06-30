@@ -15,6 +15,7 @@ import { Loading } from "../components/Loading";
 import NavBar from "../components/NavBar";
 import { persistor, store, wrapper } from "../store/store";
 import ReactGA from "react-ga4";
+import { AppProps } from "next/app";
 
 const theme: Theme = createTheme(createTheme(), {
   palette: {
@@ -36,7 +37,7 @@ const theme: Theme = createTheme(createTheme(), {
   },
 });
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     ReactGA.initialize("G-BFNLVWP9W2");
     ReactGA.send(window.location.pathname);

@@ -1,8 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-};
-
 const withTM = require("next-transpile-modules")([
   "@fullcalendar/common",
   "@babel/preset-react",
@@ -13,4 +9,6 @@ const withTM = require("next-transpile-modules")([
   "@fullcalendar/timegrid",
 ]);
 
-module.exports = withTM(nextConfig);
+module.exports = withTM({
+  // your custom config goes here
+});

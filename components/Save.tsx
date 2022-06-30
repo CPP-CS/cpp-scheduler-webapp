@@ -3,7 +3,7 @@ import LZUTF8 from "lzutf8";
 import { Button, Paper, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { CompressedQuery, CompressedSection, SaveData } from "./types";
-import { useAppDispatch, useAppSelector } from "../store/store";
+import { RootState, useAppDispatch, useAppSelector } from "../store/store";
 import { fetchQueries, schedulerActions, SchedulerState } from "../store/slices/schedulerSlice";
 
 function saveState(state: SchedulerState): SaveData {
@@ -39,7 +39,7 @@ function loadSave(key: string): SaveData | {} {
 }
 
 export function GetSave() {
-  let state = useAppSelector((state) => state.scheduler);
+  let state = useAppSelector((state: RootState) => state.scheduler);
   let [saveKey, setSaveKey] = useState("");
   return (
     <Paper elevation={4} sx={{ p: 3 }}>

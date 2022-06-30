@@ -29,7 +29,7 @@ import { fetchQueries, schedulerActions } from "../../store/slices/schedulerSlic
 import { store, useAppDispatch, useAppSelector } from "../../store/store";
 
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 
 import { API, Break, CalendarEvent, Query, QueryType, WeekDays } from "../../components/types";
 import { Course, Section } from "../../components/models";
@@ -512,7 +512,7 @@ function BreakList() {
     <Paper sx={{ p: 3 }} elevation={4}>
       <Typography variant='h3'>Break List</Typography>
       <List>
-        {breakList.map((currBreak, index) => {
+        {breakList.map((currBreak: Break, index: number) => {
           return (
             <Paper key={index} elevation={2} sx={{ px: 3, py: 1 }}>
               <Stack direction='row' alignItems='center'>
