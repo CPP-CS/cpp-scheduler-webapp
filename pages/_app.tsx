@@ -3,13 +3,18 @@ import "@fullcalendar/common/main.css";
 import "@fullcalendar/daygrid/main.css";
 import "@fullcalendar/timegrid/main.css";
 
+import "@fontsource/lato";
+import "@fontsource/roboto";
+
 import { createTheme, Theme, ThemeProvider } from "@mui/material";
 import Head from "next/head";
+import { useEffect } from "react";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { Loading } from "../components/Loading";
 import NavBar from "../components/NavBar";
 import { persistor, store, wrapper } from "../store/store";
+import ReactGA from "react-ga4";
 
 const theme: Theme = createTheme(createTheme(), {
   palette: {
@@ -32,6 +37,10 @@ const theme: Theme = createTheme(createTheme(), {
 });
 
 function MyApp({ Component, pageProps }) {
+  useEffect(() => {
+    ReactGA.initialize("G-BFNLVWP9W2");
+    ReactGA.send(window.location.pathname);
+  });
   return (
     <ThemeProvider theme={theme}>
       <Provider store={store}>
