@@ -45,12 +45,12 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={theme}>
       <Provider store={store}>
+        <Head>
+          <meta name='viewport' content='width=device-width, initial-scale=1' />
+          <title>CPP Scheduler</title>
+        </Head>
+        <NavBar />
         <PersistGate loading={<Loading />} persistor={persistor}>
-          <Head>
-            <meta name='viewport' content='width=device-width, initial-scale=1' />
-            <title>CPP Scheduler</title>
-          </Head>
-          <NavBar />
           <Component {...pageProps} />
         </PersistGate>
       </Provider>
