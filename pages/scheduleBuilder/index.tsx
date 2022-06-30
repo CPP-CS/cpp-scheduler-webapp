@@ -1,11 +1,10 @@
-import FullCalendar from "@fullcalendar/react";
-import timeGridPlugin from "@fullcalendar/timegrid/main";
 import { Delete, ExpandMore } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Autocomplete,
+  Box,
   Button,
   CircularProgress,
   createFilterOptions,
@@ -26,18 +25,19 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { Box } from "@mui/system";
-import { fetchQueries, schedulerActions } from "app/slices/schedulerSlice";
-import { store, useAppDispatch, useAppSelector } from "app/store";
-import { Loading } from "components/Loading";
-import { GetSave, LoadSave } from "components/Save";
-import { API } from "index";
-import { Course, Section } from "models";
+import { fetchQueries, schedulerActions } from "../../store/slices/schedulerSlice";
+import { store, useAppDispatch, useAppSelector } from "../../store/store";
+
 import moment from "moment";
-import { Fragment, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { round } from "utils";
-import { Break, CalendarEvent, Query, QueryType, WeekDays } from "../app/Classes";
+import { useEffect, useState } from "react";
+
+import { API, Break, CalendarEvent, Query, QueryType, WeekDays } from "../../components/types";
+import { Course, Section } from "../../components/models";
+import { getDays, round } from "../../components/utils";
+import { GetSave, LoadSave } from "../../components/Save";
+import { Loading } from "../../components/Loading";
+
+import Calendar from "../../components/Calendar";
 
 function getColor(section: Section) {
   let mode = section.InstructionMode || "TBA";
@@ -61,23 +61,10 @@ function getColor(section: Section) {
   }
 }
 
-function getDays(section: Section | Break) {
-  let res: string = "";
-  if (section.Sunday) res += "Su";
-  if (section.Monday) res += "M";
-  if (section.Tuesday) res += "Tu";
-  if (section.Wednesday) res += "W";
-  if (section.Thursday) res += "Th";
-  if (section.Friday) res += "F";
-  if (section.Saturday) res += "S";
-  if (res === "") return "TBA";
-  return res;
-}
-
 export default function ScheduleBuilder(props: {}) {
   let { setCourseList } = schedulerActions;
   let { resetting } = useAppSelector((state) => state.scheduler);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   useEffect(() => {
     // query
     dispatch(fetchQueries);
@@ -199,7 +186,7 @@ function CourseQuery(props: {}) {
 function QueryList(props: {}) {
   let queries: Query[] = useAppSelector((state) => state.scheduler.queryList);
   let loading: boolean = useAppSelector((state) => state.scheduler.loading);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   return (
     <Paper sx={{ p: 3 }} elevation={4}>
       <Stack direction='row'>
@@ -374,56 +361,8 @@ function ScheduleDisplay(props: {}) {
     }
   }
   // console.log("Events: ", events);
-  return loading ? (
-    <Loading />
-  ) : (
-    <FullCalendar
-      plugins={[timeGridPlugin]}
-      initialView='timeGridWeek'
-      allDaySlot={true}
-      allDayContent='Async'
-      dayHeaderFormat={{ weekday: "short" }}
-      headerToolbar={{ start: "", center: "", end: "" }}
-      initialDate='2011-10-02'
-      slotMinTime='06:00:00'
-      events={events}
-      slotDuration='00:30:00'
-      expandRows={true}
-      height='100%'
-      eventContent={(arg) => {
-        let event: CalendarEvent = arg.event.extendedProps as CalendarEvent;
-        let section: Section = event.section as Section;
-        return (
-          <Tooltip
-            enterTouchDelay={0}
-            title={
-              <Box>
-                <Typography>Class Number: {section.ClassNumber || "TBA"}</Typography>
-                <Typography>Days: {getDays(section)}</Typography>
-                <Typography>
-                  {section.StartTime && section.EndTime
-                    ? `Time: ${moment(section.StartTime, "HH:mm").format("h:mma")} - ${moment(
-                        section.EndTime,
-                        "HH:mm"
-                      ).format("h:mma")}`
-                    : "Time: TBA"}
-                </Typography>
-                <Typography>Location: {section.Location || "TBA"}</Typography>
-                <Typography>Component: {section.Component || "TBA"}</Typography>
-                <Typography>Units: {section.Units || "TBA"}</Typography>
-              </Box>
-            }>
-            <div className='fc-event-main-frame'>
-              {arg.timeText && <div className='fc-event-time'>{arg.timeText}</div>}
-              <div className='fc-event-title-container'>
-                <div className='fc-event-title fc-sticky'>{arg.event.title || <Fragment>&nbsp;</Fragment>}</div>
-              </div>
-            </div>
-          </Tooltip>
-        );
-      }}
-    />
-  );
+
+  return loading ? <Loading /> : <Calendar events={events} />;
 }
 
 function AddBreak() {

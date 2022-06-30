@@ -1,7 +1,6 @@
-import { Button, Container, Stack, Typography, useMediaQuery } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, Button, Container, Stack, Typography, useMediaQuery } from "@mui/material";
+import { useRouter } from "next/router";
 import { ReactElement } from "react";
-import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   let size = useMediaQuery("(min-width: 900px)");
@@ -37,12 +36,12 @@ export default function Home() {
 }
 
 function NavButton(props: { link: string; children: ReactElement }) {
-  let navigate = useNavigate();
+  let router = useRouter();
   return (
     <Button
       variant='outlined'
       onClick={() => {
-        navigate(props.link);
+        router.push(props.link);
       }}>
       {props.children}
     </Button>

@@ -1,12 +1,12 @@
 import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
-import { Break, Query, QueryType, Schedule, WeekDays } from "app/Classes";
-import { RootState, store } from "app/store";
-import { API } from "index";
-import { Course, Section } from "models";
+
 import moment from "moment";
 import { Moment } from "moment";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { Course, Section } from "../../components/models";
+import { API, Break, Query, QueryType, Schedule, WeekDays } from "../../components/types";
+import { RootState, store } from "../store";
 
 export interface SchedulerState {
   loading: boolean;

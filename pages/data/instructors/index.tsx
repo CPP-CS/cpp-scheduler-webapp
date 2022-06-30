@@ -12,13 +12,15 @@ import {
   TableCell,
   TableRow,
   TableBody,
+  Box,
 } from "@mui/material";
-import { Box } from "@mui/system";
+
 import React from "react";
-import { API } from "../..";
+
 import ReactGA from "react-ga4";
-import { Instruction, Instructor } from "models";
-import { round } from "utils";
+import { Instruction, Instructor } from "../../../components/models";
+import { API } from "../../../components/types";
+import { round } from "../../../components/utils";
 
 let bob: Instructor = {
   InstructorFirst: "Bob",
@@ -35,7 +37,7 @@ type State = {
   instructionList: Instruction[] | null;
 };
 
-export class Instructors extends React.Component<{}, State> {
+export default class Instructors extends React.Component<{}, State> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -142,7 +144,7 @@ function InstructorData(props: { selected: Instructor; instructionList: Instruct
   const { selected, instructionList } = props;
 
   //create GPA table
-  let tableData = [];
+  let tableData: Array<JSX.Element> = [];
   let key = 0;
 
   for (let instruction of instructionList) {

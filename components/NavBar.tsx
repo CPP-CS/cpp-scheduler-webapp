@@ -26,8 +26,8 @@ import {
   Collapse,
   ListItemSecondaryAction,
 } from "@mui/material";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 function ElevationScroll(props) {
   const trigger = useScrollTrigger({
@@ -57,7 +57,7 @@ export default function NavBar() {
                 <Typography variant='h2'>Navigation</Typography>
               </ListSubheader>
               <Divider sx={{ mt: 2 }}></Divider>
-              <NavLink to='/home' icon={<AppsOutlined sx={{ fontSize: "2em" }} />} setOpen={setOpen}>
+              <NavLink to='/' icon={<AppsOutlined sx={{ fontSize: "2em" }} />} setOpen={setOpen}>
                 Home
               </NavLink>
               <NavLink
@@ -115,12 +115,12 @@ export default function NavBar() {
 }
 
 function NavLink(props) {
-  const navigate = useNavigate();
+  let router = useRouter();
   return (
     <ListItemButton
       divider
       onClick={() => {
-        navigate(props.to);
+        router.push(props.to);
         props.setOpen(false);
       }}
       sx={{ px: 2 }}>
@@ -131,12 +131,12 @@ function NavLink(props) {
 }
 
 function GradesNavLink(props) {
-  const navigate = useNavigate();
+  let router = useRouter();
   return (
     <ListItemButton
       divider
       onClick={() => {
-        navigate(props.to);
+        router.push(props.to);
         props.setOpen(false);
       }}
       sx={{ pr: 2, pl: 4 }}>
