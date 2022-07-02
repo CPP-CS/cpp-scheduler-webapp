@@ -26,6 +26,7 @@ import {
   Collapse,
   ListItemSecondaryAction,
 } from "@mui/material";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { Dispatch, SetStateAction, useState } from "react";
 
@@ -82,12 +83,12 @@ export default function NavBar() {
               </ListItemButton>
               <Collapse in={grades} unmountOnExit>
                 <GradesNavLink
-                  to='/data/instructors'
+                  to='/instructors'
                   icon={<PersonOutlineSharp sx={{ fontSize: "2em" }} />}
                   setOpen={setOpen}>
                   Instructors
                 </GradesNavLink>
-                <GradesNavLink to='/data/courses' icon={<ClassOutlined sx={{ fontSize: "2em" }} />} setOpen={setOpen}>
+                <GradesNavLink to='/courses' icon={<ClassOutlined sx={{ fontSize: "2em" }} />} setOpen={setOpen}>
                   Courses
                 </GradesNavLink>
                 {/* <GradesNavLink
@@ -113,26 +114,33 @@ export default function NavBar() {
   );
 }
 
+let linkStyles: React.CSSProperties = {
+  color: "black",
+  textDecoration: 'none',
+};
 function NavLink(props: {
   to: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
   icon: JSX.Element;
   children: JSX.Element | string;
 }) {
-  let router = useRouter();
   return (
-    <ListItemButton
-      divider
-      onClick={() => {
-        router.push(props.to);
-        props.setOpen(false);
-      }}
-      sx={{ px: 2 }}>
-      <ListItemIcon> {props.icon}</ListItemIcon>
-      <ListItemText primary={<Typography variant='h5'>{props.children}</Typography>}></ListItemText>
-    </ListItemButton>
+    <Link href={props.to}>
+      <a style={linkStyles}>
+        <ListItemButton
+          divider
+          onClick={() => {
+            props.setOpen(false);
+          }}
+          sx={{ px: 2 }}>
+          <ListItemIcon> {props.icon}</ListItemIcon>
+          <ListItemText primary={<Typography variant='h5'>{props.children}</Typography>}></ListItemText>
+        </ListItemButton>
+      </a>
+    </Link>
   );
 }
+
 
 function GradesNavLink(props: {
   to: string;
@@ -140,17 +148,19 @@ function GradesNavLink(props: {
   icon: JSX.Element;
   children: JSX.Element | string;
 }) {
-  let router = useRouter();
   return (
-    <ListItemButton
-      divider
-      onClick={() => {
-        router.push(props.to);
-        props.setOpen(false);
-      }}
-      sx={{ pr: 2, pl: 4 }}>
-      <ListItemIcon> {props.icon}</ListItemIcon>
-      <ListItemText primary={<Typography variant='h5'>{props.children}</Typography>}></ListItemText>
-    </ListItemButton>
+    <Link href={props.to}>
+      <a style={linkStyles}>
+        <ListItemButton
+          divider
+          onClick={() => {
+            props.setOpen(false);
+          }}
+          sx={{ pr: 2, pl: 4 }}>
+          <ListItemIcon> {props.icon}</ListItemIcon>
+          <ListItemText primary={<Typography variant='h5'>{props.children}</Typography>}></ListItemText>
+        </ListItemButton>
+      </a>
+    </Link>
   );
 }
