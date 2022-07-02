@@ -14,8 +14,25 @@ import {
 } from "@mui/material";
 import { round } from "../../components/utils";
 import { Container } from "@mui/system";
-import CourseSearch from ".";
 import { CourseSearchBar } from "../../components/data/CourseSearchBar";
+import path from "path";
+import { promises as fs } from "fs";
+
+interface CourseMap {
+  [key: string]: Course;
+}
+
+const cache = {
+  set: async (courseMap: CourseMap) => {
+    await fs.writeFile(path.join(process.cwd(), "courses.db"), JSON.stringify(courseMap));
+  },
+  get: async (): Promise<CourseMap> => {
+    const data = await fs.readFile(path.join(process.cwd(), "courses.db"));
+    const courseMap: CourseMap = JSON.parse(data as unknown as string);
+
+    return courseMap;
+  },
+};
 
 export default function CourseListing(props: { course: string; instructionList: string; courseLabels: string }) {
   let course = JSON.parse(props.course) as Course;
@@ -38,7 +55,7 @@ export default function CourseListing(props: { course: string; instructionList: 
   return (
     <Container sx={{ mt: 17 }}>
       <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: 10 }}>
-        <CourseSearchBar courseLabels={courseLabels} />
+        <CourseSearchBar courseLabels={courseLabels} current={course.Label || "Error label not found in course"} />
         <Grid item xs={12} mt={3}>
           <Typography variant='h2'>{course.Label}</Typography>
           <Typography variant='subtitle1'>
@@ -70,7 +87,12 @@ export async function getStaticPaths() {
     method: "POST",
   });
   let courseList = (await data.json()) as Course[];
-
+  cache.set(
+    courseList.reduce((map: CourseMap, course) => {
+      map[course.Label?.toLowerCase().replaceAll(" ", "-") || "err"] = course;
+      return map;
+    }, {})
+  );
   return {
     paths: courseList.map((course) => {
       return { params: { courseLabel: course.Label?.toLowerCase().replaceAll(" ", "-") } };
@@ -82,22 +104,12 @@ export async function getStaticPaths() {
 export async function getStaticProps(props: { params: { courseLabel: string } }) {
   let { courseLabel } = props.params;
 
-  // search course
-  let data = await fetch(API + "data/courses/findFirst", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      Subject: courseLabel.split("-")[0],
-      // set courseNumber to
-      CourseNumber: courseLabel.split("-")[1],
-    }),
-  });
-  let course = (await data.json()) as Course;
+  let courseMap = await cache.get();
+  let course = courseMap[courseLabel];
+  let courseList = Object.values(courseMap);
 
   // get instructions pertaining to course
-  data = await fetch(API + "data/instructions/find", {
+  let data = await fetch(API + "data/instructions/find", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -114,12 +126,6 @@ export async function getStaticProps(props: { params: { courseLabel: string } })
     category: "Query",
     action: "Course Data Search",
   });
-
-  // get course list
-  data = await fetch(API + "data/courses/find", {
-    method: "POST",
-  });
-  let courseList = (await data.json()) as Course[];
 
   return {
     props: {

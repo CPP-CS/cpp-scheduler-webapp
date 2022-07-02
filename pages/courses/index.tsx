@@ -23,7 +23,7 @@ function SelectClass() {
 export default function CourseSearch(props: { courseLabels: string[] }) {
   return (
     <Container sx={{ mt: 17 }}>
-      {props.courseLabels == null ? null : <CourseSearchBar courseLabels={props.courseLabels} />}
+      {props.courseLabels == null ? null : <CourseSearchBar courseLabels={props.courseLabels} current='' />}
 
       <SelectClass />
     </Container>
