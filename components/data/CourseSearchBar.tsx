@@ -2,7 +2,7 @@ import { Autocomplete, Box, TextField, createFilterOptions, Chip } from "@mui/ma
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-export function CourseSearchBar(props: { courseLabels: string[]; current: string }) {
+export function CourseSearchBar(props: { courseLabels: string[]; current: string | null }) {
   let router = useRouter();
   return (
     <Box>
