@@ -10,7 +10,7 @@ export function CourseSearchBar(props: { courseLabels: string[]; current: string
         // getOptionLabel={(option) => option}
         filterOptions={createFilterOptions({
           matchFrom: "any",
-          limit: 100,
+          // limit: 100,
         })}
         value={props.current}
         options={props.courseLabels || []}
