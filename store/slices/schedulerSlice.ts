@@ -134,8 +134,8 @@ function reconcileQuerySections(query: Query, queryResults: Section[]) {
     // update existing section
 
     for (let section of query.sections) {
-      console.log("Query Result: ", queryResult.Subject, queryResult.CourseNumber, queryResult.Section);
-      console.log("Existing section: ", queryResult.Subject, queryResult.CourseNumber, queryResult.Section);
+      // console.log("Query Result: ", queryResult.Subject, queryResult.CourseNumber, queryResult.Section);
+      // console.log("Existing section: ", queryResult.Subject, queryResult.CourseNumber, queryResult.Section);
       if (
         queryResult.Subject === section.Subject &&
         queryResult.CourseNumber === section.CourseNumber &&
