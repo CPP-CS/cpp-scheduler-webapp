@@ -16,9 +16,9 @@ import {
 } from "@mui/material";
 import React from "react";
 import ReactGA from "react-ga4";
-import { Course, Instruction } from "../../../components/models";
-import { API } from "../../../components/types";
-import { round } from "../../../components/utils";
+import { Course, Instruction } from "../../components/models";
+import { API } from "../../components/types";
+import { round } from "../../components/utils";
 
 type State = {
   selected: Course | null;

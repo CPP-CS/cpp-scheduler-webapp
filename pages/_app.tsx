@@ -10,10 +10,8 @@ import { createTheme, Theme, ThemeProvider } from "@mui/material";
 import Head from "next/head";
 import { useEffect } from "react";
 import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { Loading } from "../components/Loading";
 import NavBar from "../components/NavBar";
-import { persistor, store, wrapper } from "../store/store";
+import { store, wrapper } from "../store/store";
 import ReactGA from "react-ga4";
 import { AppProps } from "next/app";
 
@@ -48,11 +46,16 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Head>
           <meta name='viewport' content='width=device-width, initial-scale=1' />
           <title>CPP Scheduler</title>
+          <meta
+            name='description'
+            key='description'
+            content='Course planning and information for Calpoly students. CPP Scheduler provides a Schedule Builder, Professor Grades, Course Grades, Course Search, and various other resources.'
+          />
         </Head>
         <NavBar />
-        <PersistGate loading={<Loading />} persistor={persistor}>
-          <Component {...pageProps} />
-        </PersistGate>
+        {/* <PersistGate loading={<Loading />} persistor={persistor}> */}
+        <Component {...pageProps} />
+        {/* </PersistGate> */}
       </Provider>
     </ThemeProvider>
   );

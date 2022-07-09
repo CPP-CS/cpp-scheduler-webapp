@@ -1,4 +1,5 @@
 import { Box, Button, Container, Stack, Typography, useMediaQuery } from "@mui/material";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
 
@@ -15,10 +16,10 @@ export default function Home() {
           <NavButton link='/scheduleBuilder'>
             <Typography>Build a Schedule</Typography>
           </NavButton>
-          <NavButton link='/data/instructors'>
+          <NavButton link='/instructors'>
             <Typography>Instructor Data</Typography>
           </NavButton>
-          <NavButton link='/data/courses'>
+          <NavButton link='/courses'>
             <Typography>Course Data</Typography>
           </NavButton>
         </Stack>
@@ -36,14 +37,11 @@ export default function Home() {
 }
 
 function NavButton(props: { link: string; children: ReactElement }) {
-  let router = useRouter();
   return (
-    <Button
-      variant='outlined'
-      onClick={() => {
-        router.push(props.link);
-      }}>
-      {props.children}
-    </Button>
+    <Link href={props.link}>
+      <a style={{ textDecoration: "none" }}>
+        <Button variant='outlined'>{props.children}</Button>
+      </a>
+    </Link>
   );
 }

@@ -18,9 +18,9 @@ import {
 import React from "react";
 
 import ReactGA from "react-ga4";
-import { Instruction, Instructor } from "../../../components/models";
-import { API } from "../../../components/types";
-import { round } from "../../../components/utils";
+import { Instruction, Instructor } from "../../components/models";
+import { API } from "../../components/types";
+import { round } from "../../components/utils";
 
 let bob: Instructor = {
   InstructorFirst: "Bob",
