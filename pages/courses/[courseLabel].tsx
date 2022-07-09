@@ -157,6 +157,6 @@ export async function getStaticProps(props: { params: { courseLabel: string } })
       instructionList: JSON.stringify(instructionList),
       courseLabels: JSON.stringify(courseList.map((course) => course.Label)),
     },
-    revalidate: 60 * 60 * 24, // 1 day
+    // revalidate: 60 * 60 * 24, // 1 day
   };
 }
