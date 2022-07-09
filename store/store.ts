@@ -2,7 +2,6 @@ import { configureStore } from "@reduxjs/toolkit";
 import schedulerSlice from "./slices/schedulerSlice";
 import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
 import thunkMiddleware from "redux-thunk";
-import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, persistStore } from "redux-persist";
 import { createWrapper } from "next-redux-wrapper";
 
 export const store = configureStore({
@@ -11,13 +10,13 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
+      // serializableCheck: {
+      //   ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      // },
     }).concat(thunkMiddleware),
 });
 
-export let persistor = persistStore(store);
+// export let persistor = persistStore(store);
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;

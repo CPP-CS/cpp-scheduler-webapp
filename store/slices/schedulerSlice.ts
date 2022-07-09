@@ -2,8 +2,6 @@ import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
 
 import moment from "moment";
 import { Moment } from "moment";
-import { persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
 import { Course, Section } from "../../components/models";
 import { API, Break, Query, QueryType, Schedule, WeekDays } from "../../components/types";
 import { RootState, store } from "../store";
@@ -178,10 +176,20 @@ function reconcileQuerySections(query: Query, queryResults: Section[]) {
 }
 
 export async function fetchQueries(dispatch: Dispatch, getState: () => RootState) {
+  store.dispatch(schedulerActions.setLoading(true));
+
+  // load save data
+  let storage = window.localStorage.getItem("cppscheduler_next");
+  if (storage) dispatch(schedulerActions.setState(JSON.parse(storage)));
+
+  // get querylist from store
   let queryList = getState().scheduler.queryList;
   console.log("Querying....", queryList);
-  store.dispatch(schedulerActions.setLoading(true));
+
+  // store new query array
   let newQueryList: Query[] = [];
+
+  // iterate through all queries in state,
   for (const query of queryList) {
     const { type, course } = query;
     let queryResults: Section[];
@@ -335,5 +343,6 @@ export const schedulerSlice = createSlice({
 });
 
 export const schedulerActions = schedulerSlice.actions;
+export default schedulerSlice.reducer;
 
-export default persistReducer({ key: "release", storage }, schedulerSlice.reducer);
+// export default persistReducer({ key: "release", storage }, schedulerSlice.reducer);

@@ -10,10 +10,9 @@ import { createTheme, Theme, ThemeProvider } from "@mui/material";
 import Head from "next/head";
 import { useEffect } from "react";
 import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
 import { Loading } from "../components/Loading";
 import NavBar from "../components/NavBar";
-import { persistor, store, wrapper } from "../store/store";
+import { store, wrapper } from "../store/store";
 import ReactGA from "react-ga4";
 import { AppProps } from "next/app";
 
@@ -50,9 +49,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           <title>CPP Scheduler</title>
         </Head>
         <NavBar />
-        <PersistGate loading={<Loading />} persistor={persistor}>
-          <Component {...pageProps} />
-        </PersistGate>
+        {/* <PersistGate loading={<Loading />} persistor={persistor}> */}
+        <Component {...pageProps} />
+        {/* </PersistGate> */}
       </Provider>
     </ThemeProvider>
   );

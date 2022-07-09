@@ -63,7 +63,8 @@ function getColor(section: Section) {
 
 export default function ScheduleBuilder(props: {}) {
   let { setCourseList } = schedulerActions;
-  let { resetting } = useAppSelector((state) => state.scheduler);
+  let schedulerState = useAppSelector((state) => state.scheduler);
+  let { resetting, currentSchedule } = schedulerState;
   const dispatch = useAppDispatch();
   useEffect(() => {
     // query
@@ -81,7 +82,13 @@ export default function ScheduleBuilder(props: {}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { currentSchedule } = useAppSelector((state) => state.scheduler);
+  // setup auto saving state
+  if (typeof window !== "undefined") {
+    window.onbeforeunload = () => {
+      window.localStorage.setItem("cppscheduler_next", JSON.stringify(schedulerState));
+    };
+  }
+
   return resetting ? (
     <Loading />
   ) : (
