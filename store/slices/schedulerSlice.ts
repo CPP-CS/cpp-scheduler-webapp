@@ -175,13 +175,17 @@ function reconcileQuerySections(query: Query, queryResults: Section[]) {
   return query;
 }
 
-export async function fetchQueries(dispatch: Dispatch, getState: () => RootState) {
-  store.dispatch(schedulerActions.setLoading(true));
-
+export async function getLocalSave(dispatch: Dispatch, getState: () => RootState) {
   // load save data
   let storage = window.localStorage.getItem("cppscheduler_next");
-  if (storage) dispatch(schedulerActions.setState(JSON.parse(storage)));
+  if (storage) {
+    console.log("loading save data...");
+    dispatch(schedulerActions.setState(JSON.parse(storage)));
+  }
+}
 
+export async function fetchQueries(dispatch: Dispatch, getState: () => RootState) {
+  store.dispatch(schedulerActions.setLoading(true));
   // get querylist from store
   let queryList = getState().scheduler.queryList;
   console.log("Querying....", queryList);
@@ -212,7 +216,8 @@ export const schedulerSlice = createSlice({
   initialState,
   reducers: {
     addQuery: (state, action: PayloadAction<Query>) => {
-      // console.log("QueryList: ", this.state.queryList);
+      console.log("State", JSON.parse(JSON.stringify(state)));
+      console.log("Payload", action.payload);
       state.queryList = [...state.queryList, action.payload];
     },
 
