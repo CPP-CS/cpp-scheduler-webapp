@@ -17,6 +17,7 @@ import { Container } from "@mui/system";
 import { CourseSearchBar } from "../../components/data/CourseSearchBar";
 import path from "path";
 import { promises as fs } from "fs";
+import Head from "next/head";
 
 interface CourseMap {
   [key: string]: Course;
@@ -43,6 +44,7 @@ export default function CourseListing(props: { course: string; instructionList: 
   let tableData: Array<JSX.Element> = [];
   let key = 0;
 
+  // generate table
   for (let instruction of instructionList) {
     tableData.push(
       <TableRow key={key++}>
@@ -52,32 +54,54 @@ export default function CourseListing(props: { course: string; instructionList: 
       </TableRow>
     );
   }
+
+  // generate metadata
+  let description = `Course history and data for ${course.Label}. Average GPA: ${
+    course.AvgGPA ? round(course.AvgGPA) : "unknown"
+  } our of ${course.TotalEnrollment} enrollments`;
+  let keyword = [
+    course.Subject,
+    course.CourseNumber,
+    course.Label,
+    ...instructionList.reduce(
+      (arr, instruction) => arr.concat(`${instruction.InstructorFirst} ${instruction.InstructorLast}`),
+      [] as String[]
+    ),
+  ].join(", ");
+
   return (
-    <Container sx={{ mt: 17 }}>
-      <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: 10 }}>
-        <CourseSearchBar courseLabels={courseLabels} current={course.Label || "Error label not found in course"} />
-        <Grid item xs={12} mt={3}>
-          <Typography variant='h2'>{course.Label}</Typography>
-          <Typography variant='subtitle1'>
-            Average GPA: {round(course.AvgGPA || 0)} out of {course.TotalEnrollment} Students
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <TableContainer component={Paper} sx={{ mt: 2 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Instructor Name</TableCell>
-                  <TableCell>Avg GPA</TableCell>
-                  <TableCell>Total Grades</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>{tableData}</TableBody>
-            </Table>
-          </TableContainer>
-        </Grid>
-      </Paper>
-    </Container>
+    <>
+      <Head>
+        <title>{course.Label}</title>
+        <meta name='description' key='description' content={description} />
+        <meta name='keywords' key='keywords' content={keyword} />
+      </Head>
+      <Container sx={{ mt: 17 }}>
+        <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: 10 }}>
+          <CourseSearchBar courseLabels={courseLabels} current={course.Label || "Error label not found in course"} />
+          <Grid item xs={12} mt={3}>
+            <Typography variant='h2'>{course.Label}</Typography>
+            <Typography variant='subtitle1'>
+              Average GPA: {round(course.AvgGPA || 0)} out of {course.TotalEnrollment} Students
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <TableContainer component={Paper} sx={{ mt: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Instructor Name</TableCell>
+                    <TableCell>Avg GPA</TableCell>
+                    <TableCell>Total Grades</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>{tableData}</TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+        </Paper>
+      </Container>
+    </>
   );
 }
 
