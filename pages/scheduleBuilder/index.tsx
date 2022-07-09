@@ -25,7 +25,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { fetchQueries, schedulerActions } from "../../store/slices/schedulerSlice";
+import { fetchQueries, getLocalSave, schedulerActions } from "../../store/slices/schedulerSlice";
 import { store, useAppDispatch, useAppSelector } from "../../store/store";
 
 import moment from "moment";
@@ -67,8 +67,12 @@ export default function ScheduleBuilder(props: {}) {
   let { resetting, currentSchedule } = schedulerState;
   const dispatch = useAppDispatch();
   useEffect(() => {
-    // query
-    dispatch(fetchQueries);
+    // get save data
+    dispatch(getLocalSave).then(() => {
+      // query and reconcile data
+      dispatch(fetchQueries);
+    });
+
     // get courses
     fetch(API + "data/courses/find", {
       method: "POST",
@@ -162,6 +166,7 @@ function CourseQuery(props: {}) {
         onChange={(e, val) => {
           setCourse(val);
         }}
+        isOptionEqualToValue={(option, val) => option.Label == val.Label}
         filterOptions={createFilterOptions({
           matchFrom: "any",
           limit: 100,
