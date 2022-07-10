@@ -155,7 +155,7 @@ function AddQuery(props: {}) {
 }
 
 function CourseQuery(props: {}) {
-  const [course, setCourse] = useState<Course | null>();
+  const [course, setCourse] = useState<Course | null>(null);
   const courseList: Course[] = useAppSelector((state) => state.scheduler.courseList);
   const dispatch = useAppDispatch();
   // console.log("CourseList in CourseQuery:", courseList);
@@ -318,65 +318,68 @@ function ScheduleDisplay(props: {}) {
   let { schedules, currentSchedule, breakList, loading } = useAppSelector((state) => state.scheduler);
   let schedule = schedules[currentSchedule];
   let events: Array<CalendarEvent> = [];
-  //schedule
-  for (let index = 0; index < schedule.length; index++) {
-    let section: Section = schedule[index];
-    // console.log("Section: ", section);
-    for (let [day, num] of Object.entries(WeekDays)) {
-      if ((section as any)[day] === true) {
-        // console.log(day, section);
-        // console.log(
-        //   "Start Time: ",
-        //   `2011-10-${num}T${moment(section.StartTime, "HH:mm").format("hh:mm")}:00.000Z`,
-        //   "End Time: ",
-        //   `2011-10-${num}T${moment(section.EndTime, "HH:mm").format("hh:mm")}:00.000Z`
-        // );
-        events.push({
-          title: `${section.Subject}${section.CourseNumber} [${section.Section}] ${
-            section.InstructorFirst ? section.InstructorFirst : "Staff"
-          } ${section.InstructorLast ? section.InstructorLast : ""}`,
-          start: `2011-10-${num}T${moment(section.StartTime, "HH:mm").format("HH:mm")}:00`,
-          end: `2011-10-${num}T${moment(section.EndTime, "HH:mm").format("HH:mm")}:00`,
-          courseIndex: index,
-          textColor: "black",
-          backgroundColor: getColor(section),
-          borderColor: "black",
-          section: section,
-        });
+  // generate events only if schedule exists (schedule doesn't exist while loading)
+  if (schedule) {
+    for (let index = 0; index < schedule.length; index++) {
+      let section: Section = schedule[index];
+      // console.log("Section: ", section);
+      for (let [day, num] of Object.entries(WeekDays)) {
+        if ((section as any)[day] === true) {
+          // console.log(day, section);
+          // console.log(
+          //   "Start Time: ",
+          //   `2011-10-${num}T${moment(section.StartTime, "HH:mm").format("hh:mm")}:00.000Z`,
+          //   "End Time: ",
+          //   `2011-10-${num}T${moment(section.EndTime, "HH:mm").format("hh:mm")}:00.000Z`
+          // );
+          events.push({
+            title: `${section.Subject}${section.CourseNumber} [${section.Section}] ${
+              section.InstructorFirst ? section.InstructorFirst : "Staff"
+            } ${section.InstructorLast ? section.InstructorLast : ""}`,
+            start: `2011-10-${num}T${moment(section.StartTime, "HH:mm").format("HH:mm")}:00`,
+            end: `2011-10-${num}T${moment(section.EndTime, "HH:mm").format("HH:mm")}:00`,
+            courseIndex: index,
+            textColor: "black",
+            backgroundColor: getColor(section),
+            borderColor: "black",
+            section: section,
+          });
+        }
+        if (section.StartTime === null && section.EndTime === null) {
+          events.push({
+            title: `${section.Subject}${section.CourseNumber}[${section.Section}] ${
+              section.InstructorFirst ? section.InstructorFirst : "Staff"
+            } ${section.InstructorLast ? section.InstructorLast : ""}`,
+            start: `2011-10-${num}`,
+            end: `2011-10-${num}`,
+            courseIndex: index,
+            textColor: "black",
+            backgroundColor: getColor(section),
+            borderColor: "black",
+            section: section,
+          });
+        }
       }
-      if (section.StartTime === null && section.EndTime === null) {
-        events.push({
-          title: `${section.Subject}${section.CourseNumber}[${section.Section}] ${
-            section.InstructorFirst ? section.InstructorFirst : "Staff"
-          } ${section.InstructorLast ? section.InstructorLast : ""}`,
-          start: `2011-10-${num}`,
-          end: `2011-10-${num}`,
-          courseIndex: index,
-          textColor: "black",
-          backgroundColor: getColor(section),
-          borderColor: "black",
-          section: section,
-        });
+    }
+    for (let index = 0; index < breakList.length; index++) {
+      let currBreak: Break = breakList[index];
+      for (let [day, num] of Object.entries(WeekDays)) {
+        if ((currBreak as any)[day] === true) {
+          events.push({
+            title: currBreak.name,
+            start: `2011-10-${num}T${moment(currBreak.StartTime, "HH:mm").format("HH:mm")}:00`,
+            end: `2011-10-${num}T${moment(currBreak.EndTime, "HH:mm").format("HH:mm")}:00`,
+            courseIndex: index,
+            textColor: "black",
+            backgroundColor: "gray",
+            borderColor: "black",
+            section: currBreak,
+          });
+        }
       }
     }
   }
-  for (let index = 0; index < breakList.length; index++) {
-    let currBreak: Break = breakList[index];
-    for (let [day, num] of Object.entries(WeekDays)) {
-      if ((currBreak as any)[day] === true) {
-        events.push({
-          title: currBreak.name,
-          start: `2011-10-${num}T${moment(currBreak.StartTime, "HH:mm").format("HH:mm")}:00`,
-          end: `2011-10-${num}T${moment(currBreak.EndTime, "HH:mm").format("HH:mm")}:00`,
-          courseIndex: index,
-          textColor: "black",
-          backgroundColor: "gray",
-          borderColor: "black",
-          section: currBreak,
-        });
-      }
-    }
-  }
+
   // console.log("Events: ", events);
 
   return loading ? <Loading /> : <Calendar events={events} />;
