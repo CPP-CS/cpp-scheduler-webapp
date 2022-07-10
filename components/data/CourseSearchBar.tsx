@@ -15,7 +15,7 @@ export function CourseSearchBar(props: { courseLabels: string[]; current: string
         value={props.current}
         options={props.courseLabels || []}
         renderOption={(props, option, state) => (
-          <Link href={"/courses/" + option.replaceAll(" ", "-").toLowerCase()}>
+          <Link href={"/courses/" + option.replaceAll(" ", "-").toLowerCase()} key={option}>
             <a style={{ textDecoration: "none", color: "black" }}>
               <li {...props}>{option}</li>
             </a>
