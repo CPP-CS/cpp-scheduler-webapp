@@ -61,7 +61,7 @@ function getColor(section: Section) {
   }
 }
 
-export default function ScheduleBuilder(props: {}) {
+export default function ScheduleBuilder(props: { courseList: Course[] }) {
   let { setCourseList } = schedulerActions;
   let schedulerState = useAppSelector((state) => state.scheduler);
   let { resetting, currentSchedule } = schedulerState;
@@ -73,16 +73,8 @@ export default function ScheduleBuilder(props: {}) {
       dispatch(fetchQueries);
     });
 
-    // get courses
-    fetch(API + "data/courses/find", {
-      method: "POST",
-    })
-      .then((data) => data.json())
-      .then((res) => {
-        let courseList = res as Course[];
-        dispatch(setCourseList(courseList));
-        dispatch(schedulerActions.setResetting(false));
-      });
+    dispatch(setCourseList(props.courseList));
+    dispatch(schedulerActions.setResetting(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -125,6 +117,19 @@ export default function ScheduleBuilder(props: {}) {
     </Grid>
   );
 }
+
+export async function getStaticProps() {
+  let data = await fetch(API + "data/courses/find", {
+    method: "POST",
+  });
+  let courseList: Course[] = await data.json();
+  return {
+    props: {
+      courseList,
+    },
+  };
+}
+
 function AddQuery(props: {}) {
   // default query type is by course
   const [queryType, setQueryType] = useState<QueryType | undefined>(QueryType.byCourse);
