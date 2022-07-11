@@ -180,7 +180,7 @@ export async function getLocalSave(dispatch: Dispatch, getState: () => RootState
   let storage = window.localStorage.getItem("cppscheduler_next");
   if (storage) {
     console.log("loading save data...");
-    dispatch(schedulerActions.setState(JSON.parse(storage)));
+    dispatch(schedulerActions.loadSave(JSON.parse(storage)));
   }
 }
 
@@ -343,6 +343,13 @@ export const schedulerSlice = createSlice({
 
     setResetting(state, action: PayloadAction<boolean>) {
       state.resetting = action.payload;
+    },
+
+    loadSave(state, action: PayloadAction<SchedulerState>) {
+      let { breakList, currentSchedule, queryList } = action.payload;
+      state.breakList = breakList;
+      state.currentSchedule = currentSchedule;
+      state.queryList = queryList;
     },
   },
 });

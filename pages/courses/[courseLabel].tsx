@@ -77,7 +77,7 @@ export default function CourseListing(props: { course: string; instructionList: 
         <meta name='keywords' key='keywords' content={keyword} />
       </Head>
       <Container sx={{ mt: 17 }}>
-        <Paper variant='elevation' elevation={4} sx={{ mt: 2, p: 10 }}>
+        <Paper variant='elevation' elevation={4} sx={{ p: { md: 10, xs: 2 }, mt: 2 }}>
           <CourseSearchBar courseLabels={courseLabels} current={course.Label || "Error label not found in course"} />
           <Grid item xs={12} mt={3}>
             <Typography variant='h2'>{course.Label}</Typography>

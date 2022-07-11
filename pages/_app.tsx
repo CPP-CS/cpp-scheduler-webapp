@@ -38,7 +38,7 @@ const theme: Theme = createTheme(createTheme(), {
 function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     ReactGA.initialize("G-BFNLVWP9W2");
-    ReactGA.send(window.location.pathname);
+    // ReactGA.send(window.location.pathname);
   });
   return (
     <ThemeProvider theme={theme}>

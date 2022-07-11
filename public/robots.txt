@@ -1,3 +1,9 @@
-# https://www.robotstxt.org/robotstxt.html
+# *
 User-agent: *
-Disallow:
+Allow: /
+
+# Host
+Host: https://www.cppscheduler.com/
+
+# Sitemaps
+Sitemap: https://www.cppscheduler.com/sitemap.xml
