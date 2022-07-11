@@ -107,7 +107,11 @@ export default function NavBar() {
               </NavLink>
             </List>
           </Drawer>
-          <Typography variant='h5'>CPP Scheduler</Typography>
+          <Typography variant='h5'>
+            <Link href='/'>
+              <a style={linkStyles}>CPP Scheduler</a>
+            </Link>
+          </Typography>
         </Toolbar>
       </AppBar>
     </ElevationScroll>
@@ -115,9 +119,10 @@ export default function NavBar() {
 }
 
 let linkStyles: React.CSSProperties = {
-  color: "black",
-  textDecoration: 'none',
+  color: "inherit",
+  textDecoration: "none",
 };
+
 function NavLink(props: {
   to: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -140,7 +145,6 @@ function NavLink(props: {
     </Link>
   );
 }
-
 
 function GradesNavLink(props: {
   to: string;
