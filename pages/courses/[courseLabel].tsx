@@ -12,7 +12,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { round } from "../../components/utils";
+import { defaultKeywords, round } from "../../components/utils";
 import { Container } from "@mui/system";
 import { CourseSearchBar } from "../../components/data/CourseSearchBar";
 import path from "path";
@@ -67,6 +67,8 @@ export default function CourseListing(props: { course: string; instructionList: 
       (arr, instruction) => arr.concat(`${instruction.InstructorFirst} ${instruction.InstructorLast}`),
       [] as String[]
     ),
+    "course",
+    ...defaultKeywords,
   ].join(", ");
 
   return (
