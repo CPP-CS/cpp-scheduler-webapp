@@ -82,7 +82,7 @@ export default function CourseListing(props: { course: string; instructionList: 
         <Paper variant='elevation' elevation={4} sx={{ p: { md: 10, xs: 2 }, mt: 2 }}>
           <CourseSearchBar courseLabels={courseLabels} current={course.Label || "Error label not found in course"} />
           <Grid item xs={12} mt={3}>
-            <Typography variant='h2'>{course.Label}</Typography>
+            <Typography variant='h1'>{course.Label}</Typography>
             <Typography variant='subtitle1'>
               Average GPA: {round(course.AvgGPA || 0)} out of {course.TotalEnrollment} Students
             </Typography>
