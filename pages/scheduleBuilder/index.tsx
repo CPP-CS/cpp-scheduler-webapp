@@ -38,6 +38,7 @@ import { GetSave, LoadSave } from "../../components/Save";
 import { Loading } from "../../components/Loading";
 
 import Calendar from "../../components/Calendar";
+import Head from "next/head";
 
 function getColor(section: Section) {
   let mode = section.InstructionMode || "TBA";
@@ -85,36 +86,48 @@ export default function ScheduleBuilder(props: { courseList: Course[] }) {
     };
   }
 
-  return resetting ? (
-    <Loading />
-  ) : (
-    <Grid
-      container
-      sx={{
-        pt: 10,
-        height: {
-          md: "100vh",
-        },
-      }}>
-      <Grid item xs={12} md={4} sx={{ height: { md: "100%" } }}>
-        <Box overflow='scroll' sx={{ height: { md: "100%" } }}>
-          <AddQuery />
-          <QueryList />
-          <AddBreak />
-          <BreakList />
-          <GetSave />
-          <LoadSave />
-        </Box>
-      </Grid>
-      <Grid item xs={12} md={8}>
-        <Stack height='100%' direction='column' alignItems='center'>
-          <SelectSchedule />
-          <Box minHeight={600} height='100%' width='100%'>
-            {currentSchedule !== -1 ? <ScheduleDisplay /> : null}
-          </Box>
-        </Stack>
-      </Grid>
-    </Grid>
+  return (
+    <>
+      <Head>
+        <title>Schedule Builder</title>
+        <meta
+          name='description'
+          content='Schedule Builder for CalPoly Pomona (CPP) students. Organizes courses, sections, and breaks.'
+          key='description'
+        />
+      </Head>
+      {resetting ? (
+        <Loading />
+      ) : (
+        <Grid
+          container
+          sx={{
+            pt: 10,
+            height: {
+              md: "100vh",
+            },
+          }}>
+          <Grid item xs={12} md={4} sx={{ height: { md: "100%" } }}>
+            <Box overflow='scroll' sx={{ height: { md: "100%" } }}>
+              <AddQuery />
+              <QueryList />
+              <AddBreak />
+              <BreakList />
+              <GetSave />
+              <LoadSave />
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <Stack height='100%' direction='column' alignItems='center'>
+              <SelectSchedule />
+              <Box minHeight={600} height='100%' width='100%'>
+                {currentSchedule !== -1 ? <ScheduleDisplay /> : null}
+              </Box>
+            </Stack>
+          </Grid>
+        </Grid>
+      )}
+    </>
   );
 }
 
