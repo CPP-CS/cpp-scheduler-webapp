@@ -58,7 +58,7 @@ export default function CourseListing(props: { course: string; instructionList: 
   // generate metadata
   let description = `Course history and data for ${course.Label}. Average GPA: ${
     course.AvgGPA ? round(course.AvgGPA) : "unknown"
-  } our of ${course.TotalEnrollment} enrollments`;
+  } out of ${course.TotalEnrollment} enrollments`;
   let keyword = [
     course.Subject,
     course.CourseNumber,
@@ -83,7 +83,7 @@ export default function CourseListing(props: { course: string; instructionList: 
           <CourseSearchBar courseLabels={courseLabels} current={course.Label || "Error label not found in course"} />
           <Grid item xs={12} mt={3}>
             <Typography variant='h1'>{course.Label}</Typography>
-            <Typography variant='subtitle1'>
+            <Typography variant='h3'>
               Average GPA: {round(course.AvgGPA || 0)} out of {course.TotalEnrollment} Students
             </Typography>
           </Grid>
@@ -92,9 +92,21 @@ export default function CourseListing(props: { course: string; instructionList: 
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Instructor Name</TableCell>
-                    <TableCell>Avg GPA</TableCell>
-                    <TableCell>Total Grades</TableCell>
+                    <TableCell>
+                      <Typography variant='h6' sx={{ fontWeight: 600 }}>
+                        Instructor Name
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant='h6' sx={{ fontWeight: 600 }}>
+                        Avg GPA
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant='h6' sx={{ fontWeight: 600 }}>
+                        Total Grades
+                      </Typography>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>{tableData}</TableBody>
