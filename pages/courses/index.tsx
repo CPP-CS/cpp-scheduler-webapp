@@ -7,6 +7,7 @@ import {
   Typography,
   AutocompleteRenderInputParams,
 } from "@mui/material";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { CourseSearchBar } from "../../components/data/CourseSearchBar";
 import { Course } from "../../components/models";
@@ -22,11 +23,20 @@ function SelectClass() {
 
 export default function CourseSearch(props: { courseLabels: string[] }) {
   return (
-    <Container sx={{ mt: 17 }}>
-      {props.courseLabels == null ? null : <CourseSearchBar courseLabels={props.courseLabels} current={null} />}
+    <>
+      <Head>
+        <title>Course Search</title>
+        <meta name='description' content='Search for Cal Poly Pomona(CPP) Course History and Data' key='description' />
+      </Head>
+      <Container sx={{ mt: 17, display: "flex", flexDirection: "column", justifyContent: "center", height: "60vh" }}>
+        <Typography variant='h1' textAlign='center'>
+          Search for Course Data
+        </Typography>
+        <CourseSearchBar courseLabels={props.courseLabels} current={null} />
 
-      <SelectClass />
-    </Container>
+        {/* <SelectClass /> */}
+      </Container>
+    </>
   );
 }
 
