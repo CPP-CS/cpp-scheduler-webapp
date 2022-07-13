@@ -6,7 +6,7 @@ import "@fullcalendar/timegrid/main.css";
 import "@fontsource/lato";
 import "@fontsource/roboto";
 
-import { createTheme, Theme, ThemeProvider } from "@mui/material";
+import { createTheme, responsiveFontSizes, Theme, ThemeProvider } from "@mui/material";
 import Head from "next/head";
 import { useEffect } from "react";
 import { Provider } from "react-redux";
@@ -14,28 +14,32 @@ import NavBar from "../components/NavBar";
 import { store, wrapper } from "../store/store";
 import ReactGA from "react-ga4";
 import { AppProps } from "next/app";
+import { useRouter } from "next/router";
 
-const theme: Theme = createTheme(createTheme(), {
-  palette: {
-    primary: {
-      main: "#388e3c",
+const theme: Theme = responsiveFontSizes(
+  createTheme(createTheme(), {
+    palette: {
+      primary: {
+        main: "#388e3c",
+      },
+      secondary: {
+        main: "#ffb300",
+      },
+      warning: {
+        main: "#f4511e",
+      },
+      success: {
+        main: "#00e676",
+      },
     },
-    secondary: {
-      main: "#ffb300",
+    typography: {
+      fontFamily: "Lato, Roboto",
     },
-    warning: {
-      main: "#f4511e",
-    },
-    success: {
-      main: "#00e676",
-    },
-  },
-  typography: {
-    fontFamily: "Lato, Roboto",
-  },
-});
+  })
+);
 
 function MyApp({ Component, pageProps }: AppProps) {
+  let router = useRouter();
   useEffect(() => {
     ReactGA.initialize("G-BFNLVWP9W2");
     // ReactGA.send(window.location.pathname);
@@ -50,6 +54,10 @@ function MyApp({ Component, pageProps }: AppProps) {
             name='description'
             key='description'
             content='Course planning and information for Calpoly students. CPP Scheduler provides a Schedule Builder, Professor Grades, Course Grades, Course Search, and various other resources.'
+          />
+          <link
+            rel='canonical'
+            href={("https://www.cppscheduler.com" + (router.asPath === "/" ? "" : router.asPath)).split("?")[0]}
           />
         </Head>
         <NavBar />

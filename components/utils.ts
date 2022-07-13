@@ -25,3 +25,5 @@ export function getDays(section: Section | Break) {
   if (res === "") return "TBA";
   return res;
 }
+
+export let defaultKeywords = ["cpp", "schedule", "opencpp", "cppscheduler"];
