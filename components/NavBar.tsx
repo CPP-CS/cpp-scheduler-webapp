@@ -107,7 +107,7 @@ export default function NavBar() {
               </NavLink>
             </List>
           </Drawer>
-          <Typography variant='h5'>
+          <Typography sx={{ fontSize: { xs: 20, md: 24 } }}>
             <Link href='/'>
               <a style={linkStyles}>CPP Scheduler</a>
             </Link>
