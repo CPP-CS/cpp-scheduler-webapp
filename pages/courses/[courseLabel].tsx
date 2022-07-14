@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { defaultKeywords, round } from "utils/utils";
 import { Container } from "@mui/system";
-import { SearchBar } from "components/data/CourseSearchBar";
+import { SearchBar } from "components/data/SearchBar";
 
 import Head from "next/head";
 import { cache, CourseMap } from "utils/cache";

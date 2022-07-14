@@ -8,7 +8,7 @@ import {
   AutocompleteRenderInputParams,
 } from "@mui/material";
 import Head from "next/head";
-import { SearchBar } from "components/data/CourseSearchBar";
+import { SearchBar } from "components/data/SearchBar";
 import { Course } from "types/models";
 import { API } from "constants/API";
 
