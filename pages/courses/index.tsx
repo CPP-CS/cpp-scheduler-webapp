@@ -8,7 +8,7 @@ import {
   AutocompleteRenderInputParams,
 } from "@mui/material";
 import Head from "next/head";
-import { CourseSearchBar } from "components/data/CourseSearchBar";
+import { SearchBar } from "components/data/CourseSearchBar";
 import { Course } from "types/models";
 import { API } from "constants/API";
 
@@ -23,7 +23,12 @@ export default function CourseSearch(props: { courseLabels: string[] }) {
         <Typography variant='h1' textAlign='center'>
           Search for Course Data
         </Typography>
-        <CourseSearchBar courseLabels={props.courseLabels} current={null} sx={{ px: { md: "20%" }, mt: 3 }} />
+        <SearchBar
+          subtext='Select a Course...'
+          labels={props.courseLabels}
+          current={null}
+          sx={{ px: { md: "20%" }, mt: 3 }}
+        />
       </Container>
     </>
   );

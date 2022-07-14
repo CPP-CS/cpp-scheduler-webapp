@@ -2,7 +2,7 @@ import { Autocomplete, Box, TextField, createFilterOptions, Chip, SxProps } from
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-export function CourseSearchBar(props: { courseLabels: string[]; current: string | null; sx?: SxProps }) {
+export function SearchBar(props: { labels: string[]; current: string | null; subtext?: string; sx?: SxProps }) {
   let router = useRouter();
   return (
     <Box sx={props.sx}>
@@ -13,7 +13,7 @@ export function CourseSearchBar(props: { courseLabels: string[]; current: string
           limit: 100,
         })}
         value={props.current}
-        options={props.courseLabels || []}
+        options={props.labels || []}
         renderOption={(props, option, state) => (
           <Link href={"/courses/" + option.replaceAll(" ", "-").toLowerCase()} key={option}>
             <a style={{ textDecoration: "none", color: "black" }}>
@@ -21,7 +21,7 @@ export function CourseSearchBar(props: { courseLabels: string[]; current: string
             </a>
           </Link>
         )}
-        renderInput={(params) => <TextField {...params} label='Select a Course...'></TextField>}
+        renderInput={(params) => <TextField {...params} label={props.subtext}></TextField>}
       />
     </Box>
   );
