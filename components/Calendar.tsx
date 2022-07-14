@@ -3,9 +3,9 @@ import FullCalendar, { Fragment } from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { Box, Tooltip, Typography } from "@mui/material";
 import moment from "moment";
-import { Section } from "./models";
-import { CalendarEvent } from "./types";
-import { getDays } from "./utils";
+import { Section } from "types/models";
+import { CalendarEvent } from "types/types";
+import { getDays } from "utils/utils";
 
 export default function Calendar(props: { events: Array<CalendarEvent> }) {
   return (

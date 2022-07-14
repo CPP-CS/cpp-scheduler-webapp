@@ -1,11 +1,11 @@
-import { Autocomplete, Box, TextField, createFilterOptions, Chip } from "@mui/material";
+import { Autocomplete, Box, TextField, createFilterOptions, Chip, SxProps } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-export function CourseSearchBar(props: { courseLabels: string[]; current: string | null }) {
+export function CourseSearchBar(props: { courseLabels: string[]; current: string | null; sx?: SxProps }) {
   let router = useRouter();
   return (
-    <Box>
+    <Box sx={props.sx}>
       <Autocomplete
         // getOptionLabel={(option) => option}
         filterOptions={createFilterOptions({

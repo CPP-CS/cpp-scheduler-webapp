@@ -27,7 +27,6 @@ import {
   ListItemSecondaryAction,
 } from "@mui/material";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import React, { Dispatch, SetStateAction, useState } from "react";
 
 function ElevationScroll(props: any) {
@@ -107,7 +106,7 @@ export default function NavBar() {
               </NavLink>
             </List>
           </Drawer>
-          <Typography variant='h5'>
+          <Typography sx={{ fontSize: { xs: 20, md: 24 } }}>
             <Link href='/'>
               <a style={linkStyles}>CPP Scheduler</a>
             </Link>

@@ -1,8 +1,5 @@
 import { Course, Section } from "./models";
 
-export const API = "https://cpp-scheduler.herokuapp.com/";
-// export const API = "http://localhost:3000/";
-
 export interface Schedule extends Array<Section> {}
 
 export enum WeekDays {

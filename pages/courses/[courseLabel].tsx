@@ -1,5 +1,5 @@
-import { Course, Instruction } from "../../components/models";
-import { API } from "../../components/types";
+import { Course, Instruction } from "types/models";
+import { API } from "constants/API";
 import ReactGA from "react-ga4";
 import {
   Grid,
@@ -12,9 +12,9 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { defaultKeywords, round } from "../../components/utils";
+import { defaultKeywords, round } from "utils/utils";
 import { Container } from "@mui/system";
-import { CourseSearchBar } from "../../components/data/CourseSearchBar";
+import { CourseSearchBar } from "components/data/CourseSearchBar";
 import path from "path";
 import { promises as fs } from "fs";
 import Head from "next/head";
@@ -78,8 +78,8 @@ export default function CourseListing(props: { course: string; instructionList: 
         <meta name='description' key='description' content={description} />
         <meta name='keywords' key='keywords' content={keyword} />
       </Head>
-      <Container sx={{ mt: 17 }}>
-        <Paper variant='elevation' elevation={4} sx={{ p: { md: 10, xs: 2 }, mt: 2 }}>
+      <Container sx={{ px: { xs: 0 } }}>
+        <Paper variant='elevation' elevation={4} sx={{ px: { md: 10, xs: 2 }, p: 5, mt: 17 }}>
           <CourseSearchBar courseLabels={courseLabels} current={course.Label || "Error label not found in course"} />
           <Grid item xs={12} mt={3}>
             <Typography variant='h1'>{course.Label}</Typography>

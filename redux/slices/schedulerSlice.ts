@@ -2,9 +2,10 @@ import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
 
 import moment from "moment";
 import { Moment } from "moment";
-import { Course, Section } from "../../components/models";
-import { API, Break, Query, QueryType, Schedule, WeekDays } from "../../components/types";
+import { Course, Section } from "../../types/models";
+import { Break, Query, QueryType, Schedule, WeekDays } from "types/types";
 import { RootState, store } from "../store";
+import { API } from "constants/API";
 
 export interface SchedulerState {
   loading: boolean;
