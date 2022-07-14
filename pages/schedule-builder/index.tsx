@@ -90,10 +90,10 @@ export default function ScheduleBuilder(props: { courseList: Course[] }) {
   return (
     <>
       <Head>
-        <title>Schedule Builder</title>
+        <title>CPP Schedule Builder</title>
         <meta
           name='description'
-          content='Schedule Builder for CalPoly Pomona (CPP) students. Organizes courses, sections, and breaks.'
+          content='CPP Schedule Builder for CalPoly Pomona students. Organizes courses, sections, and breaks.'
           key='description'
         />
       </Head>
@@ -110,6 +110,9 @@ export default function ScheduleBuilder(props: { courseList: Course[] }) {
           }}>
           <Grid item xs={12} md={4} sx={{ height: { md: "100%" } }}>
             <Box overflow='scroll' sx={{ height: { md: "100%" } }}>
+              <Typography variant='h1' sx={{ fontSize: { sx: 30, sm: 50 }, textAlign: "center" }}>
+                CPP Schedule Builder
+              </Typography>
               <AddQuery />
               <QueryList />
               <AddBreak />

@@ -14,26 +14,10 @@ import {
 } from "@mui/material";
 import { defaultKeywords, round } from "utils/utils";
 import { Container } from "@mui/system";
-import { CourseSearchBar } from "components/data/CourseSearchBar";
-import path from "path";
-import { promises as fs } from "fs";
+import { SearchBar } from "components/data/SearchBar";
+
 import Head from "next/head";
-
-interface CourseMap {
-  [key: string]: Course;
-}
-
-const cache = {
-  set: async (courseMap: CourseMap) => {
-    await fs.writeFile(path.join(process.cwd(), "courses.db"), JSON.stringify(courseMap));
-  },
-  get: async (): Promise<CourseMap> => {
-    const data = await fs.readFile(path.join(process.cwd(), "courses.db"));
-    const courseMap: CourseMap = JSON.parse(data as unknown as string);
-
-    return courseMap;
-  },
-};
+import { cache, CourseMap } from "utils/cache";
 
 export default function CourseListing(props: { course: string; instructionList: string; courseLabels: string }) {
   let course = JSON.parse(props.course) as Course;
@@ -56,7 +40,7 @@ export default function CourseListing(props: { course: string; instructionList: 
   }
 
   // generate metadata
-  let description = `Course history and data for ${course.Label}. Average GPA: ${
+  let description = `Course data and history for ${course.Label}. Average GPA: ${
     course.AvgGPA ? round(course.AvgGPA) : "unknown"
   } out of ${course.TotalEnrollment} enrollments`;
   let keyword = [
@@ -80,7 +64,11 @@ export default function CourseListing(props: { course: string; instructionList: 
       </Head>
       <Container sx={{ px: { xs: 0 } }}>
         <Paper variant='elevation' elevation={4} sx={{ px: { md: 10, xs: 2 }, p: 5, mt: 17 }}>
-          <CourseSearchBar courseLabels={courseLabels} current={course.Label || "Error label not found in course"} />
+          <SearchBar
+            subtext='Select a Course...'
+            labels={courseLabels}
+            current={course.Label || "Error label not found in course"}
+          />
           <Grid item xs={12} mt={3}>
             <Typography variant='h1'>{course.Label}</Typography>
             <Typography variant='h3'>
@@ -126,6 +114,7 @@ export async function getStaticPaths() {
   });
   let courseList = (await data.json()) as Course[];
   cache.set(
+    "courses",
     courseList.reduce((map: CourseMap, course) => {
       map[course.Label?.toLowerCase().replaceAll(" ", "-") || "err"] = course;
       return map;
@@ -142,7 +131,7 @@ export async function getStaticPaths() {
 export async function getStaticProps(props: { params: { courseLabel: string } }) {
   let { courseLabel } = props.params;
 
-  let courseMap = await cache.get();
+  let courseMap = (await cache.get("courses")) as CourseMap;
   let course = courseMap[courseLabel];
   let courseList = Object.values(courseMap);
 
