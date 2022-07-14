@@ -61,7 +61,7 @@ export default function NavBar() {
                 Home
               </NavLink>
               <NavLink
-                to='/scheduleBuilder'
+                to='/schedule-builder'
                 icon={<CalendarViewDayOutlined sx={{ fontSize: "2em" }} />}
                 setOpen={setOpen}>
                 Schedule Builder

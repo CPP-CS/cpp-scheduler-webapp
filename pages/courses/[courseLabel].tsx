@@ -40,7 +40,7 @@ export default function CourseListing(props: { course: string; instructionList: 
   }
 
   // generate metadata
-  let description = `Course history and data for ${course.Label}. Average GPA: ${
+  let description = `Course data and history for ${course.Label}. Average GPA: ${
     course.AvgGPA ? round(course.AvgGPA) : "unknown"
   } out of ${course.TotalEnrollment} enrollments`;
   let keyword = [

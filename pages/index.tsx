@@ -12,7 +12,7 @@ export default function Home() {
           <Typography variant={size ? "h3" : "h5"}>Planning Resources for CalPoly Pomona students</Typography>
         </Box>
         <Stack direction='row' sx={{ mt: 3 }} spacing={2}>
-          <NavButton link='/scheduleBuilder'>
+          <NavButton link='/schedule-builder'>
             <Typography>Build a Schedule</Typography>
           </NavButton>
           <NavButton link='/instructors'>
