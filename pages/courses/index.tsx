@@ -24,7 +24,7 @@ export default function CourseSearch(props: { courseLabels: string[] }) {
         <Typography variant='h1' textAlign='center'>
           Search for Course Data
         </Typography>
-        <CourseSearchBar courseLabels={props.courseLabels} current={null} sx={{ px: { md: "20%" } }} />
+        <CourseSearchBar courseLabels={props.courseLabels} current={null} sx={{ px: { md: "20%" }, mt: 3 }} />
       </Container>
     </>
   );
