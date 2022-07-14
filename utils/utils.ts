@@ -1,5 +1,5 @@
-import { Section } from "./models";
-import { Break } from "./types";
+import { Section } from "../types/models";
+import { Break } from "types/types";
 
 export function getCourse(section: Section) {
   return section.Subject + " " + section.CourseNumber;

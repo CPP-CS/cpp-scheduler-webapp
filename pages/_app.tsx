@@ -10,8 +10,8 @@ import { createTheme, responsiveFontSizes, Theme, ThemeProvider } from "@mui/mat
 import Head from "next/head";
 import { useEffect } from "react";
 import { Provider } from "react-redux";
-import NavBar from "../components/NavBar";
-import { store, wrapper } from "../store/store";
+import NavBar from "components/NavBar";
+import { store, wrapper } from "redux/store";
 import ReactGA from "react-ga4";
 import { AppProps } from "next/app";
 import { useRouter } from "next/router";

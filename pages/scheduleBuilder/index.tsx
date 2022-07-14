@@ -25,15 +25,16 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { fetchQueries, getLocalSave, schedulerActions } from "../../store/slices/schedulerSlice";
-import { store, useAppDispatch, useAppSelector } from "../../store/store";
+import { fetchQueries, getLocalSave, schedulerActions } from "../../redux/slices/schedulerSlice";
+import { store, useAppDispatch, useAppSelector } from "../../redux/store";
 
 import moment from "moment";
 import { Key, useEffect, useState } from "react";
 
-import { API, Break, CalendarEvent, Query, QueryType, WeekDays } from "../../components/types";
-import { Course, Section } from "../../components/models";
-import { getDays, round } from "../../components/utils";
+import { Break, CalendarEvent, Query, QueryType, WeekDays } from "types/types";
+import { API } from "constants/API";
+import { Course, Section } from "../../types/models";
+import { getDays, round } from "../../utils/utils";
 import { GetSave, LoadSave } from "../../components/Save";
 import { Loading } from "../../components/Loading";
 

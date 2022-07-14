@@ -8,10 +8,9 @@ import {
   AutocompleteRenderInputParams,
 } from "@mui/material";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import { CourseSearchBar } from "../../components/data/CourseSearchBar";
-import { Course } from "../../components/models";
-import { API } from "../../components/types";
+import { CourseSearchBar } from "components/data/CourseSearchBar";
+import { Course } from "types/models";
+import { API } from "constants/API";
 
 export default function CourseSearch(props: { courseLabels: string[] }) {
   return (

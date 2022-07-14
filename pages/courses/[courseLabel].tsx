@@ -1,5 +1,5 @@
-import { Course, Instruction } from "../../components/models";
-import { API } from "../../components/types";
+import { Course, Instruction } from "types/models";
+import { API } from "constants/API";
 import ReactGA from "react-ga4";
 import {
   Grid,
@@ -12,9 +12,9 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { defaultKeywords, round } from "../../components/utils";
+import { defaultKeywords, round } from "utils/utils";
 import { Container } from "@mui/system";
-import { CourseSearchBar } from "../../components/data/CourseSearchBar";
+import { CourseSearchBar } from "components/data/CourseSearchBar";
 import path from "path";
 import { promises as fs } from "fs";
 import Head from "next/head";

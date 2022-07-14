@@ -2,9 +2,9 @@ import LZUTF8 from "lzutf8";
 
 import { Button, Paper, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import { CompressedQuery, CompressedSection, SaveData } from "./types";
-import { RootState, useAppDispatch, useAppSelector } from "../store/store";
-import { fetchQueries, schedulerActions, SchedulerState } from "../store/slices/schedulerSlice";
+import { CompressedQuery, CompressedSection, SaveData } from "types/types";
+import { RootState, useAppDispatch, useAppSelector } from "redux/store";
+import { fetchQueries, schedulerActions, SchedulerState } from "redux/slices/schedulerSlice";
 
 function saveState(state: SchedulerState): SaveData {
   return {
@@ -15,7 +15,7 @@ function saveState(state: SchedulerState): SaveData {
         type: query.type,
         allowStaff: query.allowStaff || false,
         minGPA: query.minGPA,
-        sections: query.sections.map((section) => {
+        sections: query.sections.map((section: CompressedSection) => {
           return {
             selected: section.selected,
             Subject: section.Subject,
