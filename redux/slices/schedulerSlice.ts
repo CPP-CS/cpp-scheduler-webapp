@@ -21,7 +21,7 @@ const initialState: SchedulerState = {
   queryList: [],
   breakList: [],
   loading: true,
-  resetting: true,
+  resetting: false,
   schedules: [],
   currentSchedule: -1,
 };

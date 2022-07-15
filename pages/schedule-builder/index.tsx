@@ -76,7 +76,7 @@ export default function ScheduleBuilder(props: { courseList: Course[] }) {
     });
 
     dispatch(setCourseList(props.courseList));
-    dispatch(schedulerActions.setResetting(false));
+    // dispatch(schedulerActions.setResetting(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -97,40 +97,40 @@ export default function ScheduleBuilder(props: { courseList: Course[] }) {
           key='description'
         />
       </Head>
-      {resetting ? (
+      {/* {resetting ? (
         <Loading />
-      ) : (
-        <Grid
-          container
-          sx={{
-            pt: 10,
-            height: {
-              md: "100vh",
-            },
-          }}>
-          <Grid item xs={12} md={4} sx={{ height: { md: "100%" } }}>
-            <Box overflow='scroll' sx={{ height: { md: "100%" } }}>
-              <Typography variant='h1' sx={{ fontSize: { sx: 30, sm: 50 }, textAlign: "center" }}>
-                CPP Schedule Builder
-              </Typography>
-              <AddQuery />
-              <QueryList />
-              <AddBreak />
-              <BreakList />
-              <GetSave />
-              <LoadSave />
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={8}>
-            <Stack height='100%' direction='column' alignItems='center'>
-              <SelectSchedule />
-              <Box minHeight={600} height='100%' width='100%'>
-                {currentSchedule !== -1 ? <ScheduleDisplay /> : null}
-              </Box>
-            </Stack>
-          </Grid>
+      ) : ( */}
+      <Grid
+        container
+        sx={{
+          pt: 10,
+          height: {
+            md: "100vh",
+          },
+        }}>
+        <Grid item xs={12} md={4} sx={{ height: { md: "100%" } }}>
+          <Box overflow='scroll' sx={{ height: { md: "100%" } }}>
+            <Typography variant='h1' sx={{ fontSize: { sx: 30, sm: 50 }, textAlign: "center" }}>
+              CPP Schedule Builder
+            </Typography>
+            <AddQuery />
+            <QueryList />
+            <AddBreak />
+            <BreakList />
+            <GetSave />
+            <LoadSave />
+          </Box>
         </Grid>
-      )}
+        <Grid item xs={12} md={8}>
+          <Stack height='100%' direction='column' alignItems='center'>
+            <SelectSchedule />
+            <Box minHeight={600} height='100%' width='100%'>
+              {currentSchedule !== -1 ? <ScheduleDisplay /> : null}
+            </Box>
+          </Stack>
+        </Grid>
+      </Grid>
+      {/* )} */}
     </>
   );
 }
