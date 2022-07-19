@@ -68,7 +68,7 @@ export default function CourseListing(props: { course: string; instructionList: 
             subtext='Select a Course...'
             labels={courseLabels}
             current={course.Label || "Error label not found in course"}
-            path='courses/'
+            path='/courses/'
           />
           <Grid item xs={12} mt={3}>
             <Typography variant='h1'>{course.Label}</Typography>

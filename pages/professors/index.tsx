@@ -24,7 +24,7 @@ export default function InstructorSearch(props: { professorLabels: string[] }) {
           labels={props.professorLabels}
           current={null}
           sx={{ px: { md: "20%" }, mt: 3 }}
-          path='professors/'
+          path='/professors/'
         />
       </Container>
     </>

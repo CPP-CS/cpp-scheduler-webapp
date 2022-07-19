@@ -72,7 +72,7 @@ export default function ProfessorListing(props: {
             subtext='Select a professor...'
             labels={professorLabels}
             current={professor.Label || "Error label not found in professor"}
-            path='professors/'
+            path='/professors/'
           />
           <Grid item xs={12} mt={3}>
             <Typography variant='h1'>{professor.Label}</Typography>
