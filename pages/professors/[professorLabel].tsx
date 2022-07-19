@@ -36,7 +36,7 @@ export default function ProfessorListing(props: {
   for (let instruction of instructionList) {
     tableData.push(
       <TableRow key={key++}>
-        <TableCell>{`${instruction.InstructorFirst} ${instruction.InstructorLast}`}</TableCell>
+        <TableCell>{`${instruction.Subject} ${instruction.CourseNumber}`}</TableCell>
         <TableCell>{`${round(instruction.AvgGPA || 0)}`}</TableCell>
         <TableCell>{`${instruction.TotalEnrollment}`}</TableCell>
       </TableRow>
