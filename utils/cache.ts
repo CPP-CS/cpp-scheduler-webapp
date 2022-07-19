@@ -5,7 +5,7 @@ import { promises as fs } from "fs";
 export interface CourseMap {
   [key: string]: Course;
 }
-export interface InstructorMap {
+export interface ProfessorMap {
   [key: string]: Instructor;
 }
 

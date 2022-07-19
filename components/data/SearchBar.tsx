@@ -2,8 +2,13 @@ import { Autocomplete, Box, TextField, createFilterOptions, Chip, SxProps } from
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-export function SearchBar(props: { labels: string[]; current: string | null; subtext?: string; sx?: SxProps }) {
-  let router = useRouter();
+export function SearchBar(props: {
+  labels: string[];
+  current: string | null;
+  subtext?: string;
+  sx?: SxProps;
+  path: string;
+}) {
   return (
     <Box sx={props.sx}>
       <Autocomplete
@@ -14,10 +19,10 @@ export function SearchBar(props: { labels: string[]; current: string | null; sub
         })}
         value={props.current}
         options={props.labels || []}
-        renderOption={(props, option, state) => (
-          <Link href={"/courses/" + option.replaceAll(" ", "-").toLowerCase()} key={option}>
+        renderOption={(elProps, option, state) => (
+          <Link href={props.path + option.replaceAll(" ", "-").toLowerCase()} key={option}>
             <a style={{ textDecoration: "none", color: "black" }}>
-              <li {...props}>{option}</li>
+              <li {...elProps}>{option}</li>
             </a>
           </Link>
         )}

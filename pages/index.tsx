@@ -15,8 +15,8 @@ export default function Home() {
           <NavButton link='/schedule-builder'>
             <Typography>Build a Schedule</Typography>
           </NavButton>
-          <NavButton link='/instructors'>
-            <Typography>Instructor Data</Typography>
+          <NavButton link='/professors'>
+            <Typography>Professor Data</Typography>
           </NavButton>
           <NavButton link='/courses'>
             <Typography>Course Data</Typography>

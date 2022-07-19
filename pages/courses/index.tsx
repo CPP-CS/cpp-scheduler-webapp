@@ -28,6 +28,7 @@ export default function CourseSearch(props: { courseLabels: string[] }) {
           labels={props.courseLabels}
           current={null}
           sx={{ px: { md: "20%" }, mt: 3 }}
+          path='courses/'
         />
       </Container>
     </>

@@ -1,4 +1,4 @@
-import { Course, Instruction } from "types/models";
+import { Instructor, Instruction } from "types/models";
 import { API } from "constants/API";
 import ReactGA from "react-ga4";
 import {
@@ -17,12 +17,16 @@ import { Container } from "@mui/system";
 import { SearchBar } from "components/data/SearchBar";
 
 import Head from "next/head";
-import { cache, CourseMap } from "utils/cache";
+import { cache, ProfessorMap } from "utils/cache";
 
-export default function CourseListing(props: { course: string; instructionList: string; courseLabels: string }) {
-  let course = JSON.parse(props.course) as Course;
+export default function ProfessorListing(props: {
+  professor: string;
+  instructionList: string;
+  professorLabels: string;
+}) {
+  let professor = JSON.parse(props.professor) as Instructor;
   let instructionList = JSON.parse(props.instructionList) as Instruction[];
-  let courseLabels = JSON.parse(props.courseLabels) as string[];
+  let professorLabels = JSON.parse(props.professorLabels) as string[];
 
   //create GPA table
   let tableData: Array<JSX.Element> = [];
@@ -40,40 +44,40 @@ export default function CourseListing(props: { course: string; instructionList: 
   }
 
   // generate metadata
-  let description = `Course data and history for ${course.Label}. Average GPA: ${
-    course.AvgGPA ? round(course.AvgGPA) : "unknown"
-  } out of ${course.TotalEnrollment} enrollments`;
+  let description = `Professor data and history for ${professor.Label}. Average GPA: ${
+    professor.AvgGPA ? round(professor.AvgGPA) : "unknown"
+  } out of ${professor.TotalEnrollment} enrollments`;
   let keyword = [
-    course.Subject,
-    course.CourseNumber,
-    course.Label,
+    professor.InstructorFirst,
+    professor.InstructorLast,
+    professor.Label,
     ...instructionList.reduce(
       (arr, instruction) => arr.concat(`${instruction.InstructorFirst} ${instruction.InstructorLast}`),
       [] as String[]
     ),
-    "course",
+    "Professor",
     ...defaultKeywords,
   ].join(", ");
 
   return (
     <>
       <Head>
-        <title>{course.Label}</title>
+        <title>{professor.Label}</title>
         <meta name='description' key='description' content={description} />
         <meta name='keywords' key='keywords' content={keyword} />
       </Head>
       <Container sx={{ px: { xs: 0 } }}>
         <Paper variant='elevation' elevation={4} sx={{ px: { md: 10, xs: 2 }, p: 5, mt: 17 }}>
           <SearchBar
-            subtext='Select a Course...'
-            labels={courseLabels}
-            current={course.Label || "Error label not found in course"}
-            path='courses/'
+            subtext='Select a professor...'
+            labels={professorLabels}
+            current={professor.Label || "Error label not found in professor"}
+            path='professors/'
           />
           <Grid item xs={12} mt={3}>
-            <Typography variant='h1'>{course.Label}</Typography>
+            <Typography variant='h1'>{professor.Label}</Typography>
             <Typography variant='h3'>
-              Average GPA: {round(course.AvgGPA || 0)} out of {course.TotalEnrollment} Students
+              Average GPA: {round(professor.AvgGPA || 0)} out of {professor.TotalEnrollment} Students
             </Typography>
           </Grid>
           <Grid item xs={12}>
@@ -83,7 +87,7 @@ export default function CourseListing(props: { course: string; instructionList: 
                   <TableRow>
                     <TableCell>
                       <Typography variant='h6' sx={{ fontWeight: 600 }}>
-                        Instructor Name
+                        Course Name
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -109,57 +113,57 @@ export default function CourseListing(props: { course: string; instructionList: 
 }
 
 export async function getStaticPaths() {
-  // gets course list
-  let data = await fetch(API + "data/courses/find", {
+  // gets professor list
+  let data = await fetch(API + "data/instructors/find", {
     method: "POST",
   });
-  let courseList = (await data.json()) as Course[];
+  let professorList = (await data.json()) as Instructor[];
   await cache.set(
-    "courses",
-    courseList.reduce((map: CourseMap, course) => {
-      map[course.Label?.toLowerCase().replaceAll(" ", "-") || "err"] = course;
+    "professors",
+    professorList.reduce((map: ProfessorMap, professor) => {
+      map[professor.Label?.toLowerCase().replaceAll(" ", "-") || "err"] = professor;
       return map;
     }, {})
   );
   return {
-    paths: courseList.map((course) => {
-      return { params: { courseLabel: course.Label?.toLowerCase().replaceAll(" ", "-") } };
+    paths: professorList.map((professor) => {
+      return { params: { professorLabel: professor.Label?.toLowerCase().replaceAll(" ", "-") } };
     }),
     fallback: false,
   };
 }
 
-export async function getStaticProps(props: { params: { courseLabel: string } }) {
-  let { courseLabel } = props.params;
+export async function getStaticProps(props: { params: { professorLabel: string } }) {
+  let { professorLabel } = props.params;
 
-  let courseMap = (await cache.get("courses")) as CourseMap;
-  let course = courseMap[courseLabel];
-  let courseList = Object.values(courseMap);
+  let professorMap = (await cache.get("professors")) as ProfessorMap;
+  let professor = professorMap[professorLabel];
+  let professorList = Object.values(professorMap);
 
-  // get instructions pertaining to course
+  // get instructions pertaining to professor
   let data = await fetch(API + "data/instructions/find", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      Subject: course.Subject,
-      CourseNumber: course.CourseNumber,
+      InstructorFirst: professor.InstructorFirst,
+      InstructorLast: professor.InstructorLast,
     }),
   });
   let instructionList = (await data.json()) as Instruction[];
 
-  // send course search event to google analytics
+  // send professor search event to google analytics
   ReactGA.event({
     category: "Query",
-    action: "Course Data Search",
+    action: "Professor Data Search",
   });
 
   return {
     props: {
-      course: JSON.stringify(course),
+      professor: JSON.stringify(professor),
       instructionList: JSON.stringify(instructionList),
-      courseLabels: JSON.stringify(courseList.map((course) => course.Label)),
+      professorLabels: JSON.stringify(professorList.map((professor) => professor.Label)),
     },
     // revalidate: 60 * 60 * 24, // 1 day
   };
