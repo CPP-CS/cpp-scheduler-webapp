@@ -1,16 +1,15 @@
 export type Section = {
   id: number;
-  ClassCapacity: number | null;
-  ClassNumber: number | null;
-  ClassTitle: string | null;
+  ClassCapacity: number;
+  ClassNumber: number;
   Component: string | null;
   CourseNumber: string;
   EndDate: string | null;
   EndTime: string | null;
   Friday: boolean | null;
-  InstructionMode: string | null;
-  InstructorFirst: string | null;
-  InstructorLast: string | null;
+  InstructionMode: string;
+  InstructorFirst: string;
+  InstructorLast: string;
   Location: string | null;
   Monday: boolean | null;
   Saturday: boolean | null;
@@ -19,12 +18,12 @@ export type Section = {
   StartTime: string | null;
   Subject: string;
   Sunday: boolean | null;
-  Term: string | null;
+  Term: string;
   Thursday: boolean | null;
   Tuesday: boolean | null;
-  TotalEnrollment: number | null;
   Units: number | null;
   Wednesday: boolean | null;
+  TotalEnrollment: number;
   A: number | null;
   Am: number | null;
   Bp: number | null;
@@ -38,8 +37,8 @@ export type Section = {
   Dm: number | null;
   F: number | null;
   AvgGPA: number | null;
-  instructionId: number | null;
-  instructions: Instruction;
+  instructionId: number;
+  Graded: boolean;
 
   // local properties
   selected: boolean;
@@ -50,28 +49,29 @@ export type Instruction = {
   id: number;
   Subject: string;
   CourseNumber: string;
-  InstructorFirst: string | null;
-  InstructorLast: string | null;
-  TotalEnrollment: number | null;
+  InstructorFirst: string;
+  InstructorLast: string;
+  TotalEnrollment: number;
   AvgGPA: number | null;
-  courseId: number | null;
-  instructorId: number | null;
+  courseId: number;
+  instructorId: number;
 };
 
 export type Instructor = {
   id: number;
-  InstructorFirst: string | null;
-  InstructorLast: string | null;
-  TotalEnrollment: number | null;
+  InstructorFirst: string;
+  InstructorLast: string;
+  TotalEnrollment: number;
   AvgGPA: number | null;
-  Label: string | null;
+  Label: string;
 };
 
 export type Course = {
   id: number;
-  Subject: string | null;
-  CourseNumber: string | null;
-  TotalEnrollment: number | null;
+  Subject: string;
+  CourseNumber: string;
+  TotalEnrollment: number;
   AvgGPA: number | null;
-  Label: string | null;
+  Label: string;
+  CourseTitle: string | null;
 };
