@@ -1,8 +1,10 @@
-import FullCalendar, { Fragment } from "@fullcalendar/react";
+import FullCalendar from "@fullcalendar/react";
 
+import adaptivePlugin from "@fullcalendar/adaptive";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { Box, Tooltip, Typography } from "@mui/material";
 import moment from "moment";
+import { Fragment } from "react";
 import { Section } from "types/models";
 import { CalendarEvent } from "types/types";
 import { getDays } from "utils/utils";
@@ -10,7 +12,8 @@ import { getDays } from "utils/utils";
 export default function Calendar(props: { events: Array<CalendarEvent> }) {
   return (
     <FullCalendar
-      plugins={[timeGridPlugin]}
+      plugins={[timeGridPlugin, adaptivePlugin]}
+      schedulerLicenseKey='CC-Attribution-NonCommercial-NoDerivatives'
       initialView='timeGridWeek'
       allDaySlot={true}
       allDayContent='Async'
@@ -22,7 +25,7 @@ export default function Calendar(props: { events: Array<CalendarEvent> }) {
       slotDuration='00:30:00'
       expandRows={true}
       height='100%'
-      eventContent={(arg) => {
+      eventContent={(arg: any) => {
         let event: CalendarEvent = arg.event.extendedProps as CalendarEvent;
         let section: Section = event.section as Section;
         return (

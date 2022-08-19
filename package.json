@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.9.3",
     "@fontsource/lato": "^4.5.8",
     "@fontsource/roboto": "^4.5.7",
+    "@fullcalendar/adaptive": "^5.11.2",
     "@fullcalendar/react": "^5.11.1",
     "@fullcalendar/timegrid": "^5.11.0",
     "@mui/icons-material": "^5.8.4",
