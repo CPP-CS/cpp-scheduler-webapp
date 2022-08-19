@@ -4,6 +4,7 @@ import ReactGA from "react-ga4";
 import {
   Grid,
   Paper,
+  SxProps,
   Table,
   TableBody,
   TableCell,
@@ -11,6 +12,7 @@ import {
   TableHead,
   TableRow,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { defaultKeywords, round } from "utils/utils";
 import { Container } from "@mui/system";
@@ -18,8 +20,11 @@ import { SearchBar } from "components/data/SearchBar";
 
 import Head from "next/head";
 import { cache, CourseMap } from "utils/cache";
+import { theme } from "pages/_app";
 
 export default function CourseListing(props: { course: string; instructionList: string; courseLabels: string }) {
+  let md = useMediaQuery(theme.breakpoints.up("md"));
+
   let course = JSON.parse(props.course) as Course;
   let instructionList = JSON.parse(props.instructionList) as Instruction[];
   let courseLabels = JSON.parse(props.courseLabels) as string[];
@@ -29,12 +34,15 @@ export default function CourseListing(props: { course: string; instructionList: 
   let key = 0;
 
   // generate table
+  let cellStyles: SxProps = {
+    // py: { xs: 1 },
+  };
   for (let instruction of instructionList) {
     tableData.push(
       <TableRow key={key++}>
-        <TableCell>{`${instruction.InstructorFirst} ${instruction.InstructorLast}`}</TableCell>
-        <TableCell>{`${round(instruction.AvgGPA || 0)}`}</TableCell>
-        <TableCell>{`${instruction.TotalEnrollment}`}</TableCell>
+        <TableCell sx={cellStyles}>{`${instruction.InstructorFirst} ${instruction.InstructorLast}`}</TableCell>
+        <TableCell sx={cellStyles}>{`${round(instruction.AvgGPA || 0)}`}</TableCell>
+        <TableCell sx={cellStyles}>{`${instruction.TotalEnrollment}`}</TableCell>
       </TableRow>
     );
   }
@@ -62,47 +70,45 @@ export default function CourseListing(props: { course: string; instructionList: 
         <meta name='description' key='description' content={description} />
         <meta name='keywords' key='keywords' content={keyword} />
       </Head>
-      <Container sx={{ px: { xs: 0 } }}>
-        <Paper variant='elevation' elevation={4} sx={{ px: { md: 10, xs: 2 }, p: 5, mt: 17 }}>
-          <SearchBar
-            subtext='Select a Course...'
-            labels={courseLabels}
-            current={course.Label || "Error label not found in course"}
-            path='/courses/'
-          />
-          <Grid item xs={12} mt={3}>
-            <Typography variant='h1'>{course.Label}</Typography>
-            <Typography variant='h3'>
-              Average GPA: {round(course.AvgGPA || 0)} out of {course.TotalEnrollment} Students
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <TableContainer component={Paper} sx={{ mt: 2 }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>
-                      <Typography variant='h6' sx={{ fontWeight: 600 }}>
-                        Instructor Name
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant='h6' sx={{ fontWeight: 600 }}>
-                        Avg GPA
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant='h6' sx={{ fontWeight: 600 }}>
-                        Total Grades
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>{tableData}</TableBody>
-              </Table>
-            </TableContainer>
-          </Grid>
-        </Paper>
+      <Container sx={{ px: { md: 10, xs: 2 }, p: 5, mt: { xs: 5 } }} maxWidth='lg'>
+        <SearchBar
+          subtext='Select a Course...'
+          labels={courseLabels}
+          current={course.Label || "Error label not found in course"}
+          path='/courses/'
+        />
+        <Grid item xs={12} mt={3}>
+          <Typography variant='h1'>{course.Label}</Typography>
+          <Typography variant='h3'>
+            Average GPA: {round(course.AvgGPA || 0)} out of {course.TotalEnrollment} Students
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <TableContainer component={Paper} sx={{ mt: 2 }}>
+            <Table size={md ? undefined : "small"}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <Typography variant='h6' sx={{ fontWeight: 600 }}>
+                      Instructor Name
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant='h6' sx={{ fontWeight: 600 }}>
+                      Avg GPA
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant='h6' sx={{ fontWeight: 600 }}>
+                      Total Grades
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>{tableData}</TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
       </Container>
     </>
   );

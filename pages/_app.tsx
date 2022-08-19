@@ -16,7 +16,7 @@ import ReactGA from "react-ga4";
 import { AppProps } from "next/app";
 import { useRouter } from "next/router";
 
-const theme: Theme = responsiveFontSizes(
+export const theme: Theme = responsiveFontSizes(
   createTheme(createTheme(), {
     palette: {
       primary: {
