@@ -21,6 +21,7 @@ import { SearchBar } from "components/data/SearchBar";
 import Head from "next/head";
 import { cache, CourseMap } from "utils/cache";
 import { theme } from "pages/_app";
+import { Info } from "components/Info";
 
 export default function CourseListing(props: { course: string; instructionList: string; courseLabels: string }) {
   let md = useMediaQuery(theme.breakpoints.up("md"));
@@ -48,9 +49,9 @@ export default function CourseListing(props: { course: string; instructionList: 
   }
 
   // generate metadata
-  let description = `Course data and history for ${course.Label}. Average GPA: ${
-    course.AvgGPA ? round(course.AvgGPA) : "unknown"
-  } out of ${course.TotalEnrollment} enrollments`;
+  let description = `Course data and history for ${course.Label}${
+    course.CourseTitle ? " - " + course.CourseTitle : ""
+  }. Average GPA: ${course.AvgGPA ? round(course.AvgGPA) : "unknown"} out of ${course.TotalEnrollment} enrollments`;
   let keyword = [
     course.Subject,
     course.CourseNumber,
@@ -78,9 +79,11 @@ export default function CourseListing(props: { course: string; instructionList: 
           path='/courses/'
         />
         <Grid item xs={12} mt={3}>
-          <Typography variant='h1'>{course.Label}</Typography>
-          <Typography variant='h3'>
-            Average GPA: {round(course.AvgGPA || 0)} out of {course.TotalEnrollment} Students
+          <Typography variant='h2' variantMapping={{ h2: "h1" }} textAlign='center'>{`${course.Label}${
+            course.CourseTitle ? " - " + course.CourseTitle : ""
+          } `}</Typography>
+          <Typography variant='h4' variantMapping={{ h4: "h2" }} textAlign='center'>
+            Avg GPA: {round(course.AvgGPA || 0)} / {course.TotalEnrollment} <Info text='test' />
           </Typography>
         </Grid>
         <Grid item xs={12}>
