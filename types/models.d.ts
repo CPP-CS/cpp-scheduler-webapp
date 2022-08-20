@@ -40,6 +40,8 @@ export type Section = {
   instructionId: number;
   Graded: boolean;
 
+  instructions: Instruction;
+
   // local properties
   selected: boolean;
   expanded: boolean;
