@@ -26,7 +26,7 @@ const initialState: SchedulerState = {
   currentSchedule: -1,
 };
 
-const DEFAULT_TERM = "F 2022";
+const DEFAULT_TERM = "SP 2023";
 
 function filterCourses(queryList: Query[], breakList: Break[]): Query[] {
   return queryList.map((query) => {
