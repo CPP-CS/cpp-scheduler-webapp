@@ -25,8 +25,11 @@ import {
   Divider,
   Collapse,
   ListItemSecondaryAction,
+  Button,
+  Box,
 } from "@mui/material";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { Dispatch, SetStateAction, useState } from "react";
 
 function ElevationScroll(props: any) {
@@ -46,7 +49,7 @@ export default function NavBar() {
   const [grades, setGrades] = useState(true);
   return (
     <ElevationScroll>
-      <AppBar>
+      <AppBar position='sticky' sx={{ m: 0, flex: "0 0" }}>
         <Toolbar>
           <IconButton size='large' color='inherit' sx={{ mr: 2 }} onClick={() => setOpen(true)}>
             <MenuIcon />
@@ -111,9 +114,24 @@ export default function NavBar() {
               <a style={linkStyles}>CPP Scheduler</a>
             </Link>
           </Typography>
+          <ContactMe />
         </Toolbar>
       </AppBar>
     </ElevationScroll>
+  );
+}
+
+function ContactMe(props: {}) {
+  const router = useRouter();
+  return (
+    <Button
+      sx={{ ml: "2em" }}
+      variant='outlined'
+      onClick={() => {
+        router.push("/help");
+      }}>
+      Contact me
+    </Button>
   );
 }
 

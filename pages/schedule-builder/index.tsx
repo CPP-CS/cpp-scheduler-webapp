@@ -103,16 +103,20 @@ export default function ScheduleBuilder(props: { courseList: Course[] }) {
       <Grid
         container
         sx={{
-          pt: 10,
-          height: {
-            md: "100vh",
-          },
+          flex: "1 1",
+          maxHeight: "93%",
         }}>
-        <Grid item xs={12} md={4} sx={{ height: { md: "100%" } }}>
-          <Box overflow='scroll' sx={{ height: { md: "100%" } }}>
-            <Typography variant='h1' sx={{ fontSize: { sx: 30, sm: 50 }, textAlign: "center" }}>
-              CPP Schedule Builder
-            </Typography>
+        <Grid item xs={12} md={4} sx={{ maxHeight: "100%", overflowY: "scroll" }}>
+          <Box>
+            <Box sx={{ textAlign: "start", ml: "5%" }}>
+              <Typography variant='h1' sx={{ fontSize: { sx: 30, sm: 50 } }}>
+                CPP Schedule Builder
+              </Typography>
+              <Typography variant='h5' variantMapping={{ h5: "h2" }}>
+                Current Term: Spring 2023
+              </Typography>
+            </Box>
+
             <AddQuery />
             <QueryList />
             <AddBreak />

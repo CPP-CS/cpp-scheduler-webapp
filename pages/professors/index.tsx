@@ -15,7 +15,7 @@ export default function InstructorSearch(props: { professorLabels: string[] }) {
           key='description'
         />
       </Head>
-      <Container sx={{ mt: 17, display: "flex", flexDirection: "column", justifyContent: "center", height: "60vh" }}>
+      <Container sx={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "60vh" }}>
         <Typography variant='h1' textAlign='center'>
           Search for Professor Data
         </Typography>
