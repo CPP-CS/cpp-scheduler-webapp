@@ -67,7 +67,7 @@ export default function ProfessorListing(props: {
         <meta name='keywords' key='keywords' content={keyword} />
       </Head>
       <Container sx={{ px: { xs: 0 } }}>
-        <Paper variant='elevation' elevation={4} sx={{ px: { md: 10, xs: 2 }, p: 5, mt: 17 }}>
+        <Paper variant='elevation' elevation={4} sx={{ px: { md: 10, xs: 2 }, p: 5 }}>
           <SearchBar
             subtext='Select a professor...'
             labels={professorLabels}

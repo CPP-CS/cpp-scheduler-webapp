@@ -46,7 +46,7 @@ export default function NavBar() {
   const [grades, setGrades] = useState(true);
   return (
     <ElevationScroll>
-      <AppBar>
+      <AppBar position='sticky' sx={{ m: 0, flex: "0 0" }}>
         <Toolbar>
           <IconButton size='large' color='inherit' sx={{ mr: 2 }} onClick={() => setOpen(true)}>
             <MenuIcon />
