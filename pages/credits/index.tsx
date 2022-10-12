@@ -2,7 +2,7 @@ import { Box, Container, Typography } from "@mui/material";
 
 export default function Credits() {
   return (
-    <Box sx={{ mt: 10 }}>
+    <Box>
       <Container maxWidth='xl'>
         <Typography variant='h1'>Credits</Typography>
 
