@@ -26,14 +26,14 @@ export default function Home() {
             <Typography>Course Data</Typography>
           </NavButton>
         </Stack>
-        {/* <Box id='disclaimer' sx={{ position: "absolute", top: "93vh", left: "10vw", width: "80vw" }}>
+        <Box id='disclaimer' sx={{ position: "absolute", bottom: "3vh", left: "10vw", width: "80vw" }}>
           <Typography variant='caption'>
             CPP Scheduler is not created by, managed by, endorsed by, or affiliated with Cal Poly Pomona or the
             California State University system. CPP Scheduler is a 100% student run open source project. We do not
             warrant the information provided on this website for accuracy or relevancy. For clarification on the
             information provided, please utilize official CPP resources and datasources
           </Typography>
-        </Box> */}
+        </Box>
       </Box>
     </Container>
   );
