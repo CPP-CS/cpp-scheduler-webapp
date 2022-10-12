@@ -71,7 +71,7 @@ export default function CourseListing(props: { course: string; instructionList: 
         <meta name='description' key='description' content={description} />
         <meta name='keywords' key='keywords' content={keyword} />
       </Head>
-      <Container sx={{ px: { md: 10, xs: 2 }, p: 5, mt: { xs: 5 } }} maxWidth='lg'>
+      <Container sx={{ px: { md: 10, xs: 2 }, p: 5 }} maxWidth='lg'>
         <SearchBar
           subtext='Select a Course...'
           labels={courseLabels}

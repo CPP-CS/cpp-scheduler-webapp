@@ -6,7 +6,7 @@ import "@fullcalendar/timegrid/main.css";
 import "@fontsource/lato";
 import "@fontsource/roboto";
 
-import { createTheme, responsiveFontSizes, Theme, ThemeProvider } from "@mui/material";
+import { Box, createTheme, responsiveFontSizes, Theme, ThemeProvider } from "@mui/material";
 import Head from "next/head";
 import { useEffect } from "react";
 import { Provider } from "react-redux";
@@ -60,10 +60,12 @@ function MyApp({ Component, pageProps }: AppProps) {
             href={("https://www.cppscheduler.com" + (router.asPath === "/" ? "" : router.asPath)).split("?")[0]}
           />
         </Head>
-        <NavBar />
-        {/* <PersistGate loading={<Loading />} persistor={persistor}> */}
-        <Component {...pageProps} />
-        {/* </PersistGate> */}
+        <Box sx={{ height: "100vh", m: 0, p: 0, display: "flex", flexDirection: "column" }}>
+          <NavBar />
+          {/* <PersistGate loading={<Loading />} persistor={persistor}> */}
+          <Component {...pageProps} />
+          {/* </PersistGate> */}
+        </Box>
       </Provider>
     </ThemeProvider>
   );

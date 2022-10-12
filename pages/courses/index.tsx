@@ -19,7 +19,7 @@ export default function CourseSearch(props: { courseLabels: string[] }) {
         <title>CPP Course Search</title>
         <meta name='description' content='Search for Cal Poly Pomona - CPP Course Data and History' key='description' />
       </Head>
-      <Container sx={{ mt: 17, display: "flex", flexDirection: "column", justifyContent: "center", height: "60vh" }}>
+      <Container sx={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "60vh" }}>
         <Typography variant='h1' textAlign='center'>
           Search for Course Data
         </Typography>
