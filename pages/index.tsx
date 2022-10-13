@@ -5,8 +5,10 @@ import { ReactElement } from "react";
 export default function Home() {
   let size = useMediaQuery("(min-width: 900px)");
   return (
-    <Container maxWidth='xl'>
-      <Box id='homePage' sx={{ mt: 30 }}>
+    <Container maxWidth='xl' sx={{ flex: "1 1" }}>
+      <Box
+        id='homePage'
+        sx={{ pt: 5, height: "100%", display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
         <Typography variant={"h1"} sx={{ textAlign: { xs: "center", md: "left" } }}>
           CPP Scheduler
         </Typography>
@@ -26,12 +28,23 @@ export default function Home() {
             <Typography>Course Data</Typography>
           </NavButton>
         </Stack>
-        <Box id='disclaimer' sx={{ position: "absolute", bottom: "3vh", left: "10vw", width: "80vw" }}>
+        <Box
+          id='disclaimer'
+          sx={{
+            flex: "1 1",
+            alignItems: "center",
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            pb: 2,
+            boxSizing: "border-box",
+          }}>
           <Typography variant='caption'>
             CPP Scheduler is not created by, managed by, endorsed by, or affiliated with Cal Poly Pomona or the
             California State University system. CPP Scheduler is a 100% student run open source project. We do not
             warrant the information provided on this website for accuracy or relevancy. For clarification on the
-            information provided, please utilize official CPP resources and datasources
+            information provided, please utilize official CPP resources and datasources.
           </Typography>
         </Box>
       </Box>
