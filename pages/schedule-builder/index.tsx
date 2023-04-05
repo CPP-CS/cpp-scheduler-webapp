@@ -113,7 +113,7 @@ export default function ScheduleBuilder(props: { courseList: Course[] }) {
                 CPP Schedule Builder
               </Typography>
               <Typography variant='h5' variantMapping={{ h5: "h2" }}>
-                Current Term: Spring 2023
+                Current Term: Fall 2023
               </Typography>
             </Box>
 
