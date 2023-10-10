@@ -113,7 +113,7 @@ export default function ScheduleBuilder(props: { courseList: Course[] }) {
                 CPP Schedule Builder
               </Typography>
               <Typography variant='h5' variantMapping={{ h5: "h2" }}>
-                Current Term: Fall 2023
+                Current Term: Spring 2024
               </Typography>
             </Box>
 
@@ -140,7 +140,7 @@ export default function ScheduleBuilder(props: { courseList: Course[] }) {
 }
 
 export async function getStaticProps() {
-  let data = await fetch(API + "data/courses/find", {
+  let data = await fetch(API + "data/courses/findAll", {
     method: "POST",
   });
   let courseList: Course[] = await data.json();
@@ -307,7 +307,7 @@ function QueryList(props: {}) {
                           : "Time: TBA"}
                       </Typography>
                       <Typography>Location: {section.Location || "TBA"}</Typography>
-                      <Typography>Component: {section.Component}</Typography>
+                      {/* <Typography>Component: {section.Component}</Typography> */}
                       <Typography>Units: {section.Units}</Typography>
                     </AccordionDetails>
                   </Accordion>

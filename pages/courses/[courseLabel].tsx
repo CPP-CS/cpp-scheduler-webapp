@@ -119,7 +119,7 @@ export default function CourseListing(props: { course: string; instructionList: 
 
 export async function getStaticPaths() {
   // gets course list
-  let data = await fetch(API + "data/courses/find", {
+  let data = await fetch(API + "data/courses/findAll", {
     method: "POST",
   });
   let courseList = (await data.json()) as Course[];
@@ -146,7 +146,7 @@ export async function getStaticProps(props: { params: { courseLabel: string } })
   let courseList = Object.values(courseMap);
 
   // get instructions pertaining to course
-  let data = await fetch(API + "data/instructions/find", {
+  let data = await fetch(API + "data/instructions/findByCourse", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

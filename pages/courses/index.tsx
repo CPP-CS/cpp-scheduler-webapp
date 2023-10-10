@@ -36,7 +36,7 @@ export default function CourseSearch(props: { courseLabels: string[] }) {
 }
 
 export async function getStaticProps() {
-  let data = await fetch(API + "data/courses/find", {
+  let data = await fetch(API + "data/courses/findAll", {
     method: "POST",
   });
   let courseList = (await data.json()) as Course[];
