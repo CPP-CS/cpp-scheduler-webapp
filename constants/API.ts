@@ -1,2 +1,2 @@
-// export const API = "https://cpp-scheduler.herokuapp.com/";
-export const API = "http://localhost:3000/";
+export const API = "https://api.cppscheduler.com/";
+// export const API = "http://localhost:3000/";
