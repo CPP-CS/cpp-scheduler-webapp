@@ -114,7 +114,7 @@ export default function ProfessorListing(props: {
 
 export async function getStaticPaths() {
   // gets professor list
-  let data = await fetch(API + "data/instructors/find", {
+  let data = await fetch(API + "data/professors/findAll", {
     method: "POST",
   });
   let professorList = (await data.json()) as Instructor[];
@@ -141,7 +141,7 @@ export async function getStaticProps(props: { params: { professorLabel: string }
   let professorList = Object.values(professorMap);
 
   // get instructions pertaining to professor
-  let data = await fetch(API + "data/instructions/find", {
+  let data = await fetch(API + "data/instructions/findByProfessor", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

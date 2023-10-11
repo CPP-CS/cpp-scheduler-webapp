@@ -4,7 +4,6 @@ export type Section = {
   ClassNumber: number;
   Component: string | null;
   CourseNumber: string;
-  EndDate: string | null;
   EndTime: string | null;
   Friday: boolean | null;
   InstructionMode: string;
@@ -14,7 +13,6 @@ export type Section = {
   Monday: boolean | null;
   Saturday: boolean | null;
   Section: string;
-  StartDate: string | null;
   StartTime: string | null;
   Subject: string;
   Sunday: boolean | null;

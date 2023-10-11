@@ -32,7 +32,7 @@ export default function InstructorSearch(props: { professorLabels: string[] }) {
 }
 
 export async function getStaticProps() {
-  let data = await fetch(API + "data/instructors/find", {
+  let data = await fetch(API + "data/professors/findAll", {
     method: "POST",
   });
   let professorList = (await data.json()) as Instructor[];
